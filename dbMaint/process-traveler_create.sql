@@ -95,7 +95,7 @@ CREATE TABLE ProcessVersion
 CREATE TABLE Process 
 ( id int NOT NULL AUTO_INCREMENT, 
   processName varchar(50) NOT NULL, 
-  hardwareTypeId1 int NULL, 
+  hardwareTypeId1 int NOT NULL, 
   hardwareTypeId2 int NULL, 
   processVersionId int NOT NULL, 
   description blob, instructionsURL varchar(256), 
@@ -107,7 +107,8 @@ CREATE TABLE Process
   CONSTRAINT fk42 FOREIGN KEY (processVersionId) REFERENCES ProcessVersion (id),
   INDEX fk40 (hardwareTypeId1),
   INDEX fk41 (hardwareTypeId2),
-  INDEX fk42 (processVersionId)
+  INDEX fk42 (processVersionId),
+  CONSTRAINT fk43 UNIQUE INDEX (processName, hardwareTypeId1, processVersionId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE ProcessEdge 
