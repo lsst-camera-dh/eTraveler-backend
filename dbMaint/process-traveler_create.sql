@@ -7,12 +7,12 @@ CREATE TABLE HardwareType
   PRIMARY KEY (id),
   CONSTRAINT ix1 UNIQUE (name) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-insert into HardwareType (name) values ('CCD');
-insert into HardwareType (name) values ('Raft');
-insert into HardwareType (name) values ('Lens');
-insert into HardwareType (name) values ('Filter');
-insert into HardwareType (name) values ('ASPIC chip');
-insert into HardwareType (name) values ('CABAC Chip');
+insert into HardwareType (name, createdBy, creationTS) values ('CCD', 'jrb', NOW());
+insert into HardwareType (name, createdBy, creationTS) values ('Raft', 'jrb', NOW());
+insert into HardwareType (name, createdBy, creationTS) values ('Lens', 'jrb', NOW());
+insert into HardwareType (name, createdBy, creationTS) values ('Filter', 'jrb', NOW());
+insert into HardwareType (name, createdBy, creationTS) values ('ASPIC chip', 'jrb', NOW());
+insert into HardwareType (name, createdBy, creationTS) values ('CABAC Chip', 'jrb', NOW());
 
 CREATE TABLE Hardware 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -32,8 +32,8 @@ CREATE TABLE HardwareIdentifierAuthority
   PRIMARY KEY (id), 
   CONSTRAINT ix1 UNIQUE (authorityName) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-insert into HardwareIdentifierAuthority (authorityName) values ('BNL');
-insert into HardwareIdentifierAuthority (authorityName) values ('SerialNumber');
+insert into HardwareIdentifierAuthority (authorityName, createdBy, creationTS) values ('BNL', 'jrb', NOW());
+insert into HardwareIdentifierAuthority (authorityName, createdBy, creationTS) values ('SerialNumber', 'jrb', NOW());
 
 CREATE TABLE HardwareIdentifier 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -49,66 +49,75 @@ CREATE TABLE HardwareIdentifier
   INDEX fk4 (hardwareId) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE RelationshipType 
+CREATE TABLE HardwareRelationshipType 
 ( id int NOT NULL AUTO_INCREMENT, 
   relationshipName varchar(50) NOT NULL,
-  hardwareTypeId1 int NOT NULL,
-  hardwareTypeId2 int NOT NULL,
+  hardwareTypeId int NOT NULL,
+  componentTypeId int NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
-  constraint fk8 FOREIGN KEY (hardwareTypeId1) REFERENCES HardwareType(id),
-  constraint fk9 FOREIGN KEY (hardwareTypeId2) REFERENCES HardwareType(id),
-  INDEX fk8 (hardwareTypeId1),
-  INDEX fk9 (hardwareTypeId2)
+  constraint fk8 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType(id),
+  constraint fk9 FOREIGN KEY (componentTypeId) REFERENCES HardwareType(id),
+  INDEX fk8 (hardwareTypeId),
+  INDEX fk9 (componentTypeId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='describes relationship between two hardware types';
+COMMENT='describes relationship between two hardware types, one subsidiary to the other';
+
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_1_1',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_1_2',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_1_3',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_2_1',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_2_2',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_2_3',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_3_1',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_3_2',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_3_3',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 
 CREATE TABLE HardwareRelationship 
 ( id int NOT NULL AUTO_INCREMENT, 
-  hardwareId1 int NOT NULL, 
-  hardwareId2 int NOT NULL, 
+  hardwareId int NOT NULL, 
+  componentId int NOT NULL, 
   begin timestamp NULL, 
   end timestamp NULL, 
-  relationshipTypeId int NOT NULL, 
+  hardwareRelationshipTypeId int NOT NULL, 
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
-  CONSTRAINT fk10 FOREIGN KEY (hardwareId1) REFERENCES Hardware (id) , 
-  CONSTRAINT fk11 FOREIGN KEY (hardwareId2) REFERENCES Hardware (id) , 
-  CONSTRAINT fk12 FOREIGN KEY (relationshipTypeId) REFERENCES RelationshipType (id), 
-  INDEX fk10 (hardwareId1), 
-  INDEX fk11 (hardwareId2), 
-  INDEX fk12 (relationshipTypeId) 
+  CONSTRAINT fk10 FOREIGN KEY (hardwareId) REFERENCES Hardware (id) , 
+  CONSTRAINT fk11 FOREIGN KEY (componentId) REFERENCES Hardware (id) , 
+  CONSTRAINT fk12 FOREIGN KEY (hardwareRelationshipTypeId) REFERENCES HardwareRelationshipType (id), 
+  INDEX fk10 (hardwareId), 
+  INDEX fk11 (componentId), 
+  INDEX fk12 (hardwareRelationshipTypeId) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='Instance of RelationshipType between actual pieces of hardware';
+COMMENT='Instance of HardwareRelationshipType between actual pieces of hardware';
 
-CREATE TABLE ProcessVersion
-( id int NOT NULL AUTO_INCREMENT, 
-  versionString varchar(80) NOT NULL,
-  createdBy varchar(50) NOT NULL,
-  creationTS timestamp NULL,
-  PRIMARY KEY (id), 
-  CONSTRAINT ix1 UNIQUE (versionString) 
-)  ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE Process 
 ( id int NOT NULL AUTO_INCREMENT, 
   processName varchar(50) NOT NULL, 
-  hardwareTypeId1 int NOT NULL, 
-  hardwareTypeId2 int NULL, 
-  processVersionId int NOT NULL, 
+  hardwareTypeId int NOT NULL, 
+  hardwareRelationshipTypeId int NULL, 
+  processVersion int NOT NULL, 
   description blob, instructionsURL varchar(256), 
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
-  CONSTRAINT fk40 FOREIGN KEY (hardwareTypeId1) REFERENCES HardwareType (id), 
-  CONSTRAINT fk41 FOREIGN KEY (hardwareTypeId2) REFERENCES HardwareType (id), 
-  CONSTRAINT fk42 FOREIGN KEY (processVersionId) REFERENCES ProcessVersion (id),
-  INDEX fk40 (hardwareTypeId1),
-  INDEX fk41 (hardwareTypeId2),
-  INDEX fk42 (processVersionId),
-  CONSTRAINT fk43 UNIQUE INDEX (processName, hardwareTypeId1, processVersionId)
+  CONSTRAINT fk40 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType (id), 
+  CONSTRAINT fk41 FOREIGN KEY (hardwareRelationshipTypeId) REFERENCES HardwareRelationshipType (id), 
+  INDEX fk40 (hardwareTypeId),
+  INDEX fk41 (hardwareRelationshipTypeId),
+  CONSTRAINT fk42 UNIQUE INDEX (processName, hardwareTypeId, processVersion)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE ProcessEdge 
@@ -117,6 +126,7 @@ CREATE TABLE ProcessEdge
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
+  CONSTRAINT fk32 UNIQUE INDEX (parent, step),
   CONSTRAINT fk31 FOREIGN KEY (child) REFERENCES Process (id) , 
   CONSTRAINT fk30 FOREIGN KEY (parent) REFERENCES Process (id), 
   INDEX fk30 (parent), INDEX fk31 (child) 
@@ -150,8 +160,8 @@ CREATE TABLE Exception
 
 CREATE TABLE Activity 
 ( id int NOT NULL AUTO_INCREMENT, 
-  hardwareId1 int NULL COMMENT "hardware acted upon, if any", 
-  hardwareId2 int NULL COMMENT "auxilliary hardware acted upon, if any", 
+  hardwareId int NOT NULL COMMENT "hardware in whose behalf activity occurred", 
+  hardwareRelationshipId int NULL COMMENT "relationship pertinent to activity, if any", 
   processId int NOT NULL, 
   processEdgeid int NULL
    COMMENT "edge used to get to process; NULL for root",
@@ -161,12 +171,12 @@ CREATE TABLE Activity
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
-  CONSTRAINT fk70 FOREIGN KEY (hardwareId1) REFERENCES Hardware (id), 
-  CONSTRAINT fk71 FOREIGN KEY (hardwareId2) REFERENCES Hardware (id), 
+  CONSTRAINT fk70 FOREIGN KEY (hardwareId) REFERENCES Hardware (id), 
+  CONSTRAINT fk71 FOREIGN KEY (hardwareRelationshipId) REFERENCES HardwareRelationship (id), 
   CONSTRAINT fk72 FOREIGN KEY (processId) REFERENCES Process (id) , 
   CONSTRAINT fk73 FOREIGN KEY (processEdgeId) REFERENCES ProcessEdge (id), 
-  INDEX fk70 (hardwareId1),
-  INDEX fk71 (hardwareId2),
+  INDEX fk70 (hardwareId),
+  INDEX fk71 (hardwareRelationshipId),
   INDEX fk72 (processId), 
   INDEX fk73 (processEdgeId) 
 )   ENGINE=InnoDB DEFAULT CHARSET=latin1;
