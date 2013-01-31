@@ -64,23 +64,23 @@ CREATE TABLE HardwareRelationshipType
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='describes relationship between two hardware types, one subsidiary to the other';
 
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_0_0',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_0_1',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_0_2',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_1_0',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set relationshipName='Raft_CCD_1_1',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set relationshipName='Raft_CCD_1_2',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_1_3',
+insert into HardwareRelationshipType set relationshipName='Raft_CCD_2_0',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set relationshipName='Raft_CCD_2_1',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set relationshipName='Raft_CCD_2_2',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_2_3',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_3_1',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_3_2',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_3_3',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 
 CREATE TABLE HardwareRelationship 
