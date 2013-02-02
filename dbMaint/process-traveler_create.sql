@@ -7,12 +7,6 @@ CREATE TABLE HardwareType
   PRIMARY KEY (id),
   CONSTRAINT ix1 UNIQUE (name) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-insert into HardwareType (name, createdBy, creationTS) values ('CCD', 'jrb', NOW());
-insert into HardwareType (name, createdBy, creationTS) values ('Raft', 'jrb', NOW());
-insert into HardwareType (name, createdBy, creationTS) values ('Lens', 'jrb', NOW());
-insert into HardwareType (name, createdBy, creationTS) values ('Filter', 'jrb', NOW());
-insert into HardwareType (name, createdBy, creationTS) values ('ASPIC chip', 'jrb', NOW());
-insert into HardwareType (name, createdBy, creationTS) values ('CABAC Chip', 'jrb', NOW());
 
 CREATE TABLE Hardware 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -26,14 +20,12 @@ CREATE TABLE Hardware
 
 CREATE TABLE HardwareIdentifierAuthority 
 ( id int NOT NULL AUTO_INCREMENT, 
-  authorityName varchar(100) NOT NULL, 
+  name varchar(100) NOT NULL, 
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
-  CONSTRAINT ix1 UNIQUE (authorityName) 
+  CONSTRAINT ix1 UNIQUE (name) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-insert into HardwareIdentifierAuthority (authorityName, createdBy, creationTS) values ('BNL', 'jrb', NOW());
-insert into HardwareIdentifierAuthority (authorityName, createdBy, creationTS) values ('SerialNumber', 'jrb', NOW());
 
 CREATE TABLE HardwareIdentifier 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -51,7 +43,7 @@ CREATE TABLE HardwareIdentifier
 
 CREATE TABLE HardwareRelationshipType 
 ( id int NOT NULL AUTO_INCREMENT, 
-  relationshipName varchar(50) NOT NULL,
+  name varchar(50) NOT NULL,
   hardwareTypeId int NOT NULL,
   componentTypeId int NOT NULL,
   createdBy varchar(50) NOT NULL,
@@ -64,24 +56,6 @@ CREATE TABLE HardwareRelationshipType
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='describes relationship between two hardware types, one subsidiary to the other';
 
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_0_0',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_0_1',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_0_2',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_1_0',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_1_1',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_1_2',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_2_0',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_2_1',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set relationshipName='Raft_CCD_2_2',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 
 CREATE TABLE HardwareRelationship 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -105,10 +79,10 @@ COMMENT='Instance of HardwareRelationshipType between actual pieces of hardware'
 
 CREATE TABLE Process 
 ( id int NOT NULL AUTO_INCREMENT, 
-  processName varchar(50) NOT NULL, 
+  name varchar(50) NOT NULL, 
   hardwareTypeId int NOT NULL, 
   hardwareRelationshipTypeId int NULL, 
-  processVersion int NOT NULL, 
+  version int NOT NULL, 
   description blob, instructionsURL varchar(256), 
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -117,7 +91,7 @@ CREATE TABLE Process
   CONSTRAINT fk41 FOREIGN KEY (hardwareRelationshipTypeId) REFERENCES HardwareRelationshipType (id), 
   INDEX fk40 (hardwareTypeId),
   INDEX fk41 (hardwareRelationshipTypeId),
-  CONSTRAINT fk42 UNIQUE INDEX (processName, hardwareTypeId, processVersion)
+  CONSTRAINT fk42 UNIQUE INDEX (name, hardwareTypeId, version)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE ProcessEdge 
@@ -163,12 +137,13 @@ CREATE TABLE Activity
   hardwareId int NOT NULL COMMENT "hardware in whose behalf activity occurred", 
   hardwareRelationshipId int NULL COMMENT "relationship pertinent to activity, if any", 
   processId int NOT NULL, 
-  processEdgeid int NULL
+  processEdgeId int NULL
    COMMENT "edge used to get to process; NULL for root",
   begin timestamp NULL, 
   end timestamp NULL, 
   inNCR ENUM ('TRUE', 'FALSE')  default 'FALSE',
   createdBy varchar(50) NOT NULL,
+  closedBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
   CONSTRAINT fk70 FOREIGN KEY (hardwareId) REFERENCES Hardware (id), 
