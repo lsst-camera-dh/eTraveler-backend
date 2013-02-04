@@ -139,6 +139,7 @@ CREATE TABLE Activity
   processId int NOT NULL, 
   processEdgeId int NULL
    COMMENT "edge used to get to process; NULL for root",
+  parentActivityId int NULL,
   begin timestamp NULL, 
   end timestamp NULL, 
   inNCR ENUM ('TRUE', 'FALSE')  default 'FALSE',
@@ -150,10 +151,12 @@ CREATE TABLE Activity
   CONSTRAINT fk71 FOREIGN KEY (hardwareRelationshipId) REFERENCES HardwareRelationship (id), 
   CONSTRAINT fk72 FOREIGN KEY (processId) REFERENCES Process (id) , 
   CONSTRAINT fk73 FOREIGN KEY (processEdgeId) REFERENCES ProcessEdge (id), 
+  CONSTRAINT fk74 FOREIGN KEY (parentActivityId) REFERENCES Activity (id), 
   INDEX fk70 (hardwareId),
   INDEX fk71 (hardwareRelationshipId),
   INDEX fk72 (processId), 
-  INDEX fk73 (processEdgeId) 
+  INDEX fk73 (processEdgeId),
+  INDEX fk74 (parentActivityId) 
 )   ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE Result 
