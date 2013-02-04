@@ -1,0 +1,5 @@
+Import('listFiles')
+Import('baseEnv')
+
+env = baseEnv.Clone()
+ingest = env.Program('ingestTraveler', listFiles(['*.cxx', 'db/*.cxx']) )
