@@ -150,8 +150,8 @@ namespace rdbModel{
     virtual ResultHandle* select(const std::string& tableName,
                                  const StringVector& getCols,
                                  const StringVector& orderCols,
-                                 SELECTOPTIONS flags,
                                  const std::string& where,
+                                 SELECTOPTIONS flags = rdbModel::SELECTnone,
                                  int   rowLimit=0)=0;
 
 
