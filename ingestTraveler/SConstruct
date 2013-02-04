@@ -1,0 +1,28 @@
+# -*- python -*-
+import os.path   #, SCons,glob
+
+def listFiles(files, **kw):
+    allFiles = []
+    for file in files:
+        globFiles = Glob(file)
+        newFiles = []
+        for globFile in globFiles:
+	    if 'recursive' in kw and kw.get('recursive') and os.path.isdir(globFile.srcnode().abspath) and os.path.basename(globFile.srcnode().abspath) != 'CVS':
+	        allFiles+=listFiles([str(Dir('.').srcnode().rel_path(globFile.srcnode()))+"/*"], recursive = True)
+	    if os.path.isfile(globFile.srcnode().abspath):
+	        allFiles.append(globFile)
+    return allFiles
+
+env = Environment()
+# Externals: YAML under /usr/local
+# Mysql in /usr/bin, /usr/lib, etc.
+#  Include paths are 
+#  among the standard ones, but just in case add /usr/local/include for YAML
+env.AppendUnique(CPPPATH = ['include', '/usr/local/include'])
+env.AppendUnique(CCFLAGS = '-g')
+#  where to find external libraries
+env.AppendUnique(LIBPATH = ['/usr/local/lib', '/usr/lib64/mysql'])
+# ..and what they're called
+env.Append(LIBS = ['mysqlclient', 'yaml-cpp'])
+ingest = env.Program('ingestTraveler', listFiles(['src/*.cxx', 'src/db/*.cxx']) )
+
