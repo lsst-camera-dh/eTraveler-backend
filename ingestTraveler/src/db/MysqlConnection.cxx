@@ -379,8 +379,8 @@ namespace rdbModel {
   ResultHandle* MysqlConnection::select(const std::string& tableName,
                                         const StringVector& getCols,
                                         const StringVector& orderCols,
-                                        SELECTOPTIONS flags,
                                         const std::string& where,
+                                        SELECTOPTIONS flags,
                                         int   rowLimit) {
     std::string sqlString = "SELECT ";
     unsigned nGet = getCols.size();
