@@ -13,16 +13,21 @@ def listFiles(files, **kw):
 	        allFiles.append(globFile)
     return allFiles
 
-env = Environment()
+Export('listFiles')
+
+baseEnv = Environment()
 # Externals: YAML under /usr/local
 # Mysql in /usr/bin, /usr/lib, etc.
 #  Include paths are 
 #  among the standard ones, but just in case add /usr/local/include for YAML
-env.AppendUnique(CPPPATH = ['include', '/usr/local/include'])
-env.AppendUnique(CCFLAGS = '-g')
+baseEnv.AppendUnique(CPPPATH = ['#include', '/usr/local/include'])
+baseEnv.AppendUnique(CCFLAGS = '-g')
 #  where to find external libraries
-env.AppendUnique(LIBPATH = ['/usr/local/lib', '/usr/lib64/mysql'])
+baseEnv.AppendUnique(LIBPATH = ['/usr/local/lib', '/usr/lib64/mysql'])
 # ..and what they're called
-env.Append(LIBS = ['mysqlclient', 'yaml-cpp'])
-ingest = env.Program('ingestTraveler', listFiles(['src/*.cxx', 'src/db/*.cxx']) )
+baseEnv.Append(LIBS = ['mysqlclient', 'yaml-cpp'])
+baseEnv.SConsignFile("signatures/.sconsign.dblite")
+Export('baseEnv')
 
+#  Define targets
+baseEnv.SConscript('src/SConscript', variant_dir=('build'), duplicate=0)
