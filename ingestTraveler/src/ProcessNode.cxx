@@ -96,7 +96,7 @@ bool ProcessNode::checkInputs() {
   // Save values for HardwareRelationshipType in a set to check against
   // db at later stage.
   if (m_inputs.find("HardwareRelationshipType") != m_inputs.end()) {
-    s_relationTypes.insert(m_inputs["HardwareRelationType"]);
+    s_relationTypes.insert(m_inputs["HardwareRelationshipType"]);
   }
   return true;
 }
@@ -113,7 +113,7 @@ void ProcessNode::initStatic() {
   s_yamlToColumn["HardwareType"] = &s_columns.back(); // &s_column[1];
 
   s_columns.push_back(ColumnDescriptor("hardwareRelationshipTypeId", "",false,
-                                       false, "HardwareRelaationshipType",
+                                       false, "HardwareRelationshipType",
                                        "name"));
   s_yamlToColumn["HardwareRelationshipType"] = &s_columns.back();//&s_column[2];
   

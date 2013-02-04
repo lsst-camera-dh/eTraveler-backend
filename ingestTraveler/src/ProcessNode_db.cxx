@@ -7,6 +7,8 @@
 #include <algorithm>
 #include "Util.h"
 #include "Timestamp.h"
+#include "db/MysqlUtil.h"
+#include "db/MysqlUtilException.h"
 
 rdbModel::Connection* ProcessNode::s_connection=NULL;
 
@@ -39,8 +41,7 @@ int ProcessNode::verify(rdbModel::Connection* connect) {
   where += "'";
   getCols.push_back("id");
   rdbModel::ResultHandle* results = 
-    s_connection->select("HardwareType", getCols, getCols, 
-                         rdbModel::SELECTnone, where);
+    s_connection->select("HardwareType", getCols, getCols, where);
   if (results == NULL) {
     std::cerr << "Query to find hardware type failed " << std::endl;
     return 2;
@@ -61,7 +62,7 @@ int ProcessNode::verify(rdbModel::Connection* connect) {
 
   getCols[0] = "name";
   results = s_connection->select("HardwareRelationshipType", getCols, 
-                                 getCols, rdbModel::SELECTnone, "");
+                                 getCols, "");
   int nRows = results->getNRows();
   std::vector<std::string> fields;
   std::set<std::string> dbvals;
@@ -103,7 +104,20 @@ int ProcessNode::writeDb(rdbModel::Connection* connect, bool recurse) {
   vals.push_back("1");               // TEMPORARY
   if (m_inputs.find("HardwareRelationshipType") != m_inputs.end()) {
     // find assoc. id and fill it in
-    int a = 1;
+    std::string hrtId;
+    try {
+      hrtId =
+        rdbModel::MysqlUtil::getColumnValue(s_connection, 
+                                            "HardwareRelationshipType",
+                                            "id", "name", 
+                                            m_inputs["HardwareRelationshipType"]);
+    }
+    catch (rdbModel::MysqlUtilException ex) {
+      std::cerr << ex.what() << std::endl;
+      return 1;
+    }
+    cols.push_back("hardwareRelationshipTypeId");
+    vals.push_back(hrtId);
   } else nullCols.push_back("hardwareRelationshipTypeId");
   if (m_inputs.find("Description") != m_inputs.end()) {
     cols.push_back("description");
