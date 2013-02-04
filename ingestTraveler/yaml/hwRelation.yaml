@@ -1,0 +1,24 @@
+ Name:  Assemble
+ HardwareType: Raft
+ Description: Blah blah
+ InstructionsURL: 
+ Version: 1
+ Children:
+   -
+      Name: Install_01
+      HardwareRelationshipType: Raft_CCD_0_1
+      Description:  Install ccd in raft slot 01
+      InstructionsURL:   http://somewhere/Install CCD
+
+   - 
+      Name: Install_00
+      HardwareRelationshipType: Raft_CCD_0_0
+      Description:  Install ccd in raft slot 0 0
+      InstructionsURL:   http://somewhere/Install CCD
+   -
+      Name: Install_02
+      HardwareRelationshipType: Raft_CCD_0_2
+      Description:  Install ccd in raft slot 02
+      InstructionsURL:   http://somewhere/Install CCD
+
+
