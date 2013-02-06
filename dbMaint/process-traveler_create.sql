@@ -83,7 +83,7 @@ CREATE TABLE Process
   hardwareTypeId int NOT NULL, 
   hardwareRelationshipTypeId int NULL, 
   version int NOT NULL, 
-  description blob, instructionsURL varchar(256), 
+  description text, instructionsURL varchar(256), 
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
