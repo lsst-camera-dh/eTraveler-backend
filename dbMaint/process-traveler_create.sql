@@ -31,14 +31,18 @@ CREATE TABLE HardwareIdentifier
 ( id int NOT NULL AUTO_INCREMENT, 
   authorityId int NOT NULL COMMENT "site or other authority for assigning this identifier", 
   hardwareId int NOT NULL    COMMENT "reference to hardware instance getting identifier", 
+  hardwareTypeId int NOT NULL COMMENT "references type of hardware instance getting identifier",
   identifier varchar(100) NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
   CONSTRAINT fk3 FOREIGN KEY (authorityId) REFERENCES HardwareIdentifierAuthority (id) , 
   CONSTRAINT fk4 FOREIGN KEY (hardwareId) REFERENCES Hardware (id), 
+  CONSTRAINT fk5 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType (id), 
   INDEX fk3 (authorityId), 
-  INDEX fk4 (hardwareId) 
+  INDEX fk4 (hardwareId),
+  INDEX fk5 (hardwareTypeId),
+  CONSTRAINT fk6 UNIQUE INDEX (identifier, authorityId, hardwareTypeid)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE HardwareRelationshipType 
