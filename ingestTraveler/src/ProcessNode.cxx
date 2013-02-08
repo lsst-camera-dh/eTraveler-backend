@@ -26,37 +26,39 @@ public:
   std::string m_joinColumn;
 };
 
-
+// Special value siblingCount = -1 indicates we're an option, not a child
 ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :
-  m_parent(parent), m_childCount(0), m_hardwareId(""), m_processId(""),
-  m_parentEdge(0)
+  m_parent(parent), m_childCount(0), m_optionCount(0), 
+  m_hardwareId(""), m_processId(""),
+  m_parentEdge(0), m_isOption(false)
 {
   if (s_yamlToColumn.size() == 0) ProcessNode::initStatic();
 
+  if (siblingCount < 0) m_isOption = true;
   // If we have a parent, make edge leading back to it
   if (parent != NULL) {
     m_parentEdge = new ProcessEdge(parent, this, siblingCount);
   }
-  // set everything else to default values
-  // Can't do any more because we don't know our own content yet
-  //m_name = "";
-  //m_version = "1";
-  //m_description="";
-  //m_instructionURL = "";
-  //m_hardware = "";
-  //m_hardwareRelation = "";
   m_children.clear();
 }
 
 ProcessNode::~ProcessNode() {
-  if (m_childCount > 0) {
-    while (!m_children.empty()) {
-      ProcessNode* child = m_children[m_children.size() -1];
-      m_children.pop_back();
-      if (child != NULL) delete child;
-      m_childCount--;
-    }
+  //if (m_childCount > 0) {
+  while (!m_children.empty()) {
+    ProcessNode* child = m_children[m_children.size() -1];
+    m_children.pop_back();
+    if (child != NULL) delete child;
+    //  m_childCount--;
   }
+  // }
+  //  if (m_optionCount > 0) {
+  //    while (!m_options.empty()) {
+  //      ProcessNode* option = m_options[m_options.size() -1];
+  //      m_options.pop_back();
+  //      if (option != NULL) delete option;
+  //      m_optionCount--;
+  //    }
+  //}
   if (m_parentEdge) delete m_parentEdge;
 }
 
@@ -83,6 +85,15 @@ bool ProcessNode::checkInputs() {
     std::cerr << "Every Process must have a Name! " << std::endl;
     return false;
   }
+  // If we're an option, Condition must be present
+  if (m_isOption) {
+    if (m_inputs.find("Condition") == m_inputs.end()) {
+      std::cerr << "Every Process in a Selection must have a Condition! " 
+                << std::endl;
+      return false;
+    }
+  }
+
   if (m_inputs.find("HardwareType") == m_inputs.end()) {
     if (m_parent == 0) {
       std::cerr << "HardwareType required for top-level process" << std::endl;
@@ -125,7 +136,10 @@ void ProcessNode::initStatic() {
   
   s_columns.push_back(ColumnDescriptor("instructionsURL", "", false, false));
   s_yamlToColumn["InstructionsURL"] = &s_columns.back();
-  
+  s_columns.push_back(ColumnDescriptor("navigation", "LEAF", false, false));
+  s_columns.push_back(ColumnDescriptor("cond", "", false, false));
+  s_yamlToColumn["Condition"] = &s_columns.back();
+
   s_columns.push_back(ColumnDescriptor("createdBy", "", false, true));
   s_columns.push_back(ColumnDescriptor("creationTS", "", false, true));
   s_user = std::string("$(USER)");

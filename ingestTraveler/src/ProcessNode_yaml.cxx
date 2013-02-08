@@ -13,13 +13,14 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
     return 1;
   }
   bool hasChildren = false;
+  bool hasOptions = false;
   for (YAML::const_iterator it=ynode->begin(); it != ynode->end(); ++it) {
     if (! it->first.IsScalar()) {
       std::cerr << "Improper input:  all map keys must be scalars" << std::endl;
       return 2;
     }
     std::string key=it->first.as<std::string>();
-    if (key != std::string("Children")) {
+    if ((key != std::string("Children")) && (key != std::string("Selection"))) {
       // read all value keys except for 'child'; set instance variables
 
       if (it->second.IsNull()) continue;    // ignore it
@@ -40,9 +41,17 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
 
       // Special
 
-    }   else  hasChildren = true;
+    }   else if ((key == std::string("Selection") && !hasChildren)) {
+      hasOptions = true;
+    }    else if ((key == std::string("Children") && !hasOptions)) {
+      hasChildren = true;
+    }  else  {
+      std::cerr << "Process may not have both Children and Selection"
+                << std::endl;
+      return 5;
+    }
   }
-  if (!checkInputs()) return 5;
+  if (!checkInputs()) return 6;
   if (hasChildren) {   
     if (!((*ynode)["Children"]).IsSequence()) {
       std::cerr << "Improper value for 'Children' key" << std::endl;
@@ -56,6 +65,21 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
       child->readSerialized(&ychild);
     }
   }
+
+  if (hasOptions) {   
+    if (!((*ynode)["Selection"]).IsSequence()) {
+      std::cerr << "Improper value for 'Selection' key" << std::endl;
+      return 7;
+    }
+    for (int i=0; i <  ((*ynode)["Selection"]).size(); i++) {
+      m_optionCount++;
+      ProcessNode* option = new ProcessNode(this, -m_optionCount);
+      m_children.push_back(option);
+      YAML::Node ychild = ((*ynode)["Selection"])[i];
+      option->readSerialized(&ychild);
+    }
+  }
+
   return 0;
 }
 

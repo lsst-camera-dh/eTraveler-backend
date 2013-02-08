@@ -38,17 +38,14 @@ public:
 private:
   ProcessNode* m_parent;
   int          m_childCount;
-  //std::string  m_name;
-  //std::string  m_version;
-  //std::string  m_description;
-  //std::string  m_instructionURL;
-  //std::string  m_hardware;   // hardware type of main interest
-  //std::string  m_hardwareRelation; // non-null if proc involves, e.g. assembly
+  int          m_optionCount;
   std::map<std::string, std::string> m_inputs;  // e.g. from YAML
   std::vector<ProcessNode* > m_children;
+  //  std::vector<ProcessNode* > m_options;
   std::string m_hardwareId;  // set only for top node initially
   std::string m_processId;   // set when we write ourselves to db
   ProcessEdge* m_parentEdge;
+  bool         m_isOption;
   static rdbModel::Connection* s_connection; 
 
   // Map taking yaml key name to corresponding column name in Process table

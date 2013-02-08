@@ -102,6 +102,10 @@ int ProcessNode::writeDb(rdbModel::Connection* connect, bool recurse) {
   vals.push_back(m_hardwareId);
   cols.push_back("version");
   vals.push_back("1");               // TEMPORARY
+  cols.push_back("navigation");
+  if (m_childCount > 0) vals.push_back("CHILDREN");
+  else if (m_optionCount > 0) vals.push_back("SELECTION");
+  else vals.push_back("LEAF");
   if (m_inputs.find("HardwareRelationshipType") != m_inputs.end()) {
     // find assoc. id and fill it in
     std::string hrtId;
@@ -140,7 +144,9 @@ int ProcessNode::writeDb(rdbModel::Connection* connect, bool recurse) {
   
   facilities::Util::itoa(newId, m_processId);
   if (m_parentEdge != NULL) {
-    m_parentEdge->writeDb(s_connection, s_user, m_processId);
+    std::string cond;
+    if (m_isOption) cond = m_inputs["Condition"];
+    m_parentEdge->writeDb(s_connection, s_user, m_processId, cond);
   }
     
   if (recurse) {
@@ -148,13 +154,17 @@ int ProcessNode::writeDb(rdbModel::Connection* connect, bool recurse) {
       m_children[i]->setHardwareId(m_hardwareId);
       m_children[i]->writeDb();
     }
+    //    for (int i = 0; i < m_options.size(); i++) {
+    //      m_options[i]->setHardwareId(m_hardwareId);
+    //      m_options[i]->writeDb();
+    //    }
   }
   return 0;
 }
 
 
-int ProcessEdge::writeDb(rdbModel::Connection* connection, std::string user,
-                         std::string childId) {
+int ProcessEdge::writeDb(rdbModel::Connection* connection, std::string& user,
+                         std::string& childId, std::string& cond) {
   std::vector<std::string> cols;
   std::vector<std::string> vals;
   cols.push_back("parent");
@@ -165,6 +175,8 @@ int ProcessEdge::writeDb(rdbModel::Connection* connection, std::string user,
   std::string stepstring;
   facilities::Util::itoa(m_childCount, stepstring);
   vals.push_back(stepstring);
+  cols.push_back("cond");
+  vals.push_back(cond);
   cols.push_back("createdBy");
   vals.push_back(user);
   cols.push_back("creationTS");
