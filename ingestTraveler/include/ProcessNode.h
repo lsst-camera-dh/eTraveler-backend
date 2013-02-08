@@ -22,7 +22,7 @@ public:
   ~ProcessNode();
   static void setDbConnection(rdbModel::Connection* c);
   static void clearDbConnection();
-  int getChildCount() const {return m_childCount;}
+  int getChildCount() const {return m_children.size();}
   std::string getProcessId() const {return m_processId;}
   void setHardwareId(std::string& hid) {m_hardwareId = hid;}
 
@@ -37,7 +37,7 @@ public:
 
 private:
   ProcessNode* m_parent;
-  int          m_childCount;
+  int          m_sequenceCount;
   int          m_optionCount;
   std::map<std::string, std::string> m_inputs;  // e.g. from YAML
   std::vector<ProcessNode* > m_children;

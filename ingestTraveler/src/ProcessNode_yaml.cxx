@@ -12,7 +12,7 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
     std::cerr << "YAML input does not describe a process" << std::endl;
     return 1;
   }
-  bool hasChildren = false;
+  bool hasSequence = false;
   bool hasOptions = false;
   for (YAML::const_iterator it=ynode->begin(); it != ynode->end(); ++it) {
     if (! it->first.IsScalar()) {
@@ -20,8 +20,8 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
       return 2;
     }
     std::string key=it->first.as<std::string>();
-    if ((key != std::string("Children")) && (key != std::string("Selection"))) {
-      // read all value keys except for 'child'; set instance variables
+    if ((key != std::string("Sequence")) && (key != std::string("Selection"))) {
+      // read all value keys except for those introducing children; set instance variables
 
       if (it->second.IsNull()) continue;    // ignore it
 
@@ -41,27 +41,27 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
 
       // Special
 
-    }   else if ((key == std::string("Selection") && !hasChildren)) {
+    }   else if ((key == std::string("Selection") && !hasSequence)) {
       hasOptions = true;
-    }    else if ((key == std::string("Children") && !hasOptions)) {
-      hasChildren = true;
+    }    else if ((key == std::string("Sequence") && !hasOptions)) {
+      hasSequence = true;
     }  else  {
-      std::cerr << "Process may not have both Children and Selection"
+      std::cerr << "Process may not have both Sequence and Selection"
                 << std::endl;
       return 5;
     }
   }
   if (!checkInputs()) return 6;
-  if (hasChildren) {   
-    if (!((*ynode)["Children"]).IsSequence()) {
-      std::cerr << "Improper value for 'Children' key" << std::endl;
+  if (hasSequence) {   
+    if (!((*ynode)["Sequence"]).IsSequence()) {
+      std::cerr << "Improper value for 'Sequence' key" << std::endl;
       return 6;
     }
-    for (int i=0; i <  ((*ynode)["Children"]).size(); i++) {
-      m_childCount++;
+    for (int i=0; i <  ((*ynode)["Sequence"]).size(); i++) {
+      m_sequenceCount++;
       ProcessNode* child = new ProcessNode(this, i);
       m_children.push_back(child);
-      YAML::Node ychild = ((*ynode)["Children"])[i];
+      YAML::Node ychild = ((*ynode)["Sequence"])[i];
       child->readSerialized(&ychild);
     }
   }

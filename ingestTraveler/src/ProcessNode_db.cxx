@@ -102,10 +102,10 @@ int ProcessNode::writeDb(rdbModel::Connection* connect, bool recurse) {
   vals.push_back(m_hardwareId);
   cols.push_back("version");
   vals.push_back("1");               // TEMPORARY
-  cols.push_back("navigation");
-  if (m_childCount > 0) vals.push_back("CHILDREN");
+  cols.push_back("substeps");
+  if (m_sequenceCount > 0) vals.push_back("SEQUENCE");
   else if (m_optionCount > 0) vals.push_back("SELECTION");
-  else vals.push_back("LEAF");
+  else vals.push_back("NONE");
   if (m_inputs.find("HardwareRelationshipType") != m_inputs.end()) {
     // find assoc. id and fill it in
     std::string hrtId;
@@ -173,7 +173,7 @@ int ProcessEdge::writeDb(rdbModel::Connection* connection, std::string& user,
   vals.push_back(childId);
   cols.push_back("step");
   std::string stepstring;
-  facilities::Util::itoa(m_childCount, stepstring);
+  facilities::Util::itoa(m_step, stepstring);
   vals.push_back(stepstring);
   cols.push_back("cond");
   vals.push_back(cond);

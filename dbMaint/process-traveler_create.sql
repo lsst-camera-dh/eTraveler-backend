@@ -88,7 +88,7 @@ CREATE TABLE Process
   hardwareRelationshipTypeId int NULL, 
   version int NOT NULL, 
   description text, instructionsURL varchar(256), 
-  navigation  ENUM('LEAF', 'CHILDREN', 'SELECTION') default 'LEAF'
+  substeps  ENUM('NONE', 'SEQUENCE', 'SELECTION') default 'NONE'
    COMMENT 'determines where we go next',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,

@@ -26,9 +26,9 @@ public:
   std::string m_joinColumn;
 };
 
-// Special value siblingCount = -1 indicates we're an option, not a child
+// siblingCount < 0 indicates we're an option, not a child
 ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :
-  m_parent(parent), m_childCount(0), m_optionCount(0), 
+  m_parent(parent), m_sequenceCount(0), m_optionCount(0), 
   m_hardwareId(""), m_processId(""),
   m_parentEdge(0), m_isOption(false)
 {
@@ -43,22 +43,11 @@ ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :
 }
 
 ProcessNode::~ProcessNode() {
-  //if (m_childCount > 0) {
   while (!m_children.empty()) {
     ProcessNode* child = m_children[m_children.size() -1];
     m_children.pop_back();
     if (child != NULL) delete child;
-    //  m_childCount--;
   }
-  // }
-  //  if (m_optionCount > 0) {
-  //    while (!m_options.empty()) {
-  //      ProcessNode* option = m_options[m_options.size() -1];
-  //      m_options.pop_back();
-  //      if (option != NULL) delete option;
-  //      m_optionCount--;
-  //    }
-  //}
   if (m_parentEdge) delete m_parentEdge;
 }
 
@@ -136,7 +125,7 @@ void ProcessNode::initStatic() {
   
   s_columns.push_back(ColumnDescriptor("instructionsURL", "", false, false));
   s_yamlToColumn["InstructionsURL"] = &s_columns.back();
-  s_columns.push_back(ColumnDescriptor("navigation", "LEAF", false, false));
+  s_columns.push_back(ColumnDescriptor("substeps", "NONE", false, false));
   s_columns.push_back(ColumnDescriptor("cond", "", false, false));
   s_yamlToColumn["Condition"] = &s_columns.back();
 

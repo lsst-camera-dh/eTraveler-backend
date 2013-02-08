@@ -3,7 +3,7 @@
  Description: Blah blah
  InstructionsURL: 
  Version: 1
- Children:
+ Sequence:
    -
       Name: Clean
       Description:  Clean.  Procedure depends on supplier
@@ -11,7 +11,7 @@
         - Condition: from supplier X
           Name:  Clean_X
           Description: Clean procedure for supplier X
-          Children:
+          Sequence:
             - Name: Assemble Clean_X materials
               InstructionsURL:   http://somewhere/materialsASPIC_X.html
             - Name:  Apply Clean_X
