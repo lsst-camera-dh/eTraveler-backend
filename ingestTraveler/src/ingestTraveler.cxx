@@ -23,6 +23,10 @@ main(int argc, char* argv[])  {
   // Convert from YAML nodes to our style.  Includes some verification
   int status = root->readSerialized(&yamlRoot);
 
+  if (status != 0) {
+    std::cerr << "Failed to parse yaml input" << std::endl;
+    exit(status);
+  }
   // Set up db connection  (or fake internal db?).
   // E.g., using form which gets info from .my.cnf
   //rdbModel::Connection* connection;

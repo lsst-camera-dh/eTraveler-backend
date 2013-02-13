@@ -1,0 +1,17 @@
+%YAML 1.1 
+Name:  Prepare3
+HardwareType: ASPIC chip
+Description: Blah blah
+InstructionsURL: 
+Sequence:
+   -
+      Name: AnyOldStep
+      Description:  Do something
+   -
+      Clone: AnyOldStep
+
+   - 
+      Name: AnotherStep
+      Description: Do something else
+
+

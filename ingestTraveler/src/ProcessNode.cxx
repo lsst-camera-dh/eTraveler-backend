@@ -8,7 +8,8 @@
 std::map<std::string, ColumnDescriptor*> ProcessNode::s_yamlToColumn;
 std::vector<ColumnDescriptor> ProcessNode::s_columns;
 std::set<std::string> ProcessNode::s_relationTypes;
-std::string ProcessNode::s_user;
+std::string BaseNode::s_user;
+std::map<std::string, ProcessNode*> ProcessNode::s_processes;
 class ColumnDescriptor {
 public:
   ColumnDescriptor(std::string name="", std::string dflt="", 
@@ -28,9 +29,9 @@ public:
 
 // siblingCount < 0 indicates we're an option, not a child
 ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :
-  m_parent(parent), m_sequenceCount(0), m_optionCount(0), 
-  m_hardwareId(""), m_processId(""),
-  m_parentEdge(0), m_isOption(false)
+  BaseNode(parent, siblingCount), m_parent(parent), m_sequenceCount(0), 
+  m_optionCount(0),   m_hardwareId(""), m_processId(""),
+  m_isOption(false)
 {
   if (s_yamlToColumn.size() == 0) ProcessNode::initStatic();
 
@@ -44,7 +45,7 @@ ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :
 
 ProcessNode::~ProcessNode() {
   while (!m_children.empty()) {
-    ProcessNode* child = m_children[m_children.size() -1];
+    BaseNode* child = m_children[m_children.size() -1];
     m_children.pop_back();
     if (child != NULL) delete child;
   }
@@ -71,8 +72,12 @@ bool ProcessNode::checkInputs() {
   }
   //   Name must be present
   if (m_inputs.find("Name") == m_inputs.end()) {
-    std::cerr << "Every Process must have a Name! " << std::endl;
-    return false;
+    if (m_inputs.find("Clone") == m_inputs.end()) {
+        std::cerr << "Every Process must have a Name or be a Clone! " << std::endl;
+        return false;
+    }   else  {
+      std::cerr << "Found Clone input in ProcessNode::checkInputs -- tilt!" << std::endl;
+    }
   }
   // If we're an option, Condition must be present
   if (m_isOption) {
@@ -129,9 +134,12 @@ void ProcessNode::initStatic() {
   s_columns.push_back(ColumnDescriptor("cond", "", false, false));
   s_yamlToColumn["Condition"] = &s_columns.back();
 
+  // Just need Clone to be recognizable; doesn't correspond to a column, though
+  s_yamlToColumn["Clone"] = NULL;
+
   s_columns.push_back(ColumnDescriptor("createdBy", "", false, true));
   s_columns.push_back(ColumnDescriptor("creationTS", "", false, true));
-  s_user = std::string("$(USER)");
+  BaseNode::s_user = std::string("$(USER)");
   int nsub = facilities::Util::expandEnvVar(&s_user);
 
 }

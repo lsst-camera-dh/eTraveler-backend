@@ -7,13 +7,14 @@
 #include <cstring>
 
 class ProcessNode;
+class BaseNode;
 namespace rdbModel {
   class Connection;
 }
 
 class ProcessEdge {
 public:
-  ProcessEdge(ProcessNode* parent, ProcessNode* child, int step) :
+  ProcessEdge(ProcessNode* parent, BaseNode* child, int step) :
     m_parent(parent), m_child(child), m_step(step),
     m_condition(""), m_edgeId(""){};
   ~ProcessEdge() {};
@@ -22,7 +23,7 @@ public:
 
 private:
   ProcessNode* m_parent;
-  ProcessNode* m_child;
+  BaseNode*    m_child;    // maybe unnecessary
   int          m_step;
   std::string  m_condition;
   std::string  m_edgeId;    // our id, once db row is made

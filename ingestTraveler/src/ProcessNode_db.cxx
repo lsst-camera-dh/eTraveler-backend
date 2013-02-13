@@ -2,6 +2,7 @@
 #include "db/MysqlResults.h"
 #include "ProcessNode.h"
 #include "ProcessEdge.h"
+#include "CloneNode.h"
 #include <cstdio>
 #include <iostream>
 #include <algorithm>
@@ -10,16 +11,16 @@
 #include "db/MysqlUtil.h"
 #include "db/MysqlUtilException.h"
 
-rdbModel::Connection* ProcessNode::s_connection=NULL;
+rdbModel::Connection* BaseNode::s_connection=NULL;
 
 
 // static routines
-void ProcessNode::setDbConnection(rdbModel::Connection* c) {
+void BaseNode::setDbConnection(rdbModel::Connection* c) {
   if (s_connection != NULL) s_connection->close();
   s_connection = c;
 }
 
-void ProcessNode::clearDbConnection() {
+void BaseNode::clearDbConnection() {
   if (s_connection != NULL) {
     delete s_connection;
     s_connection = NULL;
@@ -88,7 +89,7 @@ int ProcessNode::verify(rdbModel::Connection* connect) {
   return ret;
 }
 
-int ProcessNode::writeDb(rdbModel::Connection* connect, bool recurse) {
+int ProcessNode::writeDb(rdbModel::Connection* connect) {
   // write a Process row for ourselves
 
   bool ok;
@@ -149,16 +150,13 @@ int ProcessNode::writeDb(rdbModel::Connection* connect, bool recurse) {
     m_parentEdge->writeDb(s_connection, s_user, m_processId, cond);
   }
     
-  if (recurse) {
-    for (int i = 0; i < m_children.size(); i++) {
-      m_children[i]->setHardwareId(m_hardwareId);
-      m_children[i]->writeDb();
-    }
-    //    for (int i = 0; i < m_options.size(); i++) {
-    //      m_options[i]->setHardwareId(m_hardwareId);
-    //      m_options[i]->writeDb();
-    //    }
+  //  if (recurse) {
+  for (int i = 0; i < m_children.size(); i++) {
+    ProcessNode* childProc = dynamic_cast<ProcessNode* >(m_children[i]);
+    if (childProc != NULL) childProc->setHardwareId(m_hardwareId);
+    m_children[i]->writeDb();
   }
+  //}
   return 0;
 }
 
@@ -186,4 +184,11 @@ int ProcessEdge::writeDb(rdbModel::Connection* connection, std::string& user,
   int newId;
   bool ok = connection->insertRow("ProcessEdge", cols, vals, &newId);
   facilities::Util::itoa(newId, m_edgeId);
+}
+
+int CloneNode::writeDb(rdbModel::Connection* connection) {
+  // All we need to do is write a new edge
+
+  std::string modelId = m_model->getProcessId();
+  m_parentEdge->writeDb(s_connection, s_user, modelId, m_condition);
 }
