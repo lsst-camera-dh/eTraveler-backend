@@ -1,10 +1,11 @@
 #  Do some inserts to get us started off
-insert into HardwareType (name, createdBy, creationTS) values ('CCD', 'jrb', NOW());
-insert into HardwareType (name, createdBy, creationTS) values ('Raft', 'jrb', NOW());
-insert into HardwareType (name, createdBy, creationTS) values ('Lens', 'jrb', NOW());
-insert into HardwareType (name, createdBy, creationTS) values ('Filter', 'jrb', NOW());
-insert into HardwareType (name, createdBy, creationTS) values ('ASPIC chip', 'jrb', NOW());
-insert into HardwareType (name, createdBy, creationTS) values ('CABAC Chip', 'jrb', NOW());
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 1, 0, 'TEST', 'jrb', NOW(), NOW(), 'Adding prerequisite tables');
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('CCD', 'DRAWING_CCD', 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('Raft', 'DRAWING_Raft', 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('Lens', 'DRAWING_Lens', 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('Filter', 'DRAWING_Filter', 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('ASPIC chip', 'DRAWING_ASPIC', 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('CABAC Chip', 'DRAWING_CABAC', 'jrb', NOW());
 
 insert into HardwareIdentifierAuthority (name, createdBy, creationTS) values ('BNL', 'jrb', NOW());
 insert into HardwareIdentifierAuthority (name, createdBy, creationTS) values ('SerialNumber', 'jrb', NOW());
@@ -27,3 +28,7 @@ insert into HardwareRelationshipType set name='Raft_CCD_2_1',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_2_2',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into PrerequisiteType set name='PROCESS_STEP';
+insert into PrerequisiteType set name='TRACKED_COMPONENT';
+insert into PrerequisiteType set name='TEST_EQUIPMENT';
+insert into PrerequisiteType set name='CONSUMABLE';

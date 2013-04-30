@@ -1,0 +1,62 @@
+HARDWARE 
+----------
+1. HardwareType    [template]
+Corresponds to drawing id (without revision #)
+
+2. Hardware     [instance of HardwareType]
+Instance of hardware type
+
+Hardware identifiers
+--------------------
+1. HardwareIdentifierAuthority  
+e.g., BNL
+
+2. HardwareIdentifier
+Identifier unique to referenced authority for hardware of specific type
+
+Hardware relationships
+----------------------
+1. HardwareReleationshipType    [template]
+Associates two kinds of hardware, one subsidiary to the other, e.g.
+raft and sensor where relationship is 'in slot 11'
+
+2. HardwareRelastionship    [instance of HardwareRelationshipType]
+Instance of 1. for specific components
+
+PROCESS
+-------
+1. Process   [template]
+Defines process step:
+Primary hardware type, aux hardware type if any, children type
+
+2. ProcessEdge   [template]
+Defines relationships between process steps
+
+3. Activity [instance of Process]
+Where the rubber hits the road.  Execute a particular process with
+particular component
+
+
+EXCEPTIONS
+----------
+1. NCRcondition  
+Recognized conditions which will initiate an NCR
+
+2. Exception   [template]
+Describes process step navigation in case a particular known condition occurs
+
+PREREQUISITES
+--------------
+1. PrerequisiteType
+Enumaration of kinds of prerequisites.  Includes as possibilities other
+tracked hardware; other process steps, consumables, etc.
+
+2. PrerequisitePattern [template]
+Describes a prerequisite for a particular Process.  If it's a 
+tracked hardware prereq, reference HardwareType id.  If it's a process step
+prereq, reference Process id.
+
+3. Prerequisite [instance of PrerequisitePattern]
+
+RESULTS
+-------
