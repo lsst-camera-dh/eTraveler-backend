@@ -27,16 +27,16 @@ CREATE TABLE HardwareType
 CREATE TABLE Hardware 
 ( id int NOT NULL AUTO_INCREMENT, 
   lsstId varchar(50) NOT NULL,
-  typeId int NOT NULL, 
+  hardwareTypeId int NOT NULL, 
   manufacturer varchar(50) NOT NULL,
   model varchar(50) NULL,
   manufactureDate timestamp NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
-  CONSTRAINT fk1 FOREIGN KEY (typeId) REFERENCES HardwareType (id), 
-  CONSTRAINT ix2 UNIQUE INDEX (typeId, lsstId),
-  INDEX fk1 (TypeId) 
+  CONSTRAINT fk1 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType (id), 
+  CONSTRAINT ix2 UNIQUE INDEX (hardwareTypeId, lsstId),
+  INDEX fk1 (hardwareTypeId) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE HardwareIdentifierAuthority 
