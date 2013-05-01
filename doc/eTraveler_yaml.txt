@@ -87,4 +87,4 @@ the YAML file is ingested are described in step 9.
 
 Additional constraints, defined in the database, come into play when
 the ingest program attempts to write to the db.  For example, in the
-Process table the pair (name, version) must be unique.
+Process table the triple (name, version, hardwareTypeId) must be unique.
