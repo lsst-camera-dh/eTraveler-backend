@@ -1,0 +1,90 @@
+YAML structure for a traveler (process step and arbitrary descendants).
+This document describes the format supported by processTraveler.git
+as of 2013-02-13
+
+                        *  *  *  *  *  *  *  *  *  *
+
+1.  Preferably starts with the two lines
+
+%YAML 1.1
+---
+
+2. Has a single top-level node which describes a process.  All other
+nodes are descendants of this one
+
+3. Each process node is a dict.  All keys are string scalar and in the 
+remainder of this document will be represented by key followed by a colon, e.g.
+
+Condition:
+
+for the key "Condition".  Two keys have list values.  All the others have
+scalar values.
+
+4. The keys come from a known collection of allowable keys.
+Most of them are optional. 
+
+5. Values for some keys will be inherited from parent.
+
+6. If a node is a clone it has the key Clone: whose value
+is equal to the value of the Name: key for some node preceding it in the
+YAML serialization. In particular the top node can't be a clone. Clone
+nodes may optionally have a Condition:  key.  No other keys are allowed.  
+The intent is to allow specification of the same process (and all its 
+descendants) in more than one place in the traveler.
+
+7. Allowable scalar-valued keys for non-clones are listed below along 
+with some of their properties.  Value is a string unless otherwise noted.
+
+Name:   
+must appear unless the key Clone appears
+
+HardwareType:
+required for top node; ignored for all descendants (they inherit value from 
+top node).
+
+HardwareRelationshipType:
+optional.  If not specified, value is inherited from parent.  May be null.
+
+InstructionsURL: 
+optional
+
+Description:
+optional
+
+Version:
+optional.  Value if present must be a positive integer. If
+not present, defaults to 1.
+
+Condition: required if this node is a member of a list which is itself
+the value of a Selection: key; ignored otherwise.
+
+7. There are two keys with non-scalar values.
+
+Sequence:
+Value is an ordered list of nodes.  Intent is that the process steps represented
+in the list will be executed in the order specified as child steps.
+
+Selection:
+Value is an ordered list of nodes.  Intent is that at most one of the nodes in
+the list will be executed if the condition described by its Condition:
+key is satisfied.  Conditions are evaluated in order until one is satisfied.
+Maybe front-end should implement special handling
+for final element of list if its condition value is "Default". 
+
+8. Other constraints.
+
+Documents satisfying 1-7 above will pass the first stage of ingest.  The
+next stage makes some checks against the database before attempting to 
+write anything.
+
+ - value of HardwareType: must correspond to some value of HardwareType.name
+
+ - values of HardwareRelationshipType: (if present) must correspond to 
+   to some value of HardwareRelationshipType.name
+ 
+Constraints having to do with contents of the eTraveler db at the time
+the YAML file is ingested are described in step 9.
+
+Additional constraints, defined in the database, come into play when
+the ingest program attempts to write to the db.  For example, in the
+Process table the pair (name, version) must be unique.
