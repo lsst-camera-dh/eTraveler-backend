@@ -1,0 +1,71 @@
+The tables chiefly involved in implementing prerequisites are
+
+PrerequisiteType 
+----------------
+Each row associates a string name with an id. Names include at least 
+the following:
+
+CONSUMABLE
+TEST_EQUIPMENT
+COMPONENT
+PROCESS_STEP
+
+PrerequisitePattern
+-------------------
+Part of the traveler description (i.e., template, not instance).
+Each row describes a prerequisite for some process (= entry in Process table)
+Columns in PrerequisitePattern include name, quantity, reference to process for
+which this is a prerequisite, (optional) reference to Process
+(if we're of type PROCESS_STEP) and (optional) reference
+to  HardwareType (if we're of type COMPONENT).  In case we're of type
+PROCESS_STEP, value for name will be Process.name. In case we're of type
+COMPONENT, value for name will be HardwareType.name or HardwareType.drawing.
+
+Prerequisite
+------------
+Instance version of above, created by front-end as the process step with
+the prerequisite is executed.   Probably only needed for prerequisite
+patterns of type PROCESS_STEP or COMPONENT.
+
+
+                             USAGE
+
+Displaying a process step
+-------------------------
+Look in PrerequisitePattern.processId  for match with Process.id of process
+step being displayed.   If any are found, display at least these columns:
+
+name
+description
+prerequisite type  (obtained from prerequisiteTypeId)
+quantity
+
+Running a traveler
+------------------
+For each activity, look for PrerequisitePattern entries matching corresponding
+Process.   Display.
+
+If prerequisite is consumable or test equipment, operator should
+acknowledge it's available.
+
+If prerequisite is of type COMPONENT, front-end should look for hardware
+of the correct type in the "done" state and suggest to operator.  
+Operator gains physical control of appropriate component(s) and acknowledges.
+The prerequisite pattern may require > 1 component of the same type.
+Front end makes new entries in Prerequisite table, one for each
+such component, associating it with the Activity.
+
+If prerequisite is of type PROCESS_STEP, front end searches Activity table
+for activity with the right values for Activity.processId and
+Activity.hardwareId. Conceivably there could be more than one, but I don't
+think that should be allowed..not sure how to enforce it, however.  If the
+prerequisite process step is something like "Clean", it shouldn't be using the
+prerequisite mechanism at all.  The prerequisiteness should be enforced by
+putting it as an earlier step in the same traveler.
+
+Assuming a single appropriate entry in Activity exists, create row
+in Prerequisite using it.
+
+In case the activities in question are job-harness type jobs, this
+mechanism could be used to find outputs created by the prerequisite
+activity which are required by the activity for which it is prerequisite.

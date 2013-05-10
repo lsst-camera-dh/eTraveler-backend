@@ -1,6 +1,7 @@
 YAML structure for a traveler (process step and arbitrary descendants).
 This document describes the format supported by processTraveler.git
-as of 2013-02-13
+as of 2013-05-??
+For db version 0.1.0
 
                         *  *  *  *  *  *  *  *  *  *
 
@@ -9,8 +10,9 @@ as of 2013-02-13
 %YAML 1.1
 ---
 
-2. Has a single top-level node which describes a process.  All other
-nodes are descendants of this one
+2. Has a single top-level (YAML) node which describes a process.  All other
+nodes are descendants of this one.  Descendent nodes describe either
+a descendent process or a prerequisite for some process.
 
 3. Each process node is a dict.  All keys are string scalar and in the 
 remainder of this document will be represented by key followed by a colon, e.g.
@@ -51,27 +53,68 @@ optional
 Description:
 optional
 
+UserVersionString:
+optional.
+
 Version:
 optional.  Value if present must be a positive integer. If
-not present, defaults to 1.
+not present, defaults to 1.  (do we need a way to say "next"? Should
+that be the default instead of 1?)
+
 
 Condition: required if this node is a member of a list which is itself
 the value of a Selection: key; ignored otherwise.
 
-7. There are two keys with non-scalar values.
+8. There are three keys with non-scalar values.
 
 Sequence:
-Value is an ordered list of nodes.  Intent is that the process steps represented
-in the list will be executed in the order specified as child steps.
+Value is an ordered list of process nodes.  Intent is that the process steps 
+represented in the list will be executed in the order specified as child steps.
 
 Selection:
-Value is an ordered list of nodes.  Intent is that at most one of the nodes in
-the list will be executed if the condition described by its Condition:
+Value is an ordered list of process nodes.  Intent is that at most one of the 
+nodes in the list will be executed if the condition described by its Condition:
 key is satisfied.  Conditions are evaluated in order until one is satisfied.
 Maybe front-end should implement special handling
 for final element of list if its condition value is "Default". 
 
-8. Other constraints.
+Prerequisites:
+Value is a list of prerequisite nodes.
+
+9. Description of a prerequisite node.
+Each prerequisite node is a dict with the following keys:
+
+PrerequisiteType:
+Required.  Value would normally come from an enumerated set including at least
+PROCESS_STEP, COMPONENT, TEST_EQUIPMENT, CONSUMABLE
+
+Name: 
+required for types. 
+If type was PROCESS_STEP value must match Process.name for some row in
+Process table.  Probably we also need Process.hardwareTypeId to match
+hardware type of this traveler.
+If type was COMPONENT value must match  HardwareType.name or HarwareType.drawing
+for some row in HardwareType table.  [Maybe we someday get rid of
+HardwareType.name altogether?]
+
+
+UserVersionString:
+Optional. Ignored for types other than  PROCESS_STEP
+
+Version:
+Ignored for types other than PROCESS_STEP.  Ignored if UserVersionString
+has been used.  Must be positive integer if present. 
+Otherwise if type is PROCESS_STEP value for Version defaults to most
+current version of specified Process.
+
+Description:
+optional
+
+Quantity:
+optional.  If present must be positive integer.  Defaults to 1
+
+
+10. Other constraints.
 
 Documents satisfying 1-7 above will pass the first stage of ingest.  The
 next stage makes some checks against the database before attempting to 

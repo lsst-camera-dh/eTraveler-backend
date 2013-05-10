@@ -6,6 +6,16 @@ Corresponds to drawing id (without revision #)
 2. Hardware     [instance of HardwareType]
 Instance of hardware type
 
+3. HardwareStatus
+List of allowed states for hardware, to include at least the following
+values, likely others to come:
+
+NEW (default value when new row is added to Hardware table)
+IN_PROGRESS (at least one traveler has been begun)
+REJECTED
+READY    (preparation, testing, etc. complete. ready for integration)
+USED
+
 Hardware identifiers
 --------------------
 1. HardwareIdentifierAuthority  
