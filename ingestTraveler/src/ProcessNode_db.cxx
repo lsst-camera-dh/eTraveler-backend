@@ -2,6 +2,7 @@
 #include "db/MysqlResults.h"
 #include "ProcessNode.h"
 #include "ProcessEdge.h"
+#include "PrerequisiteNode.h"
 #include "CloneNode.h"
 #include <cstdio>
 #include <iostream>
@@ -12,9 +13,11 @@
 #include "db/MysqlUtilException.h"
 
 rdbModel::Connection* BaseNode::s_connection=NULL;
+int                   BaseNode::s_major=0;
+int                   BaseNode::s_minor=1;
 
-
-// static routines
+//                  **  BaseNode  **
+// static routines 
 void BaseNode::setDbConnection(rdbModel::Connection* c) {
   if (s_connection != NULL) s_connection->close();
   s_connection = c;
@@ -27,70 +30,100 @@ void BaseNode::clearDbConnection() {
   }
 }
 
+// Regular member routines 
+
+// Return true iff major versions match and db minor version is >= s_minor
+// If test is false (default) look only for row with status = 'CURRENT'
+bool BaseNode::dbIsCompatible(bool test) {
+  if (s_connection == NULL) return false;
+
+  // Make query to db 
+  // SELECT major, minor from DbRelease where status = 'CURRENT'
+  // if not found and test = true
+  //    SELECT major, minor from DbRelease where status = 'TEST'
+  // else return false;
+  // Check for compatibility against BaseNode::s_major, BaseNode::s_minor
+  return true;
+}
+
+
+//               **  ProcessNode **
+
 int ProcessNode::verify(rdbModel::Connection* connect) {
   // Check that hardware type and any hardware relationship types mentioned
   // exist in db
+  using rdbModel::MysqlUtil;
   int ret = 0;
-  if (m_parent != NULL) return ret;
+
   if (s_connection == NULL) {
     std::cerr << "Cannot verify input without db connection" << std::endl;
     return 1;
   }
-  std::vector<std::string> getCols;
-  std::string where = " where name = '";
-  where += m_inputs["HardwareType"];
-  where += "'";
-  getCols.push_back("id");
-  rdbModel::ResultHandle* results = 
-    s_connection->select("HardwareType", getCols, getCols, where);
-  if (results == NULL) {
-    std::cerr << "Query to find hardware type failed " << std::endl;
-    return 2;
-  }
-  if (results->getNRows() != 1) {
-    std::cerr << "Hardware type " << m_inputs["HardwareType"] << " not found"
-              << std::endl;
-    delete results;
-    return 3;
-  }  else  {
-    std::vector<std::string> fields;
-    results->getRow(fields);
-    m_hardwareId = fields[0];
-  }
-  delete results;
-  // Now look for hardware relationship types
-  if (s_relationTypes.size() == 0)  return 0;
 
-  getCols[0] = "name";
-  results = s_connection->select("HardwareRelationshipType", getCols, 
-                                 getCols, "");
-  int nRows = results->getNRows();
-  std::vector<std::string> fields;
-  std::set<std::string> dbvals;
-  for (int i=0; i < nRows; i++) {
-    results->getRow(fields, i);
-    dbvals.insert(fields[0]);
-  }
-  delete results;
-  std::set<std::string>::iterator dbvalsBegin, dbvalsEnd;
-  dbvalsBegin = dbvals.begin();
-  dbvalsEnd = dbvals.end();
-  std::set<std::string>::iterator relationsBegin, relationsEnd;
-  relationsBegin = s_relationTypes.begin();
-  relationsEnd = s_relationTypes.end();
-  if (!std::includes(dbvalsBegin, dbvalsEnd, relationsBegin, relationsEnd) )
-  {
-    std::cerr << "One or more unknown hardware relation types" << std::cout;
-    return 4;
-  }
+  // Certain things only need to be checked for root node
+  if (m_parent == NULL) {
+    try {
+      m_hardwareId = 
+        MysqlUtil::getColumnValue(s_connection, "HardwareType",
+                                  "id", "name", m_inputs["HardwareType"]);
+    }  catch (rdbModel::MysqlUtilException ex) {
+      std::cerr << "Specified hardware type not found in db" << std::endl;
+      std::cerr << ex.what() << std::endl;
+      return 2;
+    }
+
+    // Now look for hardware relationship types
+    if (s_relationTypes.size() > 0)  {
+
+      std::vector<std::string> getCols;
+      getCols.push_back("name");
+      rdbModel::ResultHandle* results = 
+        s_connection->select("HardwareRelationshipType", getCols, getCols, "");
+      int nRows = results->getNRows();
+      std::vector<std::string> fields;
+      std::set<std::string> dbvals;
+      for (int i=0; i < nRows; i++) {
+        results->getRow(fields, i);
+        dbvals.insert(fields[0]);
+      }
+      delete results;
+      std::set<std::string>::iterator dbvalsBegin, dbvalsEnd;
+      dbvalsBegin = dbvals.begin();
+      dbvalsEnd = dbvals.end();
+      std::set<std::string>::iterator relationsBegin, relationsEnd;
+      relationsBegin = s_relationTypes.begin();
+      relationsEnd = s_relationTypes.end();
+      if (!std::includes(dbvalsBegin, dbvalsEnd, relationsBegin, relationsEnd) )
+      {
+        std::cerr << "One or more unknown hardware relation types" << std::cout;
+        return 4;
+      }
+    }    // end hardware relationship types
+  }    // end of root-only processing
+
   // Should perhaps also check that (process name, hardware type)
   // is not already in db for each process.
+  
+  // Check prerequisites
+  for (int i = 0; i < m_prerequisites.size(); i++) {
+    ret = m_prerequisites[i]->verify(s_connection);
+    if (ret != 0) return ret;
+  }
 
+  // Recurse   (but can skip clones)
+  for (int i = 0; i < m_children.size(); i++) {
+    ProcessNode* childProc = dynamic_cast<ProcessNode* >(m_children[i]);
+    if (childProc != NULL) {
+      ret = childProc->verify(s_connection);
+      if (ret != 0) return ret;
+    }
+  }
   return ret;
 }
 
 int ProcessNode::writeDb(rdbModel::Connection* connect) {
   // write a Process row for ourselves
+  using rdbModel::MysqlUtil;
 
   bool ok;
   std::vector<std::string> cols;
@@ -112,10 +145,10 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
     std::string hrtId;
     try {
       hrtId =
-        rdbModel::MysqlUtil::getColumnValue(s_connection, 
-                                            "HardwareRelationshipType",
-                                            "id", "name", 
-                                            m_inputs["HardwareRelationshipType"]);
+        MysqlUtil::getColumnValue(s_connection, 
+                                  "HardwareRelationshipType",
+                                  "id", "name", 
+                                  m_inputs["HardwareRelationshipType"]);
     }
     catch (rdbModel::MysqlUtilException ex) {
       std::cerr << ex.what() << std::endl;
@@ -129,6 +162,13 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
     vals.push_back(m_inputs["Description"]);
   }
   else nullCols.push_back("description");
+
+  if (m_inputs.find("UserVersionString") != m_inputs.end()) {
+    cols.push_back("userVersionString");
+    vals.push_back(m_inputs["UserVersionString"]);
+  }
+  else nullCols.push_back("userVersionString");
+
   if (m_inputs.find("InstructionsURL") != m_inputs.end()) {
     cols.push_back("instructionsURL");
     vals.push_back(m_inputs["InstructionsURL"]);
@@ -142,26 +182,40 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
   
   int newId;
   ok = s_connection->insertRow("Process", cols, vals, &newId, &nullCols);
-  
+  if (!ok) {
+    std::cerr << "Unable to write to db for process step " << m_inputs["Name"]
+              << std::endl;
+    return 1;
+  }
   facilities::Util::itoa(newId, m_processId);
   if (m_parentEdge != NULL) {
     std::string cond;
     if (m_isOption) cond = m_inputs["Condition"];
-    m_parentEdge->writeDb(s_connection, s_user, m_processId, cond);
+    int edgeStatus = m_parentEdge->writeDb(s_connection, s_user, m_processId, 
+                                           cond);
+    if (edgeStatus != 0) return edgeStatus;
   }
-    
-  //  if (recurse) {
+   
+  // Write prerequisites, if any
+  for (int i = 0; i < m_prerequisites.size(); i++) {
+    int prereqStatus = m_prerequisites[i]->writeDb(s_connection);
+    if (prereqStatus != 0) return prereqStatus;
+  }
+
   for (int i = 0; i < m_children.size(); i++) {
     ProcessNode* childProc = dynamic_cast<ProcessNode* >(m_children[i]);
     if (childProc != NULL) childProc->setHardwareId(m_hardwareId);
-    m_children[i]->writeDb();
+    int childStatus = m_children[i]->writeDb(connect);
+    if (childStatus != 0) return childStatus;
   }
-  //}
+
   return 0;
 }
 
+//                   ** ProcessEdge **
 
-int ProcessEdge::writeDb(rdbModel::Connection* connection, std::string& user,
+int ProcessEdge::writeDb(rdbModel::Connection* connection, 
+                         const std::string& user,
                          std::string& childId, std::string& cond) {
   std::vector<std::string> cols;
   std::vector<std::string> vals;
@@ -183,12 +237,140 @@ int ProcessEdge::writeDb(rdbModel::Connection* connection, std::string& user,
 
   int newId;
   bool ok = connection->insertRow("ProcessEdge", cols, vals, &newId);
+  if (!ok) {
+    std::cerr << "Failed to write ProcessEdge row" << std::endl;
+    return 1;
+  }
   facilities::Util::itoa(newId, m_edgeId);
+  return 0;
 }
 
+//         *** CloneNode ***
 int CloneNode::writeDb(rdbModel::Connection* connection) {
   // All we need to do is write a new edge
 
   std::string modelId = m_model->getProcessId();
-  m_parentEdge->writeDb(s_connection, s_user, modelId, m_condition);
+  return m_parentEdge->writeDb(s_connection, s_user, modelId, m_condition);
+}
+
+//        **** PrerequisiteNode ****
+int PrerequisiteNode::verify(rdbModel::Connection* connect) {
+  // Check that hardware type and any hardware relationship types mentioned
+  // exist in db
+  using rdbModel::MysqlUtil;
+  int ret = 0;
+
+  if (connect == NULL) {
+    std::cerr << "Cannot verify input without db connection" << std::endl;
+    return 1;
+  }
+
+  // Check that PrerequisiteType value is valid and find id
+  try {
+    m_prereqTypeId = 
+      MysqlUtil::getColumnValue(s_connection, "PrerequisiteType", "id",
+                                "name", m_inputs["PrerequisiteType"]);
+  } catch (rdbModel::MysqlUtilException ex) {
+    std::cerr << ex.what() << std::endl;
+    return 1;
+  }
+
+  // If type is COMPONENT, check that name matches HardwareType.name or
+  //  HardwareType.drawing;  cache corresponding HardwareType.id
+  std::string where;
+  if (m_component != "") {
+    where = std::string(" where name = '") + m_component + 
+      std::string("' or drawing = '") + m_component + "'";
+
+    try {
+      m_prereqId = MysqlUtil::getColumnWhere(s_connection, "HardwareType",
+                                             "id", where);
+    } catch (rdbModel::MysqlUtilException ex) {
+      std::cerr << "Unable to find hardware type " << m_component << std::endl;
+      std::cerr << ex.what() << std::endl;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int PrerequisiteNode::writeDb(rdbModel::Connection* connect) {
+  //  std::cout << "PrerequisiteNode::writeDB NYI!" << std::endl;
+  using rdbModel::MysqlUtil;
+
+  std::vector<std::string> cols;
+  std::vector<std::string> nullCols;
+  std::vector<std::string> vals;
+
+  // name = m_inputs["Name"]
+  cols.push_back("name");
+  vals.push_back(m_inputs["Name"]);
+
+  // prerequisiteTypeId = m_prereqTypeId
+  cols.push_back("prerequisiteTypeId");
+  vals.push_back(m_prereqTypeId);
+
+  // processId = m_processId
+  cols.push_back("processId");
+  vals.push_back(m_parent->getProcessId());
+
+  // prereqProcessId = m_prereqId  - if appropriate
+  if (m_processName != "") {
+    // If type is PROCESS_STEP, check that (name, version) or 
+    // (name, userVersionString) matches entry in Process; cache Process.id
+    std::string where;
+    where = std::string(" where name ='") + m_processName + 
+      std::string("' and ");
+    if (m_version != "") where += std::string("version = '") + m_version;
+    else {
+      where += std::string("userVersionString = '") +
+        m_inputs["UserVersionString"];
+    }
+    where += std::string("' and hardwareTypeId = '") 
+      + m_parent->getHardwareId() + "'";
+
+    try {
+      m_prereqId = MysqlUtil::getColumnWhere(s_connection, "Process",
+                                             "id", where);
+    } catch (rdbModel::MysqlUtilException ex) {
+      std::cerr << "Unable to find specified Process version" << std::endl;
+      std::cerr << ex.what() << std::endl;
+      return 1;
+    }
+
+    //
+    cols.push_back("prereqProcessId");
+    vals.push_back(m_prereqId);
+  } else if (m_component != "") {
+    // hardwareTypeId = m_prereqId  - if appropriate
+    cols.push_back("hardwareTypeId");
+    vals.push_back(m_prereqId);
+  }
+
+  // description = m_inputs["Description"]    - if exists
+  if (m_inputs.find("Description") != m_inputs.end()) {
+    cols.push_back("description");
+    vals.push_back(m_inputs["Description"]);
+  }
+  else nullCols.push_back("description");
+
+  // quantity = m_inputs["Quantity"]       - if exists
+  if (m_inputs.find("Quantity") != m_inputs.end()) {
+    cols.push_back("quantity");
+    vals.push_back(m_inputs["Quantity"]);
+  }
+  cols.push_back("createdBy");
+  vals.push_back(m_user);
+  cols.push_back("creationTS");
+  facilities::Timestamp curTime;
+  vals.push_back(curTime.getString());
+
+  int newId;
+  bool ok = s_connection->insertRow("PrerequisitePattern", cols, vals, 
+                                    &newId, &nullCols);
+  if (ok) return 0;
+
+  std::cerr << "Failed to write to db for prerequisite " << m_inputs["Name"]
+            << std::endl;
+  return 1;
 }

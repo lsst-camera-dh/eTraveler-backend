@@ -1,5 +1,6 @@
 #include "ProcessNode.h"
 #include "ProcessEdge.h"
+#include "PrerequisiteNode.h"
 #include "CloneNode.h"
 #include <cstdio>
 #include <iostream>
@@ -7,6 +8,9 @@
 
 namespace {
 
+  // Every ProcessNode is a map and the keys must all be scalars.
+  // getKeys checks that they really are scalars and stores them
+  // as strings in the caller-supplied vector.
   int getKeys(YAML::Node* ynode, std::vector<std::string>& keys) {
     for (YAML::const_iterator it=ynode->begin(); it != ynode->end(); ++it) {
       if (! it->first.IsScalar()) {
@@ -27,15 +31,18 @@ namespace {
   }
 }
 
+// Transform serialized YAML input into objects of type
+// ProcessNode and ProcessEdge
 int ProcessNode::readSerialized(YAML::Node* ynode) {
-  // A process node is a map with optional 'child' key whose value is a list
-  // check that it is in fact a map
+  // A process node is a map with optional 'Sequence', 'Selection', and
+  // 'Prerequisite' keys whose values are  lists
   if (! ynode->IsMap())  {
     std::cerr << "YAML input does not describe a process" << std::endl;
     return 1;
   }
   bool hasSequence = false;
   bool hasOptions = false;
+  bool hasPrerequisites = false;
   std::vector<std::string> keys;
   int status = getKeys(ynode, keys);
   if (status != 0) return status;
@@ -43,13 +50,12 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
   for (int i = 0; i < keys.size(); i++) {
     std::string key = keys[i];
     if ((key != std::string("Sequence")) && 
-        (key != std::string("Selection"))) {
-      // read all value keys except for those introducing children; set instance variables
+        (key != std::string("Selection")) &&
+        (key != std::string("Prerequisites"))) {
+      // read values for all keys except for those introducing children; set instance variables
       YAML::Node val = (*ynode)[key];
-      //if (it->second.IsNull()) continue;    // ignore it
       if (val.IsNull()) continue;    // ignore it
 
-      //if (!it->second.IsScalar()) {
       if (!val.IsScalar()) {
         std::cerr << "Bad YAML input. Key " << key 
                   << " must have scalar value " << std::endl;
@@ -72,10 +78,12 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
       }
 
       // Special
-
-    }   else if ((key == std::string("Selection") && !hasSequence)) {
+    }   else if ( key == std::string("Prerequisites") ) {
+        hasPrerequisites = true;
+    }
+    else if ((key == std::string("Selection")) && !hasSequence) {
       hasOptions = true;
-    }    else if ((key == std::string("Sequence") && !hasOptions)) {
+    }    else if ((key == std::string("Sequence")) && !hasOptions) {
       hasSequence = true;
     }  else  {
       std::cerr << "Process may not have both Sequence and Selection"
@@ -138,6 +146,20 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
     }
   }
 
+  if (hasPrerequisites) {
+    if (!((*ynode)["Prerequisites"]).IsSequence()) {
+      std::cerr << "ERROR: Value for 'Prerequisites' key must be a sequence" 
+                << std::endl;
+      return 8;
+    }
+    for (int i=0; i <  ((*ynode)["Prerequisites"]).size(); i++) {
+      YAML::Node ychild = ((*ynode)["Prerequisites"])[i];
+      PrerequisiteNode* child = new PrerequisiteNode(this, s_user);
+      m_prerequisites.push_back(child);
+      int status = m_prerequisites.back()->readSerialized(&ychild);
+      if (status != 0) return status;
+    }
+  }
   return 0;
 }
 
@@ -191,3 +213,34 @@ int CloneNode::readSerialized(YAML::Node* ynode) {
   return 0;
 }
 
+// A prerequisite is a map, all of whose keys have scalar values
+int PrerequisiteNode::readSerialized(YAML::Node* ynode) {
+  if (! ynode->IsMap())  {
+    std::cerr << "YAML input does not describe a process" << std::endl;
+    return 1;
+  }
+
+  std::vector<std::string> keys;
+  int status = getKeys(ynode, keys);
+  if (status != 0) return status;
+
+  for (int i = 0; i < keys.size(); i++) {
+    std::string key = keys[i];
+    YAML::Node val = (*ynode)[key];
+    if (!val.IsScalar()) {
+      std::cerr << "Bad YAML input. Key " << key 
+                << " must have scalar value " << std::endl;
+      return 3;
+    }
+    
+    if (s_yamlToColumn.find(key) == s_yamlToColumn.end()) {
+      std::cerr << "Unknown key " << key << std::endl;
+      return 4;
+    }  else {  // store it
+      m_inputs[key.c_str()] = (*ynode)[key].as<std::string>();
+    }
+  }
+  // checkInputs checks for required fields and so forth
+  if (!checkInputs()) return 6;
+  else return 0;
+}

@@ -1,5 +1,6 @@
 #include "ProcessNode.h"
 #include "ProcessEdge.h"
+#include "PrerequisiteNode.h"
 #include <cstdio>
 #include <iostream>
 #include "Util.h"
@@ -10,6 +11,8 @@ std::vector<ColumnDescriptor> ProcessNode::s_columns;
 std::set<std::string> ProcessNode::s_relationTypes;
 std::string BaseNode::s_user;
 std::map<std::string, ProcessNode*> ProcessNode::s_processes;
+
+/*  Moved to BaseNode.h
 class ColumnDescriptor {
 public:
   ColumnDescriptor(std::string name="", std::string dflt="", 
@@ -26,6 +29,7 @@ public:
   std::string m_joinTable;    // non-empty if we need to translate name to id
   std::string m_joinColumn;
 };
+*/
 
 // siblingCount < 0 indicates we're an option, not a child
 ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :
@@ -41,6 +45,7 @@ ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :
     m_parentEdge = new ProcessEdge(parent, this, siblingCount);
   }
   m_children.clear();
+  m_prerequisites.clear();
 }
 
 ProcessNode::~ProcessNode() {
@@ -48,6 +53,11 @@ ProcessNode::~ProcessNode() {
     BaseNode* child = m_children[m_children.size() -1];
     m_children.pop_back();
     if (child != NULL) delete child;
+  }
+  while (!m_prerequisites.empty()) {
+    PrerequisiteNode* prereq = m_prerequisites[m_prerequisites.size() -1];
+    m_prerequisites.pop_back();
+    if (prereq != NULL) delete prereq;
   }
   if (m_parentEdge) delete m_parentEdge;
 }
@@ -124,6 +134,9 @@ void ProcessNode::initStatic() {
   
   s_columns.push_back(ColumnDescriptor("version", "", false, false));
   s_yamlToColumn["Version"] = &s_columns.back();
+
+  s_columns.push_back(ColumnDescriptor("userVersionString", "", false, false));
+  s_yamlToColumn["UserVersionString"] = &s_columns.back();
   
   s_columns.push_back(ColumnDescriptor("description", "", false, false));
   s_yamlToColumn["Description"] = &s_columns.back();

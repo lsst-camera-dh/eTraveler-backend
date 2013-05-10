@@ -18,7 +18,7 @@ public:
     m_parent(parent), m_child(child), m_step(step),
     m_condition(""), m_edgeId(""){};
   ~ProcessEdge() {};
-  int writeDb(rdbModel::Connection* connection, std::string& user, 
+  int writeDb(rdbModel::Connection* connection, const std::string& user, 
               std::string& childId, std::string& cond);
 
 private:

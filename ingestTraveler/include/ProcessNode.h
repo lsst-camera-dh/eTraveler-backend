@@ -10,6 +10,7 @@
 #include "BaseNode.h"
 class ProcessEdge;
 class ColumnDescriptor;
+class PrerequisiteNode;
 
 namespace YAML {
   class Node;
@@ -22,6 +23,7 @@ public:
   int getChildCount() const {return m_children.size();}
   std::string getProcessId() const {return m_processId;}
   void setHardwareId(std::string& hid) {m_hardwareId = hid;}
+  std::string getHardwareId() const {return m_hardwareId;}
 
   // For now - and probably forever - YAML is only supported serialized form
   int virtual readSerialized(YAML::Node* ynode);   
@@ -42,6 +44,7 @@ private:
   int          m_optionCount;
   std::map<std::string, std::string> m_inputs;  // e.g. from YAML
   std::vector<BaseNode* > m_children;
+  std::vector<PrerequisiteNode* > m_prerequisites;
   std::string m_hardwareId;  // set only for top node initially
   std::string m_processId;   // set when we write ourselves to db
   bool         m_isOption;

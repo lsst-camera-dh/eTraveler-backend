@@ -45,6 +45,11 @@ main(int argc, char* argv[])  {
       exit(1);
     }
     ProcessNode::setDbConnection(connection);
+    if (!root->dbIsCompatible()) {
+      connection->close();
+      std::cout << "Incompatible db version" << std::endl;
+      exit(1);
+    }
   }   else {
     std::cout << "Fake database NYI" << std::endl;
     exit(1);
