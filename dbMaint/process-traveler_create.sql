@@ -24,6 +24,16 @@ CREATE TABLE HardwareType
   CONSTRAINT ix1 UNIQUE (drawing) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE HardwareStatus
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(50) NOT NULL,
+  description varchar(200) NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT ix2 UNIQUE (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 CREATE TABLE Hardware 
 ( id int NOT NULL AUTO_INCREMENT, 
   lsstId varchar(50) NOT NULL,
@@ -31,12 +41,15 @@ CREATE TABLE Hardware
   manufacturer varchar(50) NOT NULL,
   model varchar(50) NULL,
   manufactureDate timestamp NULL,
+  hardwareStatusId int NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
   CONSTRAINT fk1 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType (id), 
-  CONSTRAINT ix2 UNIQUE INDEX (hardwareTypeId, lsstId),
-  INDEX fk1 (hardwareTypeId) 
+  CONSTRAINT fk2 FOREIGN KEY (hardwareStatusId) REFERENCES HardwareStatus (id), 
+  CONSTRAINT ix3 UNIQUE INDEX (hardwareTypeId, lsstId),
+  INDEX fk1 (hardwareTypeId),
+  INDEX fk2 (hardwareStatusId) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE HardwareIdentifierAuthority 
@@ -45,7 +58,7 @@ CREATE TABLE HardwareIdentifierAuthority
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
-  CONSTRAINT ix3 UNIQUE (name) 
+  CONSTRAINT ix4 UNIQUE (name) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE HardwareIdentifier 
@@ -97,7 +110,10 @@ CREATE TABLE HardwareRelationship
   CONSTRAINT fk12 FOREIGN KEY (hardwareRelationshipTypeId) REFERENCES HardwareRelationshipType (id), 
   INDEX fk10 (hardwareId), 
   INDEX fk11 (componentId), 
-  INDEX fk12 (hardwareRelationshipTypeId) 
+  INDEX fk12 (hardwareRelationshipTypeId),
+  INDEX ix10 (begin),
+  INDEX ix11 (end),
+  INDEX ix12 (creationTS)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Instance of HardwareRelationshipType between actual pieces of hardware';
 
@@ -187,7 +203,10 @@ CREATE TABLE Activity
   INDEX fk71 (hardwareRelationshipId),
   INDEX fk72 (processId), 
   INDEX fk73 (processEdgeId),
-  INDEX fk74 (parentActivityId) 
+  INDEX fk74 (parentActivityId),
+  INDEX ix70 (begin),
+  INDEX ix71 (end),
+  INDEX ix72 (parentActivityId, processEdgeId)
 )   ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE Result 
@@ -205,6 +224,8 @@ CREATE TABLE Result
 CREATE TABLE PrerequisiteType
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(50) COMMENT "e.g. PROCESS_STEP, COMPONENT, CONSUMABLE, etc.",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT ix99 UNIQUE INDEX (name)
 ) ENGINE=InooDB DEFAULT CHARSET=latin1;
@@ -217,6 +238,9 @@ CREATE TABLE PrerequisitePattern
   processId int NOT NULL COMMENT "process step for which this is a prereq",
   prereqProcessId  int NULL COMMENT "Non-null if prereq is another proc. step",
   hardwareTypeId    int NULL COMMENT "non-null if prereq is tracked hardware",
+  quantity         int NOT NULL DEFAULT 1,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk100 FOREIGN KEY(processId) REFERENCES Process(id),
   CONSTRAINT fk101 FOREIGN KEY(prerequisiteTypeId) REFERENCES PrerequisiteType(id),
@@ -233,15 +257,21 @@ CREATE TABLE Prerequisite
 ( id int NOT NULL AUTO_INCREMENT,
   prerequisiteTypeId int NOT NULL,
   prerequisitePatternId int NOT NULL COMMENT "template for this prerequisite",
-  activityId int NOT NULL COMMENT "Activity for which prereq is satisfied",
+  activityId int NOT NULL COMMENT "Activity for which prereq is to be satisfied",
   prerequisiteActivityId int NULL COMMENT "Used if prereq was completion of another process step",
+  quantity int DEFAULT 1,
+  hardwareId int NULL COMMENT "Used if prereq was a tracked component",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
   PRIMARY KEY(id),
   CONSTRAINT fk110 FOREIGN KEY(prerequisiteTypeId) REFERENCES PrerequisiteType(id),
   CONSTRAINT fk111 FOREIGN KEY(prerequisitePatternId) REFERENCES PrerequisitePattern(id),
   CONSTRAINT fk112 FOREIGN KEY(activityId) REFERENCES Activity(id),
   CONSTRAINT fk113 FOREIGN KEY(prerequisiteActivityId) REFERENCES Activity(id),
+  CONSTRAINT fk114 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
   INDEX fk110 (prerequisiteTypeId),
   INDEX fk111 (prerequisitePatternId),
   INDEX fk112 (activityId),
-  INDEX fk113 (prerequisiteActivityId)
+  INDEX fk113 (prerequisiteActivityId),
+  INDEX fk114 (hardwareId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

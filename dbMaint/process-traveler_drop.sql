@@ -13,3 +13,4 @@ DROP TABLE IF EXISTS HardwareIdentifierAuthority;
 DROP TABLE IF EXISTS Hardware;
 DROP TABLE IF EXISTS HardwareRelationshipType;
 DROP TABLE IF EXISTS HardwareType;
+DROP TABLE IF EXISTS HardwareStatus;

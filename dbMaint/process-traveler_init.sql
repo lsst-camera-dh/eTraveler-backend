@@ -28,7 +28,12 @@ insert into HardwareRelationshipType set name='Raft_CCD_2_1',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_2_2',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into PrerequisiteType set name='PROCESS_STEP';
-insert into PrerequisiteType set name='TRACKED_COMPONENT';
-insert into PrerequisiteType set name='TEST_EQUIPMENT';
-insert into PrerequisiteType set name='CONSUMABLE';
+insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=NOW();
+insert into PrerequisiteType set name='COMPONENT', createdBy='jrb', creationTS=NOW();
+insert into PrerequisiteType set name='TEST_EQUIPMENT', createdBy='jrb', creationTS=NOW();
+insert into PrerequisiteType set name='CONSUMABLE', createdBy='jrb', creationTS=NOW();
+insert into HardwareStatus set name='NEW', description='Available for preparation and testing', createdBy='jrb', creationTS=NOW();
+insert into HardwareStatus set name='IN_PROGRESS', description='At least one traveler begun; at least one applicable traveler not complete', createdBy='jrb', creationTS=NOW();
+insert into HardwareStatus set name='REJECTED', description='Beyond hope', createdBy='jrb', creationTS=NOW();
+insert into HardwareStatus set name='READY', description='Testing/preparation complete; ready for integration', createdBy='jrb', creationTS=NOW();
+insert into HardwareStatus set name='USED', description='Fully tested component has been integrated', createdBy='jrb', creationTS=NOW();
