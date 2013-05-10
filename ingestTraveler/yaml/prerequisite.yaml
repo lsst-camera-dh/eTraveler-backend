@@ -1,0 +1,37 @@
+%YAML 1.1 
+---
+Name:  PrereqTraveler
+HardwareType: Raft
+Description: Blah blah
+InstructionsURL: 
+Sequence:
+   -
+      Name: stepWhichIsPrereq
+      Description: Part of PrereqTraveler example; a step used as prereq
+      UserVersionString: 1.2X
+   -
+      Name: hasPrereqs
+      Description:  Do something
+      UserVersionString:  user version 123.2B
+      Prerequisites:
+        -
+          PrerequisiteType:  PROCESS_STEP
+          Name: stepWhichIsPrereq
+          UserVersionString: 1.2X
+        -
+          PrerequisiteType:  CONSUMABLE
+          Name: ice cream
+        -
+          PrerequisiteType:  COMPONENT
+          Name: DRAWING_ASPIC
+        -
+          PrerequisiteType:  COMPONENT
+          Name: ASPIC chip
+   -
+      Clone: hasPrereqs
+
+   - 
+      Name: Noprereqs
+      Description: Do something else
+
+
