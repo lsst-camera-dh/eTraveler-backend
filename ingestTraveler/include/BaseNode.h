@@ -26,6 +26,9 @@ public:
 
   static void setDbConnection(rdbModel::Connection* c);
   static void clearDbConnection();
+  //static int getMajorVersion();   // Major db version required for compat
+  //static int getMinorVersion();  // db minor version must be >= this
+  virtual bool dbIsCompatible(bool test=false); 
 
 protected:
   ProcessNode* m_parent;
@@ -33,6 +36,28 @@ protected:
   bool         m_isOption;
   static rdbModel::Connection* s_connection; 
   static std::string s_user;
+
+private:
+  static int   s_major;
+  static int   s_minor;
+};
+
+// Used by ProcessNode and PrerequisiteNode
+class ColumnDescriptor {
+public:
+  ColumnDescriptor(std::string name="", std::string dflt="", 
+                   bool noDefault=true, bool system=false, 
+                   std::string joinTable="", std::string joinColumn="") : 
+    m_name(name), m_dflt(dflt), m_noDefault(noDefault), m_system(system),
+    m_joinTable(joinTable), m_joinColumn(joinColumn) {}
+  ~ColumnDescriptor() {}
+
+  std::string m_name;
+  std::string m_dflt;
+  bool        m_noDefault;   // user must supply a value
+  bool        m_system;      // we figure it out
+  std::string m_joinTable;    // non-empty if we need to translate name to id
+  std::string m_joinColumn;
 };
 
 #endif
