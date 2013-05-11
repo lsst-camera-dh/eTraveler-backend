@@ -1,0 +1,122 @@
+%YAML  1.1
+---
+# Assumes sensor has already been registered: that is, has an entry
+# in the Hardware table.
+# For now assume it also has at least one HardwareIdentifier.  (Another
+# way to handle this would be to make assignment of the hardware identifier
+# the first step.)
+Name: Sensor_T01
+HardwareType: ASPIC chip
+Description: Sensor delivery and inspection
+Sequence:
+   -
+     Name: Sensor at TS1
+     Description:  Operations done at test stand 1
+     Prerequisites: 
+       -  
+         Name: TS1 ready
+         Description:  TS1 has been commissioned
+         PrerequisiteType: TEST_EQUIPMENT 
+     Sequence:
+       -
+          Name: Sensor receive
+          Description:   Unpack; discard loose packing
+       -
+          Name: Sensor move to anteroom
+       -  
+          Name: Sensor file vendor data
+          InstructionsURL:  "http://.../sensor/vendorForm.html"
+       -  
+          Name: Sensor init dsta logging
+          InstructionsURL: "http://www.stanford.edu/~jrb/eTraveler/instructions/sesnor/initLogging.html"
+
+       -  
+          Name: Sensor coffin clean
+          Description:  Full cleaning procedure
+          Sequence:
+               -
+                  Name: Sensor coffin clean_1
+                  Prerequisites:
+                     -
+                        Name: gloves
+                        PrerequisiteType: CONSUMABLE
+                     -  
+                        Name: cleaning agent 1
+                        PrerequisiteType: CONSUMABLE
+                  InstructionsURL: "http://www.stanford.edu/~jrb/eTraveler/instructions/sensor/clean_coffin_1.html"
+               -  
+                  Name: Sensor coffin clean_move
+                  Description:  Move coffin into C10K
+
+               -  
+                  Name: Sensor coffin clean_2
+                  Prerequisites:
+                     -
+                        Name: gloves
+                        PrerequisiteType: CONSUMABLE
+                     -  
+                        Name: cleaning agent 2
+                        PrerequisiteType: CONSUMABLE
+                  InstructionsURL: "http://www.stanford.edu/~jrb/eTraveler/instructions/sensor/clean_coffin_2.html"
+                  # If clean_coffin_2 is identical to clean_coffin_1, clone 
+                  #   clean_coffin_1 rather than defining new step here
+       - 
+          Name:  Sensor inspect jig
+          Sequence:
+               -
+                 Name: Sensor open coffin
+               -
+                 Name: Sensor document initial appearance
+                 Description: Take pictures (also document in words?)
+                 InstructionsURL:  "http://www.stanford.edu/~jrb/eTraveler/instructions/sensor/inspect.html"
+                 Prerequisites:
+                     - 
+                       Name: Web camera
+                       PrerequisiteType: TEST_EQUIPMENT
+       -
+          Name:  Sensor move to TS2
+   -
+     Name: Sensor at TS2
+     Description:  Operations done at test stand 2
+     Prerequisites:
+       - 
+         Name:  TS1 ready
+         Description:  TS2 has been commissioned
+         PrerequisiteType:  TEST_EQUIPMENT
+     Sequence:
+       -
+          Name: Activate OGP machine
+          InstructionsURL:    "http://www.stanford.edu/~jrb/eTraveler/instructions/sensor/activateOGP.html"
+       -  
+          Name:  Sensor mount on MF01
+          InstructionsURL:    "http://www.stanford.edu/~jrb/eTraveler/instructions/sensor/mountMF01.html"
+       - 
+          Name:  Sensor remove jig cover
+       -
+          Name:  Sensor inspect edges
+          Description: run edge inspection script; archive image photos
+          InstructionsURL:    "http://www.stanford.edu/~jrb/eTraveler/instructions/sensor/edgeInspection.html"
+          Selection:
+               - 
+                 Condition: PASS
+                 Name: T01_Pass
+                 Selection:
+                    -
+                       Condition: Done for the day
+                       Name: Sensor_store
+                       Description: Return jig and coffin to storage
+                    -
+                       Condition: default
+                       Name: Sensor_goto_T02
+               -
+                 Condition: FAIL
+                 Name: T01_Fail
+                 Sequence:
+                        -
+                          Name: Sensor return
+                          Description: Replace jig and cover, return to vendor
+                        - 
+                          Name: Sensor abort
+                          Description: Mark sensor as rejected
+                          InstructionsURL: "http://www.stanford.edu/~jrb/eTraveler/instructions/sensor/reject.html"
+ 
