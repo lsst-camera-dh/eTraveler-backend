@@ -1,0 +1,5 @@
+Source for the yaml-cpp parser has been obtained from 
+code.google.com/p/yaml-cpp/
+c++ source for the yaml-cpp library is unchanged from yaml-cpp version 0.5.1
+however in this context (use by ingestTraveler) it is built with SCons rather
+than CMake.

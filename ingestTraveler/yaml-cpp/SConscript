@@ -1,0 +1,35 @@
+# Build and install yaml-cpp library 
+# Install include
+# (Maybe) build yaml utility programs
+# (Maybe) build yaml test programs
+Import('listFiles')
+Import('baseEnv')
+import os, os.path
+
+env = baseEnv.Clone()
+headers = listFiles(['include/yaml-cpp/*'], recursive = True)
+for header in headers:
+
+    header = env.File(str(header))
+    splitFile = str(env.Dir('.').srcnode().rel_path(header.srcnode()))
+
+    installPath = ''
+    while os.path.split(splitFile)[0] != '':
+        parts = os.path.split(splitFile)
+        splitFile = parts[0]
+        installPath = os.path.normpath(os.path.join(parts[1], installPath))
+
+    installPath = os.path.dirname(installPath)
+    includes = env.Install(Dir('#').Dir(installPath), header)
+    env.Alias('yaml_parser', includes)
+    env.Default(includes)
+    env.Alias('includes', includes)
+    env.Alias('all', includes)
+
+yamlLib = env.StaticLibrary('yaml-cpp', listFiles(['src/*.cpp', 'src/contrib/*.cpp']))
+yamlLibInstalled = env.Install(env['LIBDIR'], yamlLib)
+env.Alias('yaml_parser', yamlLibInstalled)
+env.Default(yamlLibInstalled)
+env.Alias('all', yamlLibInstalled)
+
+###ingest = env.Program('ingestTraveler', listFiles(['*.cxx', 'db/*.cxx']) )

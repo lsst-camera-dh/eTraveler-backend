@@ -60,7 +60,7 @@ for activity with the right values for Activity.processId and
 Activity.hardwareId. Conceivably there could be more than one, but I don't
 think that should be allowed..not sure how to enforce it, however.  If the
 prerequisite process step is something like "Clean", it shouldn't be using the
-prerequisite mechanism at all.  The prerequisiteness should be enforced by
+prerequisite mechanism at all.  The prior completion should be enforced by
 putting it as an earlier step in the same traveler.
 
 Assuming a single appropriate entry in Activity exists, create row
