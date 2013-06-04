@@ -25,7 +25,7 @@ baseEnv['BINDIR'] = Dir('#bin')
 # Mysql in /usr/bin, /usr/lib, etc.
 #  Include paths are 
 #  among the standard ones, but just in case add /usr/local/include for YAML
-baseEnv.AppendUnique(CPPPATH = ['#include', '/usr/local/include'])
+baseEnv.AppendUnique(CPPPATH = ['#include'])
 baseEnv.AppendUnique(CCFLAGS = '-g')
 baseEnv.SConsignFile("signatures/.sconsign.dblite")
 Export('baseEnv')

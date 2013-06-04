@@ -20,7 +20,8 @@ for header in headers:
         installPath = os.path.normpath(os.path.join(parts[1], installPath))
 
     installPath = os.path.dirname(installPath)
-    includes = env.Install(Dir('#').Dir(installPath), header)
+    ##includes = env.Install(Dir('#').Dir(installPath), header)
+    includes = env.Install(Dir('#/include').Dir(installPath), header)
     env.Alias('yaml_parser', includes)
     env.Default(includes)
     env.Alias('includes', includes)
