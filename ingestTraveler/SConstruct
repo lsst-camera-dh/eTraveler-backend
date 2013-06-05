@@ -44,18 +44,19 @@ if mysqlLibDir == '':
 
 baseEnv.AppendUnique(LIBPATH = [mysqlLibDir])
                                   
-conf = baseEnv.Clone().Configure()
-if not conf.CheckCHeader('mysql/mysql.h'):
-    print 'Unable to find mysql headers.'
-    print 'Is mysql installed?'
-    print 'If so, specify good value for --mysql-include-path'
-    Exit(1)
+if not baseEnv.GetOption('help'):
+    conf = baseEnv.Clone().Configure()
+    if not conf.CheckCHeader('mysql/mysql.h'):
+        print 'Unable to find mysql headers.'
+        print 'Is mysql installed?'
+        print 'If so, specify good value for --mysql-include-path'
+        Exit(1)
 
-if not conf.CheckLib('mysqlclient', language='C'):
-    print 'Unable to find mysql client library'
-    print 'Is mysql installed?'
-    print 'If so, specify good value for --mysql-lib-path'
-    Exit(1)
+    if not conf.CheckLib('mysqlclient', language='C'):
+        print 'Unable to find mysql client library'
+        print 'Is mysql installed?'
+        print 'If so, specify good value for --mysql-lib-path'
+        Exit(1)
 
 
 # Dirs where things can be installed:
