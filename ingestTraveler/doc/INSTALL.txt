@@ -1,0 +1,100 @@
+        Building and Running ingestTraveler
+
+INSTALL and BUILD
+-----------------
+1.  Do git clone of
+
+        LSST/Camera/DataHandling/processTraveler/backEnd
+
+or maybe you already have.
+
+2. REQUIREMENT:  A working installation of SCons
+If you don't already have it, see www.scons.org
+
+3. REQUIREMENT:  MySQL for clients.  If not already installed on 
+your machine, get it!  
+
+Preferred:  It's available for standard Linux distributions by their 
+usual package install method.  This is usually much simpler than the
+alternative.
+
+Last resort:  Go to dev.mysql.com/downloads/
+and download the MySQL Community Server distribution appropriate for 
+your system.  Follow installation instructions
+
+You do not need to run or even install a MySQL server.  All you need
+is the mysqlclient library and some header files.
+
+4.  cd to backEnd/ingestTraveler
+
+5. Build
+
+If you're on a redhat 5 or redhat 6 machine you probably just need to say
+
+scons
+
+Otherwise, SCons may have trouble finding your MySQL installation.  Make
+use of one or the other options:
+
+  --mysql-lib-path=MYSQLLIBPATH
+                              path to mysql client library
+  --mysql-include-path=MYSQLINCLUDEPATH
+                              path to mysql headers
+
+
+Note that the value assigned to --mysql-include-path should not 
+include the final "mysql" component of the path.  If, for example, mysql.h
+is at /usr/local/include/mysql/mysql.h   the value for the option should
+be /usr/local/include
+
+If the build succeeds the binary should show up in the bin directory:
+
+[jrb@dhcp-228-235 ingestTraveler]$ pwd
+/u1/jrb/Camera/DataHandling/processTraveler/backEnd/ingestTraveler
+[jrb@dhcp-228-235 ingestTraveler]$ ls bin
+ingestTraveler*
+
+RUN
+---
+You can invoke with no arguments for help:
+
+
+[jrb@dhcp-228-235 ingestTraveler]$ bin/ingestTraveler
+Missing required argument: path to yaml input
+Call interface example: 
+
+     ingestTraveler myTravelerDefinition.yaml rd_lsst_camt
+
+second argument (database name) defaults to rd_lsst_cam
+
+
+If you specify the special value "fake" (without the quotes) for the
+database, ingestTraveler will still load your yaml file and do some
+limited verification.  Then it will complain and exit.
+
+There are several sample yaml files in the yaml subdirectory.
+
+In order to truly ingest a yaml file you have to
+ - know of an account with write access to a suitable database
+ - have a file .my.cnf with a section describing parameters for that account
+ - be logged in to a machine on the SLAC network or be using vpn
+
+
+Here is a sample .my.cnf with sensitive information replaced by
+a (description in paranthese)
+
+[rd_lsst_camt_ingest]
+host=mysql-dev01
+port=(integer port number)
+user=(username with write access)
+password=(password for the user.  May be, and perhaps has to be, in double
+          quotes)
+
+
+The section name above is for database rd_lsst_camt.  In general it will be
+(database-name)_ingest
+
+Note the .my.cnf should be in your home directory and readable only by
+you.  If your home directory is in afs,  put .my.cnf in your .ssh directory
+and make a symbolic link to it in your home.
+

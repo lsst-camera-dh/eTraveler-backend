@@ -6,6 +6,12 @@
 main(int argc, char* argv[])  {
   if (argc < 2) {
     std::cout << "Missing required argument: path to yaml input" << std::endl;
+
+    std::cout << "Call interface example: " << std::endl << std::endl;
+    std::cout << "     ingestTraveler myTravelerDefinition.yaml rd_lsst_camt" 
+              << std::endl << std::endl;
+    std::cout << "second argument (database name) defaults to rd_lsst_cam"
+              << std::endl;
     exit(1);
   }
   // Next arg can be used for db name; choose a sensible default
@@ -31,7 +37,8 @@ main(int argc, char* argv[])  {
   // E.g., using form which gets info from .my.cnf
   //rdbModel::Connection* connection;
   if (dbName != "fake") {
-    std::string grp = dbName + "_u";
+    //std::string grp = dbName + "_u";
+    std::string grp = dbName + "_ingest";
     rdbModel::MysqlConnection* connection = 
       new rdbModel::MysqlConnection::MysqlConnection();
     connection->init();
