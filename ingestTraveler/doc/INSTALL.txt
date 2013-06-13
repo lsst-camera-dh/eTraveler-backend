@@ -31,10 +31,12 @@ is the mysqlclient library and some header files.
 
 If you're on a redhat 5 or redhat 6 machine you probably just need to say
 
-scons
+      scons
+or
+      scons all
 
-Otherwise, SCons may have trouble finding your MySQL installation.  Make
-use of one or the other options:
+On other OSes, SCons may have trouble finding your MySQL installation.  In
+that case use one or both of the options:
 
   --mysql-lib-path=MYSQLLIBPATH
                               path to mysql client library
@@ -72,7 +74,9 @@ If you specify the special value "fake" (without the quotes) for the
 database, ingestTraveler will still load your yaml file and do some
 limited verification.  Then it will complain and exit.
 
-There are several sample yaml files in the yaml subdirectory.
+There are several sample yaml files in the yaml subdirectory.  See
+backEnd/doc/eTraveler_yaml.txt  for a description of yaml format
+understood by the program.
 
 In order to truly ingest a yaml file you have to
  - know of an account with write access to a suitable database
