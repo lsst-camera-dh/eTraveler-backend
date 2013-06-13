@@ -81,7 +81,7 @@ In order to truly ingest a yaml file you have to
 
 
 Here is a sample .my.cnf with sensitive information replaced by
-a (description in paranthese)
+a (description in parentheses)
 
 [rd_lsst_camt_ingest]
 host=mysql-dev01
