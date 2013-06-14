@@ -23,10 +23,16 @@ AddOption('--mysql-lib-path', dest='mysqlLibPath', nargs=1, type='string',
           action='store', help='path to mysql client library')
 AddOption('--mysql-include-path', dest='mysqlIncludePath', nargs=1, 
           type='string', action='store', help='path to mysql headers')
+# Add option for boost include path.  Not necessary for most installations;
+# boost typically is already accessible, e.g. in /usr/include 
+AddOption('--boost-include-path', dest='boostIncludePath', nargs=1, 
+          type='string', action='store', help='path to boost headers')
 
 # See if header is really there.   Use supplied path if there is one
 if baseEnv.GetOption('mysqlIncludePath'):
     baseEnv.AppendUnique(CPPPATH=[baseEnv.GetOption('mysqlIncludePath')])
+if baseEnv.GetOption('boostIncludePath'):
+    baseEnv.AppendUnique(CPPPATH=[baseEnv.GetOption('boostIncludePath')])
 
 mysqlLibDir=''
 if baseEnv.GetOption('mysqlLibPath'):
@@ -46,6 +52,14 @@ baseEnv.AppendUnique(LIBPATH = [mysqlLibDir])
                                   
 if not baseEnv.GetOption('help'):
     conf = baseEnv.Clone().Configure()
+
+    if not conf.CheckCHeader('boost/version.hpp'):
+        print 'Unable to find boost headers.'
+        print 'Is boost installed?'
+        print 'If so, specify good value for --boost-include-path'
+        Exit(1)
+
+
     if not conf.CheckCHeader('mysql/mysql.h'):
         print 'Unable to find mysql headers.'
         print 'Is mysql installed?'

@@ -40,7 +40,7 @@ main(int argc, char* argv[])  {
     //std::string grp = dbName + "_u";
     std::string grp = dbName + "_ingest";
     rdbModel::MysqlConnection* connection = 
-      new rdbModel::MysqlConnection::MysqlConnection();
+      new rdbModel::MysqlConnection();
     connection->init();
     //  Following causes user, pwd to be read from default file,
     //  avoiding plain text in open statement.

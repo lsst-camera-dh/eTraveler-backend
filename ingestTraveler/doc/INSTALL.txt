@@ -25,9 +25,13 @@ your system.  Follow installation instructions
 You do not need to run or even install a MySQL server.  All you need
 is the mysqlclient library and some header files.
 
-4.  cd to backEnd/ingestTraveler
+4. REQUIREMENT: boost.  For standard Linux distributions it is probably
+installed or available through usual package install method.  Otherwise,
+go to www.boost.org
 
-5. Build
+5.  cd to backEnd/ingestTraveler
+
+6. Build
 
 If you're on a redhat 5 or redhat 6 machine you probably just need to say
 
@@ -48,6 +52,15 @@ Note that the value assigned to --mysql-include-path should not
 include the final "mysql" component of the path.  If, for example, mysql.h
 is at /usr/local/include/mysql/mysql.h   the value for the option should
 be /usr/local/include
+
+Usually boost headers will be accessible with no special handling,
+but if not you can specify their location with the option
+
+  --boost-include-path=BOOSTINCLUDEPATH
+                             path to mysql headers
+
+As with --mysql-include-path above, the value assigned should not include
+the final "boost" component of the path.
 
 If the build succeeds the binary should show up in the bin directory:
 
