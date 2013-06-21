@@ -13,6 +13,19 @@ CREATE TABLE IF NOT EXISTS DbRelease
   PRIMARY KEY (id),
   UNIQUE INDEX (major, minor, patch)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS SiteInfo
+( id int NOT NULL AUTO_INCREMENT,
+  siteName varchar(20) NOT NULL,
+  jhVirtualEnv varchar(200) NULL COMMENT "path to root of virtual env for job harmenss",
+  jhOutputRoot  varchar(200) NULL COMMENT "path to root of job harness output directory, corresponds to environment variable LCATR_ROOT",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT UNIQUE (siteName)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Keep site-specific information here';
+  
   
 CREATE TABLE HardwareType 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -275,3 +288,7 @@ CREATE TABLE Prerequisite
   INDEX fk113 (prerequisiteActivityId),
   INDEX fk114 (hardwareId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+

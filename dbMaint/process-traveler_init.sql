@@ -1,5 +1,6 @@
 #  Do some inserts to get us started off
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 1, 0, 'TEST', 'jrb', NOW(), NOW(), 'Adding prerequisite tables');
+insert into SiteInfo (siteName, jhVirtualEnv, jhOutputRoot, createdBy, creationTS) values ('SLAC', '/nfs/farm/g/lsst/jobHarnessEnv', '/nfs/farm/g/lsst/jobHarnessEnv/stage', 'jrb', NOW());
 insert into HardwareType (name, drawing, createdBy, creationTS) values ('CCD', 'DRAWING_CCD', 'jrb', NOW());
 insert into HardwareType (name, drawing, createdBy, creationTS) values ('Raft', 'DRAWING_Raft', 'jrb', NOW());
 insert into HardwareType (name, drawing, createdBy, creationTS) values ('Lens', 'DRAWING_Lens', 'jrb', NOW());
