@@ -26,7 +26,10 @@ CREATE TABLE IF NOT EXISTS SiteInfo
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep site-specific information here';
   
-  
+# May need to add additional table for subsystem (name, id and boilerplate)
+# and add column to HardwareType: fk to subsystem
+# Maybe do something similar for "component type"  ("part" or "assembly")
+# or, if there are just those two, add flag column.
 CREATE TABLE HardwareType 
 ( id int NOT NULL AUTO_INCREMENT, 
   name varchar(50) NOT NULL COMMENT "common name; defaults to drawing", 
@@ -45,7 +48,8 @@ CREATE TABLE HardwareStatus
   creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT ix2 UNIQUE (name)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='just registered, ready for assembly, rejected, etc.';
 
 CREATE TABLE Hardware 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -63,7 +67,8 @@ CREATE TABLE Hardware
   CONSTRAINT ix3 UNIQUE INDEX (hardwareTypeId, lsstId),
   INDEX fk1 (hardwareTypeId),
   INDEX fk2 (hardwareStatusId) 
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Create a row here to register new component';
 
 CREATE TABLE HardwareIdentifierAuthority 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -130,7 +135,6 @@ CREATE TABLE HardwareRelationship
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Instance of HardwareRelationshipType between actual pieces of hardware';
 
-
 CREATE TABLE Process 
 ( id int NOT NULL AUTO_INCREMENT, 
   name varchar(50) NOT NULL, 
@@ -150,7 +154,8 @@ CREATE TABLE Process
   INDEX fk41 (hardwareRelationshipTypeId),
   CONSTRAINT ix42 UNIQUE INDEX (name, hardwareTypeId, version),
   CONSTRAINT ix43 UNIQUE INDEX (name, hardwareTypeId, userVersionString)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Describes procedure for a step within a traveler';
 
 CREATE TABLE ProcessEdge 
 ( id int NOT NULL AUTO_INCREMENT, parent int NOT NULL, 
@@ -164,7 +169,8 @@ CREATE TABLE ProcessEdge
   CONSTRAINT fk31 FOREIGN KEY (child) REFERENCES Process (id) , 
   CONSTRAINT fk30 FOREIGN KEY (parent) REFERENCES Process (id), 
   INDEX fk30 (parent), INDEX fk31 (child) 
-)  ENGINE=InnoDB DEFAULT CHARSET=latin1;
+)  ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Encapsulates information on how to traverse hierarchy of process steps';
 
 CREATE TABLE NCRcondition
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -173,7 +179,8 @@ CREATE TABLE NCRcondition
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
   CONSTRAINT ix30 UNIQUE (conditionString) 
-)  ENGINE=InnoDB DEFAULT CHARSET=latin1;
+)  ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Describe condition under which one branches to NCR';
 
 CREATE TABLE Exception
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -220,7 +227,8 @@ CREATE TABLE Activity
   INDEX ix70 (begin),
   INDEX ix71 (end),
   INDEX ix72 (parentActivityId, processEdgeId)
-)   ENGINE=InnoDB DEFAULT CHARSET=latin1;
+)   ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Instance of process step executed on a particular component';
 
 CREATE TABLE Result 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -264,7 +272,8 @@ CREATE TABLE PrerequisitePattern
   INDEX fk101 (prerequisiteTypeId),
   INDEX fk102 (prereqProcessId),
   INDEX fk103 (hardwareTypeId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Describe prerequisite for specified process step';
 
 CREATE TABLE Prerequisite
 ( id int NOT NULL AUTO_INCREMENT,
@@ -287,8 +296,35 @@ CREATE TABLE Prerequisite
   INDEX fk112 (activityId),
   INDEX fk113 (prerequisiteActivityId),
   INDEX fk114 (hardwareId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Describes item satisfying a prereq. for a specific activity';
 
+CREATE TABLE InputSemantics
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(32) NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  UNIQUE INDEX ix120 (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Names possible types of operator input';
 
-
-
+CREATE TABLE InputPattern
+(id int NOT NULL AUTO_INCREMENT,
+  processId int NOT NULL COMMENT "process step this input belongs to",
+  inputSemanticsId int NOT NULL,
+  label   varchar(50) NOT NULL COMMENT "required label to appear on form", 
+  units  varchar(5) DEFAULT "none",
+  description varchar(256) NULL COMMENT "if label is not sufficient",
+  minV float  NULL COMMENT "allowed minimum (optional)",  
+  maxV float  NULL COMMENT "allowed maximum (optional)",  
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT fk130 FOREIGN KEY(processId) REFERENCES Process(id),
+  CONSTRAINT fk131 FOREIGN KEY(inputSemanticsId) REFERENCES InputSemantics(id),
+  CONSTRAINT ix132 UNIQUE (processId, label),
+  INDEX fk130 (processId),
+  INDEX fk131 (inputSemanticsId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Describes required operator input assoc. with particular process step';
