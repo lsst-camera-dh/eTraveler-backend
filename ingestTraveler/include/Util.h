@@ -133,6 +133,12 @@ namespace facilities {
     /// not of the proper form, throws facilities::WrongType
     static unsigned long long stringToUll(const std::string& InStr);
 
+    /// return true if string converts to int; false otherwise
+    static bool isInt(const std::string& InStr);
+
+    /// return true if string converts to floating point; false otherwise
+    static bool isDouble(const std::string& InStr);
+
 
     /** This routine breaks down a string into tokens, based on the
         characters appearing in the string @a delimiters.

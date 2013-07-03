@@ -65,7 +65,7 @@ that be the default instead of 1?)
 Condition: required if this node is a member of a list which is itself
 the value of a Selection: key; ignored otherwise.
 
-8. There are three keys with non-scalar values.
+8. There are four keys with non-scalar values.
 
 Sequence:
 Value is an ordered list of process nodes.  Intent is that the process steps 
@@ -80,6 +80,9 @@ for final element of list if its condition value is "Default".
 
 Prerequisites:
 Value is a list of prerequisite nodes.
+
+RequiredInputs:
+Value is a list of input nodes.
 
 9. Description of a prerequisite node.
 Each prerequisite node is a dict with the following keys:
@@ -113,8 +116,29 @@ optional
 Quantity:
 optional.  If present must be positive integer.  Defaults to 1
 
+10. Input nodes
+Each input node is a dict with the following keys:
 
-10. Other constraints.
+Label:
+Required.  Used to prompt operator for value
+
+Semantics:
+Required.  Value must be one of a set of known values (to be verified
+against database).  These values will be things like "int", "float",
+"filepath",...
+
+Units:
+Optional.  
+
+MinValue, MaxValue:
+Optional.  User input will be compared to one or both of these if present.  
+Must be appropriate for value of Semantics
+
+Description:
+Optional.  Could be useful if label is not sufficient to clearly indicate
+what's needed.
+
+11. Other constraints.
 
 Documents satisfying 1-7 above will pass the first stage of ingest.  The
 next stage makes some checks against the database before attempting to 

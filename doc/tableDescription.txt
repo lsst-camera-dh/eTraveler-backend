@@ -70,3 +70,25 @@ prereq, reference Process id.
 
 RESULTS
 -------
+Certain kinds of results require an input description so that eTraveler
+can produce an appropriate form for operator to fill out.  Tables 
+involved in this are
+
+1. InputSemantics
+A list of possible input categories, to include at least integer, float,
+file path, arbitrary string.
+
+2. InputPattern
+References InputSemantics and Process (process this particular input
+belongs to).  Required field "label". Optional fields for units, and
+min and max values allowed.
+
+
+MISC
+----
+1. DbRelease
+major, minor, patch numbers; descriptive comment
+
+2. SiteInfo
+Site-specific information needed to run eTraveler, e.g. value to
+use for $VIRTUAL_ENV environment variable required by Job Harness

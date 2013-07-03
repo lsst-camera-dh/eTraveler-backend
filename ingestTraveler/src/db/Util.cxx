@@ -213,6 +213,25 @@ namespace facilities {
     return val;
   }
 
+  bool Util::isInt(const std::string& inStr) {
+    try {
+      int val = Util::stringToInt(inStr);
+    }
+    catch (std::exception) {
+      return false;
+    }
+    return true;
+  }
+
+  bool Util::isDouble(const std::string& inStr) {
+    try {
+      double val = Util::stringToDouble(inStr);
+    }
+    catch (std::exception) {
+      return false;
+    }
+    return true;
+  }
 
   void Util::stringTokenize(std::string input, const std::string& delimiters,
                             std::vector<std::string>& tokens, bool clear) {

@@ -3,6 +3,7 @@
 #include "ProcessNode.h"
 #include "ProcessEdge.h"
 #include "PrerequisiteNode.h"
+#include "InputNode.h"
 #include "CloneNode.h"
 #include <cstdio>
 #include <iostream>
@@ -50,8 +51,7 @@ bool BaseNode::dbIsCompatible(bool test) {
 //               **  ProcessNode **
 
 int ProcessNode::verify(rdbModel::Connection* connect) {
-  // Check that hardware type and any hardware relationship types mentioned
-  // exist in db
+  // Check that hdwr type, hdwr relationship types mentioned exist in db
   using rdbModel::MysqlUtil;
   int ret = 0;
 
@@ -107,6 +107,12 @@ int ProcessNode::verify(rdbModel::Connection* connect) {
   // Check prerequisites
   for (int i = 0; i < m_prerequisites.size(); i++) {
     ret = m_prerequisites[i]->verify(s_connection);
+    if (ret != 0) return ret;
+  }
+
+  // Check input nodes
+  for (int i = 0; i < m_inputNodes.size(); i++) {
+    ret = m_inputNodes[i]->verify(s_connection);
     if (ret != 0) return ret;
   }
 
@@ -202,13 +208,18 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
     if (prereqStatus != 0) return prereqStatus;
   }
 
+  // Write input patterns, if any
+  for (int i = 0; i < m_inputNodes.size(); i++) {
+    int inputNodesStatus = m_inputNodes[i]->writeDb(s_connection);
+    if (inputNodesStatus != 0) return inputNodesStatus;
+  }
+
   for (int i = 0; i < m_children.size(); i++) {
     ProcessNode* childProc = dynamic_cast<ProcessNode* >(m_children[i]);
     if (childProc != NULL) childProc->setHardwareId(m_hardwareId);
     int childStatus = m_children[i]->writeDb(connect);
     if (childStatus != 0) return childStatus;
   }
-
   return 0;
 }
 
@@ -255,8 +266,6 @@ int CloneNode::writeDb(rdbModel::Connection* connection) {
 
 //        **** PrerequisiteNode ****
 int PrerequisiteNode::verify(rdbModel::Connection* connect) {
-  // Check that hardware type and any hardware relationship types mentioned
-  // exist in db
   using rdbModel::MysqlUtil;
   int ret = 0;
 
@@ -295,7 +304,6 @@ int PrerequisiteNode::verify(rdbModel::Connection* connect) {
 }
 
 int PrerequisiteNode::writeDb(rdbModel::Connection* connect) {
-  //  std::cout << "PrerequisiteNode::writeDB NYI!" << std::endl;
   using rdbModel::MysqlUtil;
 
   std::vector<std::string> cols;
@@ -313,6 +321,7 @@ int PrerequisiteNode::writeDb(rdbModel::Connection* connect) {
   // processId = m_processId
   cols.push_back("processId");
   vals.push_back(m_parent->getProcessId());
+  // vals.push_back(BaseNode::getParent()->getProcessId());
 
   // prereqProcessId = m_prereqId  - if appropriate
   if (m_processName != "") {
@@ -371,6 +380,89 @@ int PrerequisiteNode::writeDb(rdbModel::Connection* connect) {
   if (ok) return 0;
 
   std::cerr << "Failed to write to db for prerequisite " << m_inputs["Name"]
+            << std::endl;
+  return 1;
+}
+  //                *** InputNode ***
+int InputNode::verify(rdbModel::Connection* connect) {
+  using rdbModel::MysqlUtil;
+  int ret = 0;
+
+  if (connect == NULL) {
+    std::cerr << "Cannot verify input without db connection" << std::endl;
+    return 1;
+  }
+
+  // Check that InputSemantics value is valid and find id
+  try {
+    m_inputSemanticsId = 
+      MysqlUtil::getColumnValue(s_connection, "InputSemantics", "id",
+                                "name", m_inputs["InputSemantics"]);
+  } catch (rdbModel::MysqlUtilException ex) {
+    std::cerr << "Unable to find InputSemantics value " << 
+      m_inputs["InputSemantics"] << " in database" << std::endl;
+    std::cerr << ex.what() << std::endl;
+    return 1;
+  }
+  return 0;
+}
+
+int InputNode::writeDb(rdbModel::Connection* connect) {
+  using rdbModel::MysqlUtil;
+
+  std::vector<std::string> cols;
+  std::vector<std::string> nullCols;
+  std::vector<std::string> vals;
+
+  // label = m_inputs["Label"]
+  cols.push_back("label");
+  vals.push_back(m_inputs["Label"]);
+
+  // inputSemanticsId = m_inputSemanticsId
+  cols.push_back("inputSemanticsId");
+  vals.push_back(m_inputSemanticsId);
+
+  // processId = m_processId
+  cols.push_back("processId");
+  vals.push_back(m_parent->getProcessId());
+
+  // description, units, minV, maxV are all optional
+  if (m_inputs.find("Description") != m_inputs.end()) {
+    cols.push_back("description");
+    vals.push_back(m_inputs["Description"]);
+  }
+  else nullCols.push_back("description");
+
+  if (m_inputs.find("Units") != m_inputs.end()) {
+    cols.push_back("units");
+    vals.push_back(m_inputs["Units"]);
+  }
+  else nullCols.push_back("units");
+
+  if (m_inputs.find("MinValue") != m_inputs.end()) {
+    cols.push_back("minV");
+    vals.push_back(m_inputs["MinValue"]);
+  }
+  else nullCols.push_back("minV");
+
+  if (m_inputs.find("MaxValue") != m_inputs.end()) {
+    cols.push_back("maxV");
+    vals.push_back(m_inputs["MaxValue"]);
+  }
+  else nullCols.push_back("maxV");
+
+  cols.push_back("createdBy");
+  vals.push_back(m_user);
+  cols.push_back("creationTS");
+  facilities::Timestamp curTime;
+  vals.push_back(curTime.getString());
+
+  int newId;
+  bool ok = s_connection->insertRow("InputPattern", cols, vals, 
+                                    &newId, &nullCols);
+  if (ok) return 0;
+
+  std::cerr << "Failed to write to db for input pattern " << m_inputs["Label"]
             << std::endl;
   return 1;
 }

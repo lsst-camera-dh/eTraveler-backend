@@ -11,6 +11,7 @@
 class ProcessEdge;
 class ColumnDescriptor;
 class PrerequisiteNode;
+class InputNode;
 
 namespace YAML {
   class Node;
@@ -45,9 +46,16 @@ private:
   std::map<std::string, std::string> m_inputs;  // e.g. from YAML
   std::vector<BaseNode* > m_children;
   std::vector<PrerequisiteNode* > m_prerequisites;
+  std::vector<InputNode* > m_inputNodes;
   std::string m_hardwareId;  // set only for top node initially
   std::string m_processId;   // set when we write ourselves to db
   bool         m_isOption;
+
+  // Handling of Prerequisites and RequiredInputs is identical
+  // up to a point.  Return status of processing
+  template<class T> int readAuxNodes(std::vector<T*>& auxVector, 
+                                     YAML::Node* ynode, 
+                                     const std::string& auxName);
 
   // Map taking yaml key name to corresponding column name in Process table
   static std::map<std::string, ColumnDescriptor*> s_yamlToColumn;
@@ -61,6 +69,4 @@ private:
   // Verify that input (e.g. yaml file) makes sense, apart from db
   bool checkInputs();
 };
-
-
 #endif

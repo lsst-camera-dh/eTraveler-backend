@@ -12,24 +12,7 @@ std::set<std::string> ProcessNode::s_relationTypes;
 std::string BaseNode::s_user;
 std::map<std::string, ProcessNode*> ProcessNode::s_processes;
 
-/*  Moved to BaseNode.h
-class ColumnDescriptor {
-public:
-  ColumnDescriptor(std::string name="", std::string dflt="", 
-                   bool noDefault=true, bool system=false, 
-                   std::string joinTable="", std::string joinColumn="") : 
-    m_name(name), m_dflt(dflt), m_noDefault(noDefault), m_system(system),
-    m_joinTable(joinTable), m_joinColumn(joinColumn) {}
-  ~ColumnDescriptor() {}
-
-  std::string m_name;
-  std::string m_dflt;
-  bool        m_noDefault;   // user must supply a value
-  bool        m_system;      // we figure it out
-  std::string m_joinTable;    // non-empty if we need to translate name to id
-  std::string m_joinColumn;
-};
-*/
+//  ColumnDescriptor class moved to BaseNode.h
 
 // siblingCount < 0 indicates we're an option, not a child
 ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :

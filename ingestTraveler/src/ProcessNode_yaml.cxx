@@ -1,6 +1,7 @@
 #include "ProcessNode.h"
 #include "ProcessEdge.h"
 #include "PrerequisiteNode.h"
+#include "InputNode.h"
 #include "CloneNode.h"
 #include <cstdio>
 #include <iostream>
@@ -31,11 +32,28 @@ namespace {
   }
 }
 
+template<class T> int ProcessNode::readAuxNodes(std::vector<T*>& auxVector,
+                                                YAML::Node* ynode, 
+                                                const std::string& auxName) {
+  if (!((*ynode)[auxName]).IsSequence()) {
+    std::cerr << "ERROR: Value for '" << auxName << "' key must be a sequence" 
+              << std::endl;
+    return 8;
+  }
+  for (int i=0; i <  ((*ynode)[auxName]).size(); i++) {
+    YAML::Node ychild = ((*ynode)[auxName])[i];
+    T* child = new T(this, s_user);
+    auxVector.push_back(child);
+    int status = auxVector.back()->readSerialized(&ychild);
+    if (status != 0) return status;
+  }
+}
+
 // Transform serialized YAML input into objects of type
 // ProcessNode and ProcessEdge
 int ProcessNode::readSerialized(YAML::Node* ynode) {
-  // A process node is a map with optional 'Sequence', 'Selection', and
-  // 'Prerequisite' keys whose values are  lists
+  // A process node is a map with optional 'Sequence', 'Selection',
+  // 'Prerequisite' and 'RequiredInputs' keys whose values are lists
   if (! ynode->IsMap())  {
     std::cerr << "YAML input does not describe a process" << std::endl;
     return 1;
@@ -43,6 +61,7 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
   bool hasSequence = false;
   bool hasOptions = false;
   bool hasPrerequisites = false;
+  bool hasInputNodes = false;
   std::vector<std::string> keys;
   int status = getKeys(ynode, keys);
   if (status != 0) return status;
@@ -51,7 +70,8 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
     std::string key = keys[i];
     if ((key != std::string("Sequence")) && 
         (key != std::string("Selection")) &&
-        (key != std::string("Prerequisites"))) {
+        (key != std::string("Prerequisites")) &&
+        (key != std::string("RequiredInputs")) ) {
       // read values for all keys except for those introducing children; set instance variables
       YAML::Node val = (*ynode)[key];
       if (val.IsNull()) continue;    // ignore it
@@ -80,6 +100,8 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
       // Special
     }   else if ( key == std::string("Prerequisites") ) {
         hasPrerequisites = true;
+    }   else if ( key == std::string("RequiredInputs") ) {
+        hasInputNodes = true;
     }
     else if ((key == std::string("Selection")) && !hasSequence) {
       hasOptions = true;
@@ -147,21 +169,16 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
   }
 
   if (hasPrerequisites) {
-    if (!((*ynode)["Prerequisites"]).IsSequence()) {
-      std::cerr << "ERROR: Value for 'Prerequisites' key must be a sequence" 
-                << std::endl;
-      return 8;
-    }
-    for (int i=0; i <  ((*ynode)["Prerequisites"]).size(); i++) {
-      YAML::Node ychild = ((*ynode)["Prerequisites"])[i];
-      PrerequisiteNode* child = new PrerequisiteNode(this, s_user);
-      m_prerequisites.push_back(child);
-      int status = m_prerequisites.back()->readSerialized(&ychild);
-      if (status != 0) return status;
-    }
+    int status = this->readAuxNodes(m_prerequisites, ynode, "Prerequisites");
+    if (status != 0) return status;
+  }
+  if (hasInputNodes) {
+    int status = this->readAuxNodes(m_inputNodes, ynode, "RequiredInputs");
+    if (status != 0) return status;
   }
   return 0;
 }
+
 
 ProcessNode* ProcessNode::findProcess(std::string& name) {
   if (s_processes.find(name) != s_processes.end()) return s_processes[name];
@@ -213,8 +230,8 @@ int CloneNode::readSerialized(YAML::Node* ynode) {
   return 0;
 }
 
-// A prerequisite is a map, all of whose keys have scalar values
-int PrerequisiteNode::readSerialized(YAML::Node* ynode) {
+
+int AuxNode::readSerialized(YAML::Node* ynode) {
   if (! ynode->IsMap())  {
     std::cerr << "YAML input does not describe a process" << std::endl;
     return 1;
@@ -233,7 +250,7 @@ int PrerequisiteNode::readSerialized(YAML::Node* ynode) {
       return 3;
     }
     
-    if (s_yamlToColumn.find(key) == s_yamlToColumn.end()) {
+    if (!findColumn(key)) {
       std::cerr << "Unknown key " << key << std::endl;
       return 4;
     }  else {  // store it

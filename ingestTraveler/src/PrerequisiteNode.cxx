@@ -9,9 +9,9 @@ std::vector<ColumnDescriptor> PrerequisiteNode::s_columns;
 
 PrerequisiteNode::PrerequisiteNode(ProcessNode* parent, 
                                    const std::string& user) :
-  BaseNode(parent, 0), m_parent(parent), m_processId(""),
+  AuxNode(parent, user),
   m_processName(""), m_component(""), m_prereqId(""), m_prereqTypeId(""),
-  m_version(""), m_userVersionString(false), m_user(user)
+  m_version(""), m_userVersionString(false)
 {
   if (s_yamlToColumn.size() == 0) PrerequisiteNode::initStatic();
 
@@ -119,5 +119,8 @@ void PrerequisiteNode::initStatic() {
 
   s_columns.push_back(ColumnDescriptor("createdBy", "", false, true));
   s_columns.push_back(ColumnDescriptor("creationTS", "", false, true));
+}
+bool  PrerequisiteNode::findColumn(const std::string& col)  {
+  return (s_yamlToColumn.find(col) != s_yamlToColumn.end());
 }
 

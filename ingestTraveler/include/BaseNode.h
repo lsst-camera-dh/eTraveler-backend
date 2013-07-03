@@ -29,6 +29,7 @@ public:
   //static int getMajorVersion();   // Major db version required for compat
   //static int getMinorVersion();  // db minor version must be >= this
   virtual bool dbIsCompatible(bool test=false); 
+  ProcessNode* getParent() {return m_parent;} 
 
 protected:
   ProcessNode* m_parent;
@@ -42,7 +43,7 @@ private:
   static int   s_minor;
 };
 
-// Used by ProcessNode and PrerequisiteNode
+// Used by ProcessNode, PrerequisiteNode and InputNode
 class ColumnDescriptor {
 public:
   ColumnDescriptor(std::string name="", std::string dflt="", 
