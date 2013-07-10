@@ -7,9 +7,6 @@ env = baseEnv.Clone()
 ##env.AppendUnique(LIBPATH = [env['LIBDIR'], '/usr/lib64/mysql'])
 env.AppendUnique(LIBPATH = [env['LIBDIR']])
 
-# No obvious default for finding mysql client library;
-# should add scons command-line option to specify
-
 # ..and what they're called
 env.Append(LIBS = ['mysqlclient', 'yaml-cpp'])
 
