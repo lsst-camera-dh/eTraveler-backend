@@ -45,3 +45,10 @@ insert into InputSemantics set name="checkbox", createdBy='jrb', creationTS=NOW(
 insert into InputSemantics set name="filepath", createdBy='jrb', creationTS=NOW();
 insert into InputSemantics set name="timestamp", createdBy='jrb', creationTS=NOW();
 insert into InputSemantics set name="string", createdBy='jrb', creationTS=NOW();
+
+insert into JobHarnessStep set name="configured", createdBy='jrb', creationTS=NOW();
+insert into JobHarnessStep set name="staged", createdBy='jrb', creationTS=NOW();
+insert into JobHarnessStep set name="produced", createdBy='jrb', creationTS=NOW();
+insert into JobHarnessStep set name="validated", createdBy='jrb', creationTS=NOW();
+insert into JobHarnessStep set name="archived", createdBy='jrb', creationTS=NOW();
+insert into JobHarnessStep set name="purged", createdBy='jrb', creationTS=NOW();

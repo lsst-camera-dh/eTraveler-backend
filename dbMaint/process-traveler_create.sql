@@ -199,6 +199,16 @@ CREATE TABLE Exception
   INDEX fk82 (NCRProcessId) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE JobHarnessStep
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(32) NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT ix35 UNIQUE (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Steps within for job harness job';
+
 CREATE TABLE Activity 
 ( id int NOT NULL AUTO_INCREMENT, 
   hardwareId int NOT NULL COMMENT "hardware in whose behalf activity occurred", 
@@ -207,6 +217,7 @@ CREATE TABLE Activity
   processEdgeId int NULL
    COMMENT "edge used to get to process; NULL for root",
   parentActivityId int NULL,
+  jobHarnessStepId int NULL COMMENT "last completed step for job harness activities; null otherwise",
   begin timestamp NULL, 
   end timestamp NULL, 
   inNCR ENUM ('TRUE', 'FALSE')  default 'FALSE',
@@ -219,11 +230,13 @@ CREATE TABLE Activity
   CONSTRAINT fk72 FOREIGN KEY (processId) REFERENCES Process (id) , 
   CONSTRAINT fk73 FOREIGN KEY (processEdgeId) REFERENCES ProcessEdge (id), 
   CONSTRAINT fk74 FOREIGN KEY (parentActivityId) REFERENCES Activity (id), 
+  CONSTRAINT fk75 FOREIGN KEY (JobHarnessStepId) REFERENCES JobHarnessStep (id), 
   INDEX fk70 (hardwareId),
   INDEX fk71 (hardwareRelationshipId),
   INDEX fk72 (processId), 
   INDEX fk73 (processEdgeId),
   INDEX fk74 (parentActivityId),
+  INDEX fk75 (jobHarnessStepId),
   INDEX ix70 (begin),
   INDEX ix71 (end),
   INDEX ix72 (parentActivityId, processEdgeId)
@@ -277,7 +290,6 @@ COMMENT='Describe prerequisite for specified process step';
 
 CREATE TABLE Prerequisite
 ( id int NOT NULL AUTO_INCREMENT,
-  prerequisiteTypeId int NOT NULL,
   prerequisitePatternId int NOT NULL COMMENT "template for this prerequisite",
   activityId int NOT NULL COMMENT "Activity for which prereq is to be satisfied",
   prerequisiteActivityId int NULL COMMENT "Used if prereq was completion of another process step",
@@ -286,12 +298,10 @@ CREATE TABLE Prerequisite
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
-  CONSTRAINT fk110 FOREIGN KEY(prerequisiteTypeId) REFERENCES PrerequisiteType(id),
   CONSTRAINT fk111 FOREIGN KEY(prerequisitePatternId) REFERENCES PrerequisitePattern(id),
   CONSTRAINT fk112 FOREIGN KEY(activityId) REFERENCES Activity(id),
   CONSTRAINT fk113 FOREIGN KEY(prerequisiteActivityId) REFERENCES Activity(id),
   CONSTRAINT fk114 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
-  INDEX fk110 (prerequisiteTypeId),
   INDEX fk111 (prerequisitePatternId),
   INDEX fk112 (activityId),
   INDEX fk113 (prerequisiteActivityId),
