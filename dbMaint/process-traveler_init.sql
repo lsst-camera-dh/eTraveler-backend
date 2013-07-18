@@ -38,6 +38,7 @@ insert into HardwareStatus set name='IN_PROGRESS', description='At least one tra
 insert into HardwareStatus set name='REJECTED', description='Beyond hope', createdBy='jrb', creationTS=NOW();
 insert into HardwareStatus set name='READY', description='Testing/preparation complete; ready for integration', createdBy='jrb', creationTS=NOW();
 insert into HardwareStatus set name='USED', description='Fully tested component has been integrated', createdBy='jrb', creationTS=NOW();
+insert into HardwareStatus set name='PENDING', description='Component has irregularities; acceptance under review', createdBy='jrb', creationTS=NOW();
 insert into InputSemantics set name="int", createdBy='jrb', creationTS=NOW();
 insert into InputSemantics set name="float", createdBy='jrb', creationTS=NOW();
 insert into InputSemantics set name="boolean", createdBy='jrb', creationTS=NOW();
@@ -46,9 +47,11 @@ insert into InputSemantics set name="filepath", createdBy='jrb', creationTS=NOW(
 insert into InputSemantics set name="timestamp", createdBy='jrb', creationTS=NOW();
 insert into InputSemantics set name="string", createdBy='jrb', creationTS=NOW();
 
+insert into JobHarnessStep set name="registered", createdBy='jrb', creationTS=NOW();
 insert into JobHarnessStep set name="configured", createdBy='jrb', creationTS=NOW();
 insert into JobHarnessStep set name="staged", createdBy='jrb', creationTS=NOW();
 insert into JobHarnessStep set name="produced", createdBy='jrb', creationTS=NOW();
 insert into JobHarnessStep set name="validated", createdBy='jrb', creationTS=NOW();
 insert into JobHarnessStep set name="archived", createdBy='jrb', creationTS=NOW();
 insert into JobHarnessStep set name="purged", createdBy='jrb', creationTS=NOW();
+insert into JobHarnessStep set name="ingested", createdBy='jrb', creationTS=NOW();
