@@ -3,3 +3,5 @@ signatures
 lib
 bin
 *.log
+redhat*
+
