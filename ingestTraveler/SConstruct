@@ -34,6 +34,10 @@ if baseEnv.GetOption('mysqlIncludePath'):
 if baseEnv.GetOption('boostIncludePath'):
     baseEnv.AppendUnique(CPPPATH=[baseEnv.GetOption('boostIncludePath')])
 
+platBrief = platform.dist()[0] + platform.dist()[1] + "_" + platform.architecture()[0]
+
+SConsignFile(platBrief + "/scons-signatures")
+
 mysqlLibDir=''
 if baseEnv.GetOption('mysqlLibPath'):
     mysqlLibDir = baseEnv.GetOption('mysqlLibPath')
@@ -51,7 +55,7 @@ if mysqlLibDir == '':
 baseEnv.AppendUnique(LIBPATH = [mysqlLibDir])
                                   
 if not baseEnv.GetOption('help'):
-    conf = baseEnv.Clone().Configure()
+    conf = baseEnv.Clone().Configure(conf_dir=platBrief)
 
     if not conf.CheckCHeader('boost/version.hpp'):
         print 'Unable to find boost headers.'
@@ -84,7 +88,7 @@ baseEnv['BINDIR'] = Dir('#bin')
 #  among the standard ones, but just in case add /usr/local/include for YAML
 baseEnv.AppendUnique(CPPPATH = ['#include'])
 baseEnv.AppendUnique(CCFLAGS = '-g')
-baseEnv.SConsignFile("signatures/.sconsign.dblite")
+####baseEnv.SConsignFile(platBrief + "/.sconsign.dblite")
 Export('baseEnv')
 
 #  Define targets
