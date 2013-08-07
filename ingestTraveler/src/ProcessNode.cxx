@@ -18,7 +18,7 @@ std::map<std::string, ProcessNode*> ProcessNode::s_processes;
 ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :
   BaseNode(parent, siblingCount), m_parent(parent), m_sequenceCount(0), 
   m_optionCount(0),   m_hardwareId(""), m_processId(""),
-  m_isOption(false)
+  m_isOption(false), m_originalId("")
 {
   if (s_yamlToColumn.size() == 0) ProcessNode::initStatic();
 
@@ -103,6 +103,8 @@ bool ProcessNode::checkInputs() {
 void ProcessNode::initStatic() {
   if (s_yamlToColumn.size()  > 0 ) return;
 
+  // ColumnDescriptor(string name, string dflt, bool noDefault=true,
+  //    bool system=false, string joinTable="", string joinColumn="")
   s_columns.push_back(ColumnDescriptor("name", "", true, false));
   s_yamlToColumn["Name"] = &s_columns.back();    //  &s_columns[0];
 
@@ -129,6 +131,12 @@ void ProcessNode::initStatic() {
   s_columns.push_back(ColumnDescriptor("substeps", "NONE", false, false));
   s_columns.push_back(ColumnDescriptor("cond", "", false, false));
   s_yamlToColumn["Condition"] = &s_columns.back();
+
+  // originalId should be set to id if version = 1.  Otherwise need to
+  // look up id of version 1.  Since auto-increment value is not available
+  // until after row has been created, if version is one, originalId
+  // must be set in a separate UPDATE command
+  s_columns.push_back(ColumnDescriptor("originalId", "", true, true));
 
   // Just need Clone to be recognizable; doesn't correspond to a column, though
   s_yamlToColumn["Clone"] = NULL;

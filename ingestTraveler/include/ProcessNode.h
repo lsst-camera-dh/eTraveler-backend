@@ -50,6 +50,7 @@ private:
   std::string m_hardwareId;  // set only for top node initially
   std::string m_processId;   // set when we write ourselves to db
   bool         m_isOption;
+  std::string m_originalId;   // Used when version > 1
 
   // Handling of Prerequisites and RequiredInputs is identical
   // up to a point.  Return status of processing

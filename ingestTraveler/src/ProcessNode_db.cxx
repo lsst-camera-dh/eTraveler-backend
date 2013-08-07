@@ -142,6 +142,11 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
   vals.push_back(m_hardwareId);
   cols.push_back("version");
   vals.push_back("1");               // TEMPORARY
+  // If version is not 1, verify stage should have done do 
+  // SELECT id from Process where name=<our name> and
+  // hardwareTypeId = <our type id> and version=1 and saved
+  // result (if any) as m_originalId.  If the query doesn't
+  // return anything, we fail verify step 
   cols.push_back("substeps");
   if (m_sequenceCount > 0) vals.push_back("SEQUENCE");
   else if (m_optionCount > 0) vals.push_back("SELECTION");
@@ -201,7 +206,25 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
                                            cond);
     if (edgeStatus != 0) return edgeStatus;
   }
-   
+  // Update originalId field
+  {
+    rdbModel::StringVector updateCol;
+    rdbModel::StringVector updateVal;
+
+    updateCol.push_back("originalId");
+    updateVal.push_back(m_processId);
+    std::string updateWhere(" where id='");
+    updateWhere += m_processId;
+    updateWhere += std::string("'");
+    
+    unsigned int nUpdated = 
+      s_connection->update("Process", updateCol, updateVal, updateWhere);
+    if (nUpdated != 1) {
+      std::cerr << "Unable to update originalId field for process step "
+                << m_inputs["Name"] << std::endl;
+      return 1;
+    }
+  } 
   // Write prerequisites, if any
   for (int i = 0; i < m_prerequisites.size(); i++) {
     int prereqStatus = m_prerequisites[i]->writeDb(s_connection);
