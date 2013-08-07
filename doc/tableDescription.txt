@@ -46,6 +46,9 @@ Defines relationships between process steps
 Where the rubber hits the road.  Execute a particular process with
 particular component
 
+4. JobHarnessStep
+Enumerate states of job harness job.  Nullable fk in Activity references it.
+
 
 EXCEPTIONS
 ----------

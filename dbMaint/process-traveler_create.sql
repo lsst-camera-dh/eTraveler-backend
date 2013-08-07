@@ -137,6 +137,7 @@ COMMENT='Instance of HardwareRelationshipType between actual pieces of hardware'
 
 CREATE TABLE Process 
 ( id int NOT NULL AUTO_INCREMENT, 
+  originalId int NULL COMMENT "set equal to id of 1st version of this Process",
   name varchar(50) NOT NULL, 
   hardwareTypeId int NOT NULL, 
   hardwareRelationshipTypeId int NULL, 
@@ -145,6 +146,8 @@ CREATE TABLE Process
   description text, instructionsURL varchar(256), 
   substeps  ENUM('NONE', 'SEQUENCE', 'SELECTION') default 'NONE'
    COMMENT 'determines where we go next',
+  isHarnessed tinyint DEFAULT 0 COMMENT "Should be non-zero for harnessed job",
+  maxIteration tinyint unsigned DEFAULT 1,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
@@ -153,7 +156,9 @@ CREATE TABLE Process
   INDEX fk40 (hardwareTypeId),
   INDEX fk41 (hardwareRelationshipTypeId),
   CONSTRAINT ix42 UNIQUE INDEX (name, hardwareTypeId, version),
-  CONSTRAINT ix43 UNIQUE INDEX (name, hardwareTypeId, userVersionString)
+  CONSTRAINT ix43 UNIQUE INDEX (name, hardwareTypeId, userVersionString),
+  CONSTRAINT ix44 UNIQUE INDEX (originalId, version),
+  CONSTRAINT ix45 UNIQUE INDEX (originalId, userVersionString)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Describes procedure for a step within a traveler';
 
@@ -218,6 +223,7 @@ CREATE TABLE Activity
    COMMENT "edge used to get to process; NULL for root",
   parentActivityId int NULL,
   jobHarnessStepId int NULL COMMENT "last completed step for job harness activities; null otherwise",
+  iteration tinyint unsigned DEFAULT 1 COMMENT "Set to non-default for rework",
   begin timestamp NULL, 
   end timestamp NULL, 
   inNCR ENUM ('TRUE', 'FALSE')  default 'FALSE',
@@ -293,7 +299,6 @@ CREATE TABLE Prerequisite
   prerequisitePatternId int NOT NULL COMMENT "template for this prerequisite",
   activityId int NOT NULL COMMENT "Activity for which prereq is to be satisfied",
   prerequisiteActivityId int NULL COMMENT "Used if prereq was completion of another process step",
-  quantity int DEFAULT 1,
   hardwareId int NULL COMMENT "Used if prereq was a tracked component",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
