@@ -1,3 +1,4 @@
+
 DROP TABLE IF EXISTS InputPattern;
 DROP TABLE IF EXISTS InputSemantics;
 DROP TABLE IF EXISTS SiteInfo;
@@ -6,7 +7,9 @@ DROP TABLE IF EXISTS Exception;
 DROP TABLE IF EXISTS Prerequisite;
 DROP TABLE IF EXISTS PrerequisitePattern;
 DROP TABLE IF EXISTS PrerequisiteType;
+DROP TABLE IF EXISTS JobStepHistory;
 DROP TABLE IF EXISTS Activity;
+DROP TABLE IF EXISTS ActivityFinalStatus;
 DROP TABLE IF EXISTS JobHarnessStep;
 DROP TABLE IF EXISTS ProcessEdge;
 DROP TABLE IF EXISTS Process;

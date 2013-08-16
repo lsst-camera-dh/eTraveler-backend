@@ -55,3 +55,5 @@ insert into JobHarnessStep set name="validated", createdBy='jrb', creationTS=NOW
 insert into JobHarnessStep set name="archived", createdBy='jrb', creationTS=NOW();
 insert into JobHarnessStep set name="purged", createdBy='jrb', creationTS=NOW();
 insert into JobHarnessStep set name="ingested", createdBy='jrb', creationTS=NOW();
+insert into ActivityFinalStatus set name="success", createdBy='jrb', creationTS=NOW();
+insert into ActivityFinalStatus set name="failure", createdBy='jrb', creationTS=NOW();

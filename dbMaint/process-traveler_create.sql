@@ -214,6 +214,17 @@ CREATE TABLE JobHarnessStep
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Steps within for job harness job';
 
+CREATE TABLE ActivityFinalStatus
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(32) NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT ix36 UNIQUE (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Final status';
+
+
 CREATE TABLE Activity 
 ( id int NOT NULL AUTO_INCREMENT, 
   hardwareId int NOT NULL COMMENT "hardware in whose behalf activity occurred", 
@@ -222,7 +233,7 @@ CREATE TABLE Activity
   processEdgeId int NULL
    COMMENT "edge used to get to process; NULL for root",
   parentActivityId int NULL,
-  jobHarnessStepId int NULL COMMENT "last completed step for job harness activities; null otherwise",
+  activityFinalStatusId int NULL COMMENT "Set only when activity is closed out",
   iteration tinyint unsigned DEFAULT 1 COMMENT "Set to non-default for rework",
   begin timestamp NULL, 
   end timestamp NULL, 
@@ -236,13 +247,13 @@ CREATE TABLE Activity
   CONSTRAINT fk72 FOREIGN KEY (processId) REFERENCES Process (id) , 
   CONSTRAINT fk73 FOREIGN KEY (processEdgeId) REFERENCES ProcessEdge (id), 
   CONSTRAINT fk74 FOREIGN KEY (parentActivityId) REFERENCES Activity (id), 
-  CONSTRAINT fk75 FOREIGN KEY (JobHarnessStepId) REFERENCES JobHarnessStep (id), 
+  CONSTRAINT fk75 FOREIGN KEY (activityFinalStatusId) REFERENCES ActivityFinalStatus (id), 
   INDEX fk70 (hardwareId),
   INDEX fk71 (hardwareRelationshipId),
   INDEX fk72 (processId), 
   INDEX fk73 (processEdgeId),
   INDEX fk74 (parentActivityId),
-  INDEX fk75 (jobHarnessStepId),
+  INDEX fk75 (activityFinalStatusId),
   INDEX ix70 (begin),
   INDEX ix71 (end),
   INDEX ix72 (parentActivityId, processEdgeId)
@@ -343,3 +354,18 @@ CREATE TABLE InputPattern
   INDEX fk131 (inputSemanticsId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Describes required operator input assoc. with particular process step';
+
+CREATE TABLE JobStepHistory
+(id  int NOT NULL AUTO_INCREMENT,
+  jobHarnessStepId int NOT NULL COMMENT "fk for the new status",
+  activityId int NOT NULL COMMENT "activity whose status is being updated",
+  errorString varchar(120) NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT fk140 FOREIGN KEY(jobHarnessStepId) REFERENCES JobHarnessStep(id),
+  CONSTRAINT fk141 FOREIGN KEY(activityId) REFERENCES Activity(id),
+  INDEX fk140 (jobHarnessStepId),
+  INDEX fk141 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Keep track of all job harness status updates';
