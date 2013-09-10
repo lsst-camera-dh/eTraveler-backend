@@ -128,6 +128,8 @@ void ProcessNode::initStatic() {
   
   s_columns.push_back(ColumnDescriptor("instructionsURL", "", false, false));
   s_yamlToColumn["InstructionsURL"] = &s_columns.back();
+  s_columns.push_back(ColumnDescriptor("isHarnessed", "0", false, false));
+  s_yamlToColumn["IsHarnessed"] = &s_columns.back();
   s_columns.push_back(ColumnDescriptor("substeps", "NONE", false, false));
   s_columns.push_back(ColumnDescriptor("cond", "", false, false));
   s_yamlToColumn["Condition"] = &s_columns.back();

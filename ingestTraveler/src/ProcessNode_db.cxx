@@ -185,6 +185,19 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
     vals.push_back(m_inputs["InstructionsURL"]);
   }
   else nullCols.push_back("instructionsURL");
+
+  cols.push_back("isHarnessed");
+  std::string harnessVal("0");
+  if (m_inputs.find("IsHarnessed") != m_inputs.end()) {
+    std::string harnessString = m_inputs["IsHarnessed"];
+    if ((harnessString == std::string("True")) || 
+        (harnessString == std::string("true")) ||
+        (harnessString == std::string("Yes"))  ||
+        (harnessString == std::string("yes")) ) {
+      harnessVal = "1";
+    }
+  }
+  vals.push_back(harnessVal);
   cols.push_back("createdBy");
   vals.push_back(s_user);
   cols.push_back("creationTS");
