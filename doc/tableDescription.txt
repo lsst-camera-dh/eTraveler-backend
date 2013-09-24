@@ -16,6 +16,13 @@ REJECTED
 READY    (preparation, testing, etc. complete. ready for integration)
 USED
 
+4. HardwareStatusHistory
+Make an entry whenever a hardware item changes status
+
+5. HardwareLocationHistory
+Make an entry whenever a hardware item is moved to a new station or
+other location
+
 Hardware identifiers
 --------------------
 1. HardwareIdentifierAuthority  
@@ -26,7 +33,7 @@ Identifier unique to referenced authority for hardware of specific type
 
 Hardware relationships
 ----------------------
-1. HardwareReleationshipType    [template]
+1. HardwareRelationshipType    [template]
 Associates two kinds of hardware, one subsidiary to the other, e.g.
 raft and sensor where relationship is 'in slot 11'
 
@@ -46,8 +53,19 @@ Defines relationships between process steps
 Where the rubber hits the road.  Execute a particular process with
 particular component
 
-4. JobHarnessStep
+4. ActivityFinalStatus
+Enumeration of possible final states for an activity
+
+5. JobHarnessStep
 Enumerate states of job harness job.  Nullable fk in Activity references it.
+
+6. JobStepHistory
+New entry each time a harnessed job changes state
+
+7. InternalAction
+Enumerates special actions eTraveler may have to perform and assigns
+mask bit to each.  Process definition includes mask field in which
+these bits may be set.
 
 
 EXCEPTIONS
@@ -77,6 +95,9 @@ Certain kinds of results require an input description so that eTraveler
 can produce an appropriate form for operator to fill out.  Tables 
 involved in this are
 
+0. Result
+Placeholder, not currently used.  May be eliminated in a future release.
+
 1. InputSemantics
 A list of possible input categories, to include at least integer, float,
 file path, arbitrary string.
@@ -86,12 +107,31 @@ References InputSemantics and Process (process this particular input
 belongs to).  Required field "label". Optional fields for units, and
 min and max values allowed.
 
+3. IntResult
+Place to store manual-entry integers as well as integers which are
+part of a harnessed job summary.
+
+4. FloatResult
+Like IntResult, but float
+
+5. FilepathResult
+Like IntResult, but a string which is a filepath
+
+6. StringResult
+(Scalar) results which are not int, float or filepath are stored here
+as strings.
+
 
 MISC
 ----
 1. DbRelease
 major, minor, patch numbers; descriptive comment
 
-2. SiteInfo
+2. Site
 Site-specific information needed to run eTraveler, e.g. value to
 use for $VIRTUAL_ENV environment variable required by Job Harness
+
+3. Location
+Lists locations where components might be: teststands, assembly stations, etc.
+References Site. Could conceivably include things like "in transit UPS", 
+in which case the site fk references responsible site.

@@ -71,6 +71,7 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
     if ((key != std::string("Sequence")) && 
         (key != std::string("Selection")) &&
         (key != std::string("Prerequisites")) &&
+        (key != std::string("TravelerActions")) &&
         (key != std::string("RequiredInputs")) ) {
       // read values for all keys except for those introducing children; set instance variables
       YAML::Node val = (*ynode)[key];
@@ -102,7 +103,12 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
         hasPrerequisites = true;
     }   else if ( key == std::string("RequiredInputs") ) {
         hasInputNodes = true;
+    }   else if (key == std::string("TravelerActions") ) {
+      YAML::Node actionsNode = (*ynode)["TravelerActions"];
+      int retStatus = parseTravelerActions(&actionsNode);
+      if (retStatus != 0) return retStatus;
     }
+    
     else if ((key == std::string("Selection")) && !hasSequence) {
       hasOptions = true;
     }    else if ((key == std::string("Sequence")) && !hasOptions) {
@@ -260,4 +266,23 @@ int AuxNode::readSerialized(YAML::Node* ynode) {
   // checkInputs checks for required fields and so forth
   if (!checkInputs()) return 6;
   else return 0;
+}
+
+int ProcessNode::parseTravelerActions(YAML::Node* actions) {
+  if (!actions->IsSequence())  {
+    std::cerr << "Improper value for 'TravelerActions' key" << std::endl;
+    return 6;
+  }
+  //  each elt. of sequence must be a scalar
+  //  only scalar we recognize is "HarnessedJob"
+  for (int i=0; i <  actions->size(); i++) {
+    YAML::Node val = (*actions)[i];
+    if (!val.IsScalar() ) {
+      std::cerr << "Improper traveler action.  Should be scalar" << std::endl;
+      return 3;
+    }
+    std::string strVal = val.Scalar();
+    if (strVal == "HarnessedJob") m_travelerActionMask |= 1;
+  }
+  return 0;
 }

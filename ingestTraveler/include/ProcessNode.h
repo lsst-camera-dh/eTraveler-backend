@@ -51,6 +51,7 @@ private:
   std::string m_processId;   // set when we write ourselves to db
   bool         m_isOption;
   std::string m_originalId;   // Used when version > 1
+  unsigned int m_travelerActionMask;
 
   // Handling of Prerequisites and RequiredInputs is identical
   // up to a point.  Return status of processing
@@ -69,5 +70,8 @@ private:
 
   // Verify that input (e.g. yaml file) makes sense, apart from db
   bool checkInputs();
+
+  // Parse TravelerActions
+  int parseTravelerActions(YAML::Node* val);
 };
 #endif

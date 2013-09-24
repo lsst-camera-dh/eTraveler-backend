@@ -1,5 +1,5 @@
 source process-traveler_drop.sql
-
+## last fk:  210s
 CREATE TABLE IF NOT EXISTS DbRelease
 ( id int NOT NULL AUTO_INCREMENT,
   major int NOT NULL COMMENT "major release number",
@@ -14,17 +14,32 @@ CREATE TABLE IF NOT EXISTS DbRelease
   UNIQUE INDEX (major, minor, patch)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS SiteInfo
+##CREATE TABLE IF NOT EXISTS Site
+CREATE TABLE Site
 ( id int NOT NULL AUTO_INCREMENT,
-  siteName varchar(20) NOT NULL,
+  name varchar(20) NOT NULL,
   jhVirtualEnv varchar(200) NULL COMMENT "path to root of virtual env for job harmenss",
   jhOutputRoot  varchar(200) NULL COMMENT "path to root of job harness output directory, corresponds to environment variable LCATR_ROOT",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
-  CONSTRAINT UNIQUE (siteName)
+  CONSTRAINT UNIQUE (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep site-specific information here';
+
+#CREATE TABLE IF NOT EXISTS Location
+CREATE TABLE Location
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(20) NOT NULL,
+  siteId int NOT NULL COMMENT "responsible site, even if, e.g., in transit",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk190 FOREIGN KEY(siteId) REFERENCES Site(id),
+  CONSTRAINT ix191 UNIQUE (siteId, name),
+  INDEX fk190 (siteId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Identifies teststand, assembly station, etc.';
   
 # May need to add additional table for subsystem (name, id and boilerplate)
 # and add column to HardwareType: fk to subsystem
@@ -58,7 +73,7 @@ CREATE TABLE Hardware
   manufacturer varchar(50) NOT NULL,
   model varchar(50) NULL,
   manufactureDate timestamp NULL,
-  hardwareStatusId int NOT NULL,
+  hardwareStatusId int NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
@@ -69,6 +84,34 @@ CREATE TABLE Hardware
   INDEX fk2 (hardwareStatusId) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Create a row here to register new component';
+
+CREATE TABLE HardwareStatusHistory
+(id  int NOT NULL AUTO_INCREMENT,
+  hardwareStatusId int NOT NULL COMMENT "fk for the new status",
+  hardwareId int NOT NULL COMMENT "component whose status is being updated",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT fk200 FOREIGN KEY(hardwareStatusId) REFERENCES HardwareStatus(id),
+  CONSTRAINT fk201 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
+  INDEX fk200 (hardwareStatusId),
+  INDEX fk201 (hardwareId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Keep track of all hardware status updates';
+
+CREATE TABLE HardwareLocationHistory
+(id  int NOT NULL AUTO_INCREMENT,
+  locationId int NOT NULL COMMENT "fk for the new location",
+  hardwareId int NOT NULL COMMENT "component whose location is being updated",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT fk210 FOREIGN KEY(locationId) REFERENCES Location(id),
+  CONSTRAINT fk211 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
+  INDEX fk200 (locationId),
+  INDEX fk201 (hardwareId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Keep track of all hardware location updates';
 
 CREATE TABLE HardwareIdentifierAuthority 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -134,6 +177,17 @@ CREATE TABLE HardwareRelationship
   INDEX ix12 (creationTS)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Instance of HardwareRelationshipType between actual pieces of hardware';
+CREATE TABLE InternalAction
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(50) NOT NULL,
+  maskBit int unsigned NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  UNIQUE INDEX (maskBit),
+  UNIQUE INDEX (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Identify special actions eTraveler may have to perform assoc. with process';
 
 CREATE TABLE Process 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -146,8 +200,8 @@ CREATE TABLE Process
   description text, instructionsURL varchar(256), 
   substeps  ENUM('NONE', 'SEQUENCE', 'SELECTION') default 'NONE'
    COMMENT 'determines where we go next',
-  isHarnessed tinyint DEFAULT 0 COMMENT "Should be non-zero for harnessed job",
   maxIteration tinyint unsigned DEFAULT 1,
+  travelerActionMask int unsigned DEFAULT 0,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
@@ -325,6 +379,8 @@ CREATE TABLE Prerequisite
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Describes item satisfying a prereq. for a specific activity';
 
+# Maybe should add another field for base type?  Or table name for 
+# corresponding results table?
 CREATE TABLE InputSemantics
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(32) NOT NULL,
@@ -344,6 +400,7 @@ CREATE TABLE InputPattern
   description varchar(256) NULL COMMENT "if label is not sufficient",
   minV float  NULL COMMENT "allowed minimum (optional)",  
   maxV float  NULL COMMENT "allowed maximum (optional)",  
+  choiceField varchar(50) NULL COMMENT "may be set to table.field, e.g. HardwareStatus.name",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
@@ -369,3 +426,80 @@ CREATE TABLE JobStepHistory
   INDEX fk141 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all job harness status updates';
+
+CREATE TABLE IntResult
+(id int NOT NULL AUTO_INCREMENT,
+ inputPatternId int NULL COMMENT "may be null for harnessed job step",
+ name varchar(50) COMMENT "if inputPatternId not NULL use label field",
+ value  int,
+ schemaName varchar(50) COMMENT "null for non-harnessed steps",
+ schemaVersion varchar(50) COMMENT "null for non-harnessed steps",
+ activityId int NOT NULL COMMENT "activity producing this result",
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk150 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
+ CONSTRAINT fk151 FOREIGN KEY(activityId) REFERENCES Activity(id),
+ CONSTRAINT ix152 UNIQUE (activityId, name),
+ INDEX fk150 (inputPatternId),
+ INDEX fk151 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Store scalar int results from activities';
+
+CREATE TABLE FloatResult
+(id int NOT NULL AUTO_INCREMENT,
+ inputPatternId int NULL COMMENT "may be null for harnessed job step",
+ name varchar(50) COMMENT "if inputPatternId not NULL use label field",
+ value  float,
+ schemaName varchar(50) COMMENT "null for non-harnessed steps",
+ schemaVersion varchar(50) COMMENT "null for non-harnessed steps",
+ activityId int NOT NULL COMMENT "activity producing this result",
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk160 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
+ CONSTRAINT fk161 FOREIGN KEY(activityId) REFERENCES Activity(id),
+ CONSTRAINT ix162 UNIQUE (activityId, name),
+ INDEX fk160 (inputPatternId),
+ INDEX fk161 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Store scalar float results from activities';
+
+CREATE TABLE FilepathResult
+(id int NOT NULL AUTO_INCREMENT,
+ inputPatternId int NULL COMMENT "may be null for harnessed job step",
+ name varchar(50) COMMENT "if inputPatternId not NULL use label field",
+ value varchar(255),
+ schemaName varchar(50) COMMENT "null for non-harnessed steps",
+ schemaVersion varchar(50) COMMENT "null for non-harnessed steps",
+ activityId int NOT NULL COMMENT "activity producing this result",
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk170 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
+ CONSTRAINT fk171 FOREIGN KEY(activityId) REFERENCES Activity(id),
+ CONSTRAINT ix172 UNIQUE (activityId, name),
+ INDEX fk160 (inputPatternId),
+ INDEX fk161 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Store filepath results from activities';
+
+CREATE TABLE StringResult
+(id int NOT NULL AUTO_INCREMENT,
+ inputPatternId int NULL COMMENT "may be null for harnessed job step",
+ name varchar(50) COMMENT "if inputPatternId not NULL use label field",
+ value varchar(255),
+ schemaName varchar(50) COMMENT "null for non-harnessed steps",
+ schemaVersion varchar(50) COMMENT "null for non-harnessed steps",
+ activityId int NOT NULL COMMENT "activity producing this result",
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk180 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
+ CONSTRAINT fk181 FOREIGN KEY(activityId) REFERENCES Activity(id),
+ CONSTRAINT ix182 UNIQUE (activityId, name),
+ INDEX fk180 (inputPatternId),
+ INDEX fk181 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Store arbitrary non-filepath string results from activities';
+

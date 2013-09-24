@@ -18,7 +18,7 @@ std::map<std::string, ProcessNode*> ProcessNode::s_processes;
 ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :
   BaseNode(parent, siblingCount), m_parent(parent), m_sequenceCount(0), 
   m_optionCount(0),   m_hardwareId(""), m_processId(""),
-  m_isOption(false), m_originalId("")
+  m_isOption(false), m_originalId(""), m_travelerActionMask(0)
 {
   if (s_yamlToColumn.size() == 0) ProcessNode::initStatic();
 
@@ -128,8 +128,8 @@ void ProcessNode::initStatic() {
   
   s_columns.push_back(ColumnDescriptor("instructionsURL", "", false, false));
   s_yamlToColumn["InstructionsURL"] = &s_columns.back();
-  s_columns.push_back(ColumnDescriptor("isHarnessed", "0", false, false));
-  s_yamlToColumn["IsHarnessed"] = &s_columns.back();
+  s_columns.push_back(ColumnDescriptor("travelerActionMask", "0", 
+                                       false, false));
   s_columns.push_back(ColumnDescriptor("substeps", "NONE", false, false));
   s_columns.push_back(ColumnDescriptor("cond", "", false, false));
   s_yamlToColumn["Condition"] = &s_columns.back();

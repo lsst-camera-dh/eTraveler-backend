@@ -10,7 +10,9 @@ main(int argc, char* argv[])  {
     std::cout << "Call interface example: " << std::endl << std::endl;
     std::cout << "     ingestTraveler myTravelerDefinition.yaml rd_lsst_camt" 
               << std::endl << std::endl;
-    std::cout << "second argument (database name) defaults to rd_lsst_cam"
+    std::cout << "Second argument (database name) defaults to rd_lsst_cam"
+              << std::endl;
+    std::cout << "Special database name 'fake' may be used to check yaml syntax"
               << std::endl;
     exit(1);
   }

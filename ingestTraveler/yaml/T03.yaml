@@ -53,15 +53,15 @@ Sequence:
         - 
          Name: Thermal controller
          PrerequisiteType: TEST_EQUIPMENT
-     #RequiredInputs:
-     #   -
-     #    Label: Cooldown log (filepath)
-     #    InputSemantics: filepath
+     RequiredInputs:
+        -
+         Label: Cooldown log (filepath)
+         InputSemantics: filepath
    -
      Name: TS3_initialize_electronics
      #  Is the script run via job harness?  If so, value of Name above is the
      #  job harness "cannonical job name"; there must be a UserVersionString
-     #  key and a the IsHarnessed flag must be set (normally clear)
+     #  key and the HarnessedJob flag must be set (normally clear)
      #  See example of job harnessed step description below
      Description: Start lamp and initialize electronics via script
    -
@@ -81,10 +81,10 @@ Sequence:
         -
          Name: pattern projector
          PrerequisiteType: TEST_EQUIPMENT
-     #RequiredInputs:
-     #   -
-     #    Label: directory path for pattern images
-     #    InputSemantics: filepath
+     RequiredInputs:
+        -
+         Label: directory path for pattern images
+         InputSemantics: filepath
    -
      Name: TS3 Prepare for EO test scripts
      Description: Remove pattern projector, set up monochromator
@@ -98,40 +98,49 @@ Sequence:
        -
           Name: Fe55_X-ray_Exposures
           UserVersionString: v1r2       # or whatever git tag should be used
-          IsHarnessed: True
-          # operator is instructed to paste job harness cmd into console window
+          TravelerActions:
+            - HarnessedJob
+            # operator is told to paste job harness cmd into console window
        -
           Name: Dark Integrations      # names can have embedded blanks
           UserVersionString: v1r0
-          IsHarnessed:  True
+          TravelerActions:
+            - HarnessedJob
        -
           Name: Flat_field_Exposures
           UserVersionString: v1r0
-          IsHarnessed:  True
+          TravelerActions:
+            - HarnessedJob
        -  
           Name: Pocket_Pumping_Exposures
           UserVersionString: v1r0
-          IsHarnessed:  True
+          TravelerActions:
+            - HarnessedJob
        -  
           Name: Wavelength_Scan
           UserVersionString: v1r0
-          IsHarnessed:  True
+          TravelerActions:
+            - HarnessedJob
        -  
           Name: Superflat
           UserVersionString: v1r0
-          IsHarnessed:  True
+          TravelerActions:
+            - HarnessedJob
        -  
           Name: Spot_Images
           UserVersionString: v1r0
-          IsHarnessed:  True
+          TravelerActions:
+            - HarnessedJob
        -  
           Name: Readout_System_Noise_Frames
           UserVersionString: v1r0
-          IsHarnessed:  True
+          TravelerActions:
+            - HarnessedJob
        -  
           Name: Readout_System_Crosstalk_Images
           UserVersionString: v1r0
-          IsHarnessed:  True
+          TravelerActions:
+            - HarnessedJob
    -
      Name: TS3 offline analysis
      # substeps are harnessed analysis jobs.  Just one example is shown here
@@ -139,7 +148,8 @@ Sequence:
        -  
         Name: Response_linearity_measurement
         UserVersionString: v1r1
-        IsHarnessed:   True
+        TravelerActions:
+          - HarnessedJob
         # Prerequisites:    PROCESS_STEP prereqs not yet implemented
         #  -
         #    Name:  Acquire_flat_fields
@@ -150,10 +160,10 @@ Sequence:
    -
      Name: TS3 cryostat warmup
      Description:  Controlled warmup of cryostat; monitor thermal cycle
-     #RequiredInputs:
-     #   -
-     #    Label: Warmup log (filepath)
-     #    InputSemantics: filepath
+     RequiredInputs:
+        -
+         Label: Warmup log (filepath)
+         InputSemantics: filepath
    -
      Name: TS3 cryostat done
      Description: Move cryostat to TS5 s
