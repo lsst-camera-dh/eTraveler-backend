@@ -15,26 +15,24 @@ namespace rdbModel {
 }
 
 class ProcessNode;
-class ProcessEdge;
 
 class BaseNode  {
 public:
-  BaseNode(ProcessNode* parent=NULL, int siblingCount=0);
+  BaseNode(ProcessNode* parent=NULL, int stepNumber=0);
   virtual ~BaseNode();
   virtual int readSerialized(YAML::Node* ynode)=0;
   virtual int writeDb(rdbModel::Connection* connect=NULL)=0;
+
+  // Read from db what is needed for our node type.  Recurses
+  /* virtual int readDb(const std::string& id)=0;    TEMP */
 
   static void setDbConnection(rdbModel::Connection* c);
   static void clearDbConnection();
   //static int getMajorVersion();   // Major db version required for compat
   //static int getMinorVersion();  // db minor version must be >= this
   virtual bool dbIsCompatible(bool test=false); 
-  ProcessNode* getParent() {return m_parent;} 
 
 protected:
-  ProcessNode* m_parent;
-  ProcessEdge* m_parentEdge;
-  bool         m_isOption;
   static rdbModel::Connection* s_connection; 
   static std::string s_user;
 

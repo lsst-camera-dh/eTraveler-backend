@@ -14,18 +14,19 @@ std::map<std::string, ProcessNode*> ProcessNode::s_processes;
 
 //  ColumnDescriptor class moved to BaseNode.h
 
-// siblingCount < 0 indicates we're an option, not a child
-ProcessNode::ProcessNode(ProcessNode* parent, int siblingCount) :
-  BaseNode(parent, siblingCount), m_parent(parent), m_sequenceCount(0), 
+// stepNumber < 0 indicates we're an option, not a child
+ProcessNode::ProcessNode(ProcessNode* parent, int stepNumber) :
+  BaseNode(parent, stepNumber), m_parent(parent), m_sequenceCount(0), 
   m_optionCount(0),   m_hardwareId(""), m_processId(""),
-  m_isOption(false), m_originalId(""), m_travelerActionMask(0)
+  m_isOption(false), m_originalId(""), m_travelerActionMask(0),
+  m_parentEdge(0)
 {
   if (s_yamlToColumn.size() == 0) ProcessNode::initStatic();
 
-  if (siblingCount < 0) m_isOption = true;
+  if (stepNumber < 0) m_isOption = true;
   // If we have a parent, make edge leading back to it
   if (parent != NULL) {
-    m_parentEdge = new ProcessEdge(parent, this, siblingCount);
+    m_parentEdge = new ProcessEdge(parent, this, stepNumber);
   }
   m_children.clear();
   m_prerequisites.clear();
@@ -147,6 +148,5 @@ void ProcessNode::initStatic() {
   s_columns.push_back(ColumnDescriptor("creationTS", "", false, true));
   BaseNode::s_user = std::string("$(USER)");
   int nsub = facilities::Util::expandEnvVar(&s_user);
-
 }
 

@@ -23,6 +23,9 @@ public:
   // For now - and probably forever - YAML is only supported serialized form
   int virtual readSerialized(YAML::Node* ynode);   
 
+  // No implementation for the first round.
+  int virtual readDb(const std::string& id) {} 
+
 protected:
   std::map<std::string, std::string> m_inputs;  // e.g. from YAML
   ProcessNode* m_parent;

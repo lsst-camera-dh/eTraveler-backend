@@ -2,16 +2,20 @@ Import('listFiles')
 Import('baseEnv')
 
 env = baseEnv.Clone()
+progEnv = baseEnv.Clone()
 
 #  where to find external libraries
 ##env.AppendUnique(LIBPATH = [env['LIBDIR'], '/usr/lib64/mysql'])
 env.AppendUnique(LIBPATH = [env['LIBDIR']])
+progEnv.AppendUnique(LIBPATH = [env['LIBDIR']])
 
 # ..and what they're called
 env.Append(LIBS = ['mysqlclient', 'yaml-cpp'])
+progEnv.Append(LIBS = ['ingest', 'mysqlclient', 'yaml-cpp'])
 
-
-ingest = env.Program('ingestTraveler', listFiles(['*.cxx', 'db/*.cxx']) )
-ingestInstalled = env.Install(env['BINDIR'], ingest)
-env.Alias('all', ingestInstalled)
-env.Default(ingestInstalled)
+ingestLib = env.SharedLibrary('ingest',listFiles(['*.cxx', 'db/*.cxx']) ) 
+ingestLibInstalled = env.Install(env['LIBDIR'], ingestLib)
+ingestYaml = progEnv.Program('ingestTraveler', ['programs/ingestTraveler.cxx'])
+ingestYamlInstalled = env.Install(env['BINDIR'], ingestYaml)
+env.Alias('all', ingestYamlInstalled)
+env.Default(ingestYamlInstalled)

@@ -14,12 +14,14 @@ namespace rdbModel {
 
 class ProcessEdge {
 public:
-  ProcessEdge(ProcessNode* parent, BaseNode* child, int step) :
+  ProcessEdge(ProcessNode* parent, BaseNode* child, int step, 
+              const std::string& condition="") :
     m_parent(parent), m_child(child), m_step(step),
-    m_condition(""), m_edgeId(""){};
+    m_condition(condition), m_edgeId(""){};
   ~ProcessEdge() {};
+  void setCondition(const std::string& cond) {m_condition = cond;}
   int writeDb(rdbModel::Connection* connection, const std::string& user, 
-              std::string& childId, std::string& cond);
+              std::string& childId);    // , std::string& cond);
 
 private:
   ProcessNode* m_parent;

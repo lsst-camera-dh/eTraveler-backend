@@ -208,9 +208,8 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
   facilities::Util::itoa(newId, m_processId);
   if (m_parentEdge != NULL) {
     std::string cond;
-    if (m_isOption) cond = m_inputs["Condition"];
-    int edgeStatus = m_parentEdge->writeDb(s_connection, s_user, m_processId, 
-                                           cond);
+    if (m_isOption) m_parentEdge->setCondition(m_inputs["Condition"]);
+    int edgeStatus = m_parentEdge->writeDb(s_connection, s_user, m_processId);
     if (edgeStatus != 0) return edgeStatus;
   }
   // Update originalId field
@@ -257,7 +256,7 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
 
 int ProcessEdge::writeDb(rdbModel::Connection* connection, 
                          const std::string& user,
-                         std::string& childId, std::string& cond) {
+                         std::string& childId) { // std::string& cond) {
   std::vector<std::string> cols;
   std::vector<std::string> vals;
   cols.push_back("parent");
@@ -269,7 +268,7 @@ int ProcessEdge::writeDb(rdbModel::Connection* connection,
   facilities::Util::itoa(m_step, stepstring);
   vals.push_back(stepstring);
   cols.push_back("cond");
-  vals.push_back(cond);
+  vals.push_back(m_condition);
   cols.push_back("createdBy");
   vals.push_back(user);
   cols.push_back("creationTS");
@@ -291,7 +290,8 @@ int CloneNode::writeDb(rdbModel::Connection* connection) {
   // All we need to do is write a new edge
 
   std::string modelId = m_model->getProcessId();
-  return m_parentEdge->writeDb(s_connection, s_user, modelId, m_condition);
+  m_parentEdge->setCondition(m_condition);
+  return m_parentEdge->writeDb(s_connection, s_user, modelId);// m_condition);
 }
 
 //        **** PrerequisiteNode ****
@@ -495,4 +495,46 @@ int InputNode::writeDb(rdbModel::Connection* connect) {
   std::cerr << "Failed to write to db for input pattern " << m_inputs["Label"]
             << std::endl;
   return 1;
+}
+
+
+int ProcessNode::readDb(const std::string& id, const std::string& edgeId) {
+  using rdbModel::ResultHandle;
+  using rdbModel::StringVector;
+  // Expect exactly one of the two arguments to be non-empty string
+  if (edgeId != std::string("") ) {
+    // SELECT  child, step, cond from ProcessEdge where id = edgeId
+    std::string where = std::string(" WHERE id=") + edgeId;
+    ResultHandle* handle = 0;
+    
+    StringVector getCols;
+    getCols.push_back("child");
+    getCols.push_back("step");
+    getCols.push_back("cond");
+    handle = s_connection->select("ProcessEdge", getCols, getCols, where);
+    if (handle == NULL) {
+      std::cerr << "Cannot find edge with id= " << edgeId << std::endl;
+      exit(1);
+    }
+    if (handle->getNRows() != 1) {
+      std::cerr << "Cannot find edge with id= " << edgeId << std::endl;
+      exit(1);
+    }
+    std::vector<std::string> fields;
+    handle->getRow(fields);
+    m_processId = fields[0];   // child
+      
+    //  
+    //   Store value for m_condition in our edge 
+    //     maybe check that step is consistent with m_step in our edge?
+    //   child is our id; store in m_processId
+  } else {
+     // check id arg is not ""
+    m_processId = id;  
+  }
+  // SELECT pile of stuff from Process where id = m_processId
+  //  store
+  //  SELECT id from ProcessEdge where parent = m_processId
+  //   For each edge id found
+  //        call ourselves with args id="", edgeId= edge id
 }

@@ -27,6 +27,9 @@ for header in headers:
     env.Alias('includes', includes)
     env.Alias('all', includes)
 
+# In order to link into ingest shared library
+env.AppendUnique(CCFLAGS = "-fPIC")
+
 yamlLib = env.StaticLibrary('yaml-cpp', listFiles(['src/*.cpp', 'src/contrib/*.cpp']))
 yamlLibInstalled = env.Install(env['LIBDIR'], yamlLib)
 env.Alias('yaml_parser', yamlLibInstalled)

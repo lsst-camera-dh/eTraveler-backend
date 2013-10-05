@@ -19,7 +19,7 @@ namespace YAML {
 
 class ProcessNode : public virtual BaseNode {
 public:  
-  ProcessNode(ProcessNode* parent=NULL, int siblingCount=0);
+  ProcessNode(ProcessNode* parent=NULL, int stepNumber=0);
   ~ProcessNode();
   int getChildCount() const {return m_children.size();}
   std::string getProcessId() const {return m_processId;}
@@ -34,6 +34,10 @@ public:
 
   // Write row in Process table and, if needed ProcessEdge table
   int virtual writeDb(rdbModel::Connection* connect=NULL);
+
+  // If node has a parent, pass in connecting edge id.  In this case,
+  // value of id can be "" (since information is in edge)
+  virtual int readDb(const std::string& id, const std::string& edgeId="");
 
   // See if we already have a node with this name
   static ProcessNode* findProcess(std::string& name);
@@ -52,6 +56,7 @@ private:
   bool         m_isOption;
   std::string m_originalId;   // Used when version > 1
   unsigned int m_travelerActionMask;
+  ProcessEdge*  m_parentEdge;
 
   // Handling of Prerequisites and RequiredInputs is identical
   // up to a point.  Return status of processing

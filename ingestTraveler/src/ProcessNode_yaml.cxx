@@ -134,11 +134,13 @@ int ProcessNode::readSerialized(YAML::Node* ynode) {
       if (findKey(std::string("Clone"), childKeys))  {
         std::string modelName = ychild["Clone"].as<std::string>();
         CloneNode* child = 
-          new CloneNode(this, modelName, i);
+          new CloneNode(this, modelName, i + 1);
         m_children.push_back(child);
       }
       else {
-        ProcessNode* child = new ProcessNode(this, i);        
+        // Use i + 1 so that step number is always > 0 for sequence children.
+        // It will be < 0 for option children
+        ProcessNode* child = new ProcessNode(this, i + 1);        
         m_children.push_back(child);
       }
       int status = m_children.back()->readSerialized(&ychild);
