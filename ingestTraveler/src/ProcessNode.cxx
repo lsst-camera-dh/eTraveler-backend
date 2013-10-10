@@ -17,8 +17,10 @@ std::map<std::string, ProcessNode*> ProcessNode::s_processes;
 // stepNumber < 0 indicates we're an option, not a child
 ProcessNode::ProcessNode(ProcessNode* parent, int stepNumber) :
   BaseNode(parent, stepNumber), m_parent(parent), m_sequenceCount(0), 
-  m_optionCount(0),   m_hardwareId(""), m_processId(""),
-  m_isOption(false), m_originalId(""), m_travelerActionMask(0),
+  m_optionCount(0), m_name(""),  m_hardwareId(""), m_processId(""),
+  m_version(""), m_userVersionString(""), m_description(""), 
+  m_maxIteration(""), m_substeps(""), m_isOption(false), 
+  m_originalId(""), m_travelerActionMask(0),
   m_parentEdge(0)
 {
   if (s_yamlToColumn.size() == 0) ProcessNode::initStatic();
@@ -150,3 +152,39 @@ void ProcessNode::initStatic() {
   int nsub = facilities::Util::expandEnvVar(&s_user);
 }
 
+static int indentLevel = 0;
+static std::string indentString = "  ";
+
+int ProcessNode::printTraveler(bool fromDb) {
+  indentLevel += 1;
+  std::string indent;
+  for (int i=0; i < indentLevel; i++) indent += indentString;
+  std::cout << indent << "Process name: " << m_name << std::endl;
+  std::cout << indent << "Version: " << m_version << std::endl;
+  std::cout << indent << "User version string: " << m_userVersionString 
+            << std::endl;
+  std::cout << indent << "Hardware id: " << m_hardwareId << std::endl;
+  std::cout << indent << "Description: " << m_description << std::endl;
+  std::cout << indent << "Max iteration: " << m_maxIteration << std::endl;
+  std::cout << indent << "Process id: " << m_processId << std::endl;
+  std::cout << indent << "Original id: " << m_originalId << std::endl;
+  std::cout << indent << "Traveler action mask : " << std::hex 
+            << m_travelerActionMask << std::dec << std::endl;
+  if (m_substeps == "NONE") {
+    indentLevel -= 1;
+    return 0;
+  } 
+  std::cout << indent << m_substeps << std::endl;
+  std::vector<BaseNode* >::iterator it = m_children.begin();
+  while (it != m_children.end()) {
+    ProcessNode* child = dynamic_cast<ProcessNode* >(*it++);
+    if (child == NULL) {
+      std::cerr << "Whoops! Dynamic cast failed" << std::endl;
+      continue;
+    }
+    child->printTraveler(fromDb);
+    std::cout << std::endl;
+  }
+  indentLevel-=1;
+  return 0;
+}

@@ -499,17 +499,18 @@ int InputNode::writeDb(rdbModel::Connection* connect) {
 
 
 int ProcessNode::readDb(const std::string& id, const std::string& edgeId) {
-  using rdbModel::ResultHandle;
+
   using rdbModel::StringVector;
-  // Expect exactly one of the two arguments to be non-empty string
+  // If parent is NULL, must have non-empty id.  Else will have 
+  // non-empty edgeId.
   if (edgeId != std::string("") ) {
     // SELECT  child, step, cond from ProcessEdge where id = edgeId
     std::string where = std::string(" WHERE id=") + edgeId;
-    ResultHandle* handle = 0;
+    rdbModel::ResultHandle* handle = 0;
     
     StringVector getCols;
     getCols.push_back("child");
-    getCols.push_back("step");
+    //getCols.push_back("step");
     getCols.push_back("cond");
     handle = s_connection->select("ProcessEdge", getCols, getCols, where);
     if (handle == NULL) {
@@ -518,23 +519,92 @@ int ProcessNode::readDb(const std::string& id, const std::string& edgeId) {
     }
     if (handle->getNRows() != 1) {
       std::cerr << "Cannot find edge with id= " << edgeId << std::endl;
+      delete handle;
       exit(1);
     }
     std::vector<std::string> fields;
     handle->getRow(fields);
     m_processId = fields[0];   // child
-      
-    //  
-    //   Store value for m_condition in our edge 
-    //     maybe check that step is consistent with m_step in our edge?
-    //   child is our id; store in m_processId
+    m_parentEdge->setCondition(fields[1]);
+    delete handle;
   } else {
      // check id arg is not ""
     m_processId = id;  
   }
   // SELECT pile of stuff from Process where id = m_processId
-  //  store
-  //  SELECT id from ProcessEdge where parent = m_processId
-  //   For each edge id found
-  //        call ourselves with args id="", edgeId= edge id
+  std::string where = std::string(" WHERE id=") + m_processId;
+  rdbModel::ResultHandle* handle = 0;
+  StringVector getCols;
+  getCols.push_back("name");
+  getCols.push_back("originalId");
+  getCols.push_back("hardwareTypeId");
+  getCols.push_back("version");
+  getCols.push_back("userVersionString");
+  getCols.push_back("description");
+  getCols.push_back("maxIteration");
+  getCols.push_back("substeps");
+  getCols.push_back("travelerActionMask");
+
+  handle = s_connection->select("Process", getCols, getCols, where);
+  if (handle == NULL) {
+    std::cerr << "Cannot find process with id= " << m_processId << std::endl;
+    exit(1);
+  }
+  if (handle->getNRows() != 1) {
+    std::cerr << "Cannot find process with id= " << m_processId << std::endl;
+    delete handle;
+    exit(1);
+  }
+  std::vector<std::string> fields;
+  handle->getRow(fields);
+  delete handle;
+  handle = 0;
+
+  std::vector<std::string>::const_iterator it = fields.begin();
+  m_name = *it++;
+  m_originalId = *it++;
+  m_hardwareId = *it++;
+  m_version = *it++;
+  m_userVersionString =*it++;
+  m_description = *it++;
+  m_maxIteration = *it++;
+  m_substeps = *it++;
+  try {
+    m_travelerActionMask = facilities::Util::stringToUnsigned(*it++);
+  }
+  catch (std::exception ex) {
+    std::cerr << "Improper Process.travelerActionMask" << std::endl;
+    exit(1);
+  }
+  if (m_substeps == "NONE") return 0;   // all done
+
+  where = std::string(" where parent=")+m_processId +  
+    std::string(" ORDER BY ABS(step) ");
+  std::vector<std::string> orderCols;   // empty
+  getCols.clear();
+  getCols.push_back("step");
+  getCols.push_back("id");
+
+  handle = s_connection->select("ProcessEdge", getCols, orderCols, where);
+  if (handle == NULL) {
+    std::cerr << "Failed query to find edges for " << m_processId << std::endl;
+    exit(1);
+  }
+
+  int nChildren = handle->getNRows();
+  for (int i = 0; i < nChildren; i++) {
+    fields.clear();
+    handle->getRow(fields, i);
+    int step = facilities::Util::stringToInt(fields[0]);
+    ProcessNode* child = new ProcessNode(this, step);
+    child->readDb("", fields[1]);
+    m_children.push_back(child);
+  }
+  if (m_substeps == "SEQUENCE") m_sequenceCount = nChildren;
+  else {
+    m_optionCount = nChildren;
+    m_isOption = true;
+  }
+  delete handle;
+  return 0;
 }

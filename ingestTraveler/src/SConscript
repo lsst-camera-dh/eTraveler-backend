@@ -19,3 +19,8 @@ ingestYaml = progEnv.Program('ingestTraveler', ['programs/ingestTraveler.cxx'])
 ingestYamlInstalled = env.Install(env['BINDIR'], ingestYaml)
 env.Alias('all', ingestYamlInstalled)
 env.Default(ingestYamlInstalled)
+readDbTraveler = progEnv.Program('readDbTraveler', 
+	       ['programs/readTraveler.cxx'])
+readDbTravelerInstalled = env.Install(env['BINDIR'], readDbTraveler)
+env.Alias('all', readDbTravelerInstalled)
+env.Default(readDbTravelerInstalled)

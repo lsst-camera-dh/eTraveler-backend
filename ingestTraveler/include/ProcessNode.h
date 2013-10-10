@@ -39,6 +39,8 @@ public:
   // value of id can be "" (since information is in edge)
   virtual int readDb(const std::string& id, const std::string& edgeId="");
 
+  virtual int printTraveler(bool fromDb=true);
+
   // See if we already have a node with this name
   static ProcessNode* findProcess(std::string& name);
   
@@ -51,8 +53,14 @@ private:
   std::vector<BaseNode* > m_children;
   std::vector<PrerequisiteNode* > m_prerequisites;
   std::vector<InputNode* > m_inputNodes;
+  std::string m_name;
   std::string m_hardwareId;  // set only for top node initially
   std::string m_processId;   // set when we write ourselves to db
+  std::string m_version;
+  std::string m_userVersionString;
+  std::string m_description;
+  std::string  m_maxIteration;
+  std::string m_substeps;
   bool         m_isOption;
   std::string m_originalId;   // Used when version > 1
   unsigned int m_travelerActionMask;
