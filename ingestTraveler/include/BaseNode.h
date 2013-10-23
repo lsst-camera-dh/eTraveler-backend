@@ -18,7 +18,7 @@ class ProcessNode;
 
 class BaseNode  {
 public:
-  BaseNode(ProcessNode* parent=NULL, int stepNumber=0);
+  BaseNode() {}
   virtual ~BaseNode();
   virtual int readSerialized(YAML::Node* ynode)=0;
   virtual int writeDb(rdbModel::Connection* connect=NULL)=0;

@@ -17,7 +17,7 @@ namespace YAML {
 class AuxNode : public virtual BaseNode {
 public:  
   AuxNode(ProcessNode* parent=NULL, const std::string& user="") : 
-    BaseNode(0, 0), m_parent(parent), m_processId(""), m_user(user) {};
+    BaseNode(), m_parent(parent), m_processId(""), m_user(user) {};
   ~AuxNode() {};
 
   // For now - and probably forever - YAML is only supported serialized form

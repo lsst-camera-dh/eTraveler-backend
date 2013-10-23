@@ -16,7 +16,7 @@ std::map<std::string, ProcessNode*> ProcessNode::s_processes;
 
 // stepNumber < 0 indicates we're an option, not a child
 ProcessNode::ProcessNode(ProcessNode* parent, int stepNumber) :
-  BaseNode(parent, stepNumber), m_parent(parent), m_sequenceCount(0), 
+  BaseNode(), m_parent(parent), m_sequenceCount(0), 
   m_optionCount(0), m_name(""),  m_hardwareId(""), m_processId(""),
   m_version(""), m_userVersionString(""), m_description(""), 
   m_maxIteration(""), m_substeps(""), m_isOption(false), 
