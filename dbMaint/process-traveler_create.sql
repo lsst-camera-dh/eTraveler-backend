@@ -427,13 +427,11 @@ CREATE TABLE JobStepHistory
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all job harness status updates';
 
-CREATE TABLE IntResult
+CREATE TABLE IntResultManual
 (id int NOT NULL AUTO_INCREMENT,
- inputPatternId int NULL COMMENT "may be null for harnessed job step",
- name varchar(50) COMMENT "if inputPatternId not NULL use label field",
+ inputPatternId int NOT NULL,
+ name varchar(50) COMMENT " use label field from inputPatternId",
  value  int,
- schemaName varchar(50) COMMENT "null for non-harnessed steps",
- schemaVersion varchar(50) COMMENT "null for non-harnessed steps",
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
@@ -444,15 +442,30 @@ CREATE TABLE IntResult
  INDEX fk150 (inputPatternId),
  INDEX fk151 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='Store scalar int results from activities';
+COMMENT='Store scalar int results from manual activities';
 
-CREATE TABLE FloatResult
+CREATE TABLE IntResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
- inputPatternId int NULL COMMENT "may be null for harnessed job step",
- name varchar(50) COMMENT "if inputPatternId not NULL use label field",
+ name varchar(50) COMMENT "comes from schema",
+ value  int,
+ schemaName varchar(50) NOT NULL,
+ schemaVersion varchar(50) NOT NULL,
+ schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result sumamry",
+ activityId int NOT NULL COMMENT "activity producing this result",
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk155 FOREIGN KEY(activityId) REFERENCES Activity(id),
+ CONSTRAINT ix156 UNIQUE (activityId, name, schemaName, schemaVersion, schemaInstance),
+ INDEX fk155 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Store scalar int results from harnessed activities';
+
+CREATE TABLE FloatResultManual
+(id int NOT NULL AUTO_INCREMENT,
+ inputPatternId int NOT NULL,
+ name varchar(50) COMMENT "use label field from inputPatternId",
  value  float,
- schemaName varchar(50) COMMENT "null for non-harnessed steps",
- schemaVersion varchar(50) COMMENT "null for non-harnessed steps",
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
@@ -463,15 +476,30 @@ CREATE TABLE FloatResult
  INDEX fk160 (inputPatternId),
  INDEX fk161 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='Store scalar float results from activities';
+COMMENT='Store scalar float results from manual activities';
 
-CREATE TABLE FilepathResult
+CREATE TABLE FloatResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
- inputPatternId int NULL COMMENT "may be null for harnessed job step",
- name varchar(50) COMMENT "if inputPatternId not NULL use label field",
+ name varchar(50) COMMENT "comes from schema",
+ value  float,
+ schemaName varchar(50) NOT NULL,
+ schemaVersion varchar(50) NOT NULL,
+ schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result sumamry",
+ activityId int NOT NULL COMMENT "activity producing this result",
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk165 FOREIGN KEY(activityId) REFERENCES Activity(id),
+ CONSTRAINT ix166 UNIQUE (activityId, name, schemaName, schemaVersion, schemaInstance),
+ INDEX fk165 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Store scalar float results from harnessed activities';
+
+CREATE TABLE FilepathResultManual
+(id int NOT NULL AUTO_INCREMENT,
+ inputPatternId int NOT NULL,
+ name varchar(50) COMMENT "use label field from inputPattern",
  value varchar(255),
- schemaName varchar(50) COMMENT "null for non-harnessed steps",
- schemaVersion varchar(50) COMMENT "null for non-harnessed steps",
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
@@ -482,15 +510,30 @@ CREATE TABLE FilepathResult
  INDEX fk160 (inputPatternId),
  INDEX fk161 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='Store filepath results from activities';
+COMMENT='Store filepath results from manual activities';
 
-CREATE TABLE StringResult
+CREATE TABLE FilepathResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
- inputPatternId int NULL COMMENT "may be null for harnessed job step",
- name varchar(50) COMMENT "if inputPatternId not NULL use label field",
+ name varchar(50) COMMENT "comes from schema",
+ value  varchar(255),
+ schemaName varchar(50) NOT NULL,
+ schemaVersion varchar(50) NOT NULL,
+ schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result sumamry",
+ activityId int NOT NULL COMMENT "activity producing this result",
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk175 FOREIGN KEY(activityId) REFERENCES Activity(id),
+ CONSTRAINT ix176 UNIQUE (activityId, name, schemaName, schemaVersion, schemaInstance),
+ INDEX fk175 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Store filepath results from harnessed activities';
+
+CREATE TABLE StringResultManual
+(id int NOT NULL AUTO_INCREMENT,
+ inputPatternId int NOT NULL,
+ name varchar(50) COMMENT "use label field from inputPattern",
  value varchar(255),
- schemaName varchar(50) COMMENT "null for non-harnessed steps",
- schemaVersion varchar(50) COMMENT "null for non-harnessed steps",
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
@@ -501,5 +544,22 @@ CREATE TABLE StringResult
  INDEX fk180 (inputPatternId),
  INDEX fk181 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='Store arbitrary non-filepath string results from activities';
+COMMENT='Store arbitrary non-filepath string results from manual activities';
+
+CREATE TABLE StringResultHarnessed
+(id int NOT NULL AUTO_INCREMENT,
+ name varchar(50) COMMENT "comes from schema",
+ value  varchar(255),
+ schemaName varchar(50) NOT NULL,
+ schemaVersion varchar(50) NOT NULL,
+ schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result sumamry",
+ activityId int NOT NULL COMMENT "activity producing this result",
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk185 FOREIGN KEY(activityId) REFERENCES Activity(id),
+ CONSTRAINT ix186 UNIQUE (activityId, name, schemaName, schemaVersion, schemaInstance),
+ INDEX fk185 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Store arbitary non-filepath string results from activities';
 

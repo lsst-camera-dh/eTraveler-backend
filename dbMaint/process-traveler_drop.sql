@@ -1,8 +1,12 @@
 DROP TABLE IF EXISTS Result;
-DROP TABLE IF EXISTS StringResult;
-DROP TABLE IF EXISTS FilepathResult;
-DROP TABLE IF EXISTS IntResult;
-DROP TABLE IF EXISTS FloatResult;
+DROP TABLE IF EXISTS StringResultManual;
+DROP TABLE IF EXISTS StringResultHarnessed;
+DROP TABLE IF EXISTS FilepathResultManual;
+DROP TABLE IF EXISTS FilepathResultHarnessed;
+DROP TABLE IF EXISTS IntResultManual;
+DROP TABLE IF EXISTS IntResultHarnessed;
+DROP TABLE IF EXISTS FloatResultManual;
+DROP TABLE IF EXISTS FloatResultHarnessed;
 DROP TABLE IF EXISTS InputPattern;
 DROP TABLE IF EXISTS InputSemantics;
 DROP TABLE IF EXISTS Prerequisite;

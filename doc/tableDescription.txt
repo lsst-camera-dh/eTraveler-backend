@@ -107,17 +107,26 @@ References InputSemantics and Process (process this particular input
 belongs to).  Required field "label". Optional fields for units, and
 min and max values allowed.
 
-3. IntResult
-Place to store manual-entry integers as well as integers which are
-part of a harnessed job summary.
+3a. IntResultManual
+Place to store manual-entry integers.
 
-4. FloatResult
-Like IntResult, but float
+3b. IntResultHarnessed
+Place to store integers coming from harnessed job result summaries
 
-5. FilepathResult
-Like IntResult, but a string which is a filepath
+4a. FloatResultManual
+Like IntResultManual, but float
 
-6. StringResult
+4b. FloatResultHarnessed
+Like IntResultHarnessed, but float
+
+5a. FilepathResultManual
+Like IntResultManual, but a string which is a filepath
+
+5b. FilepathResultHarnessed
+Like IntResultHarnessed, but filepath (identified by use of fileref schema)
+
+6a. StringResultManual
+6b. StringResultHarnessed
 (Scalar) results which are not int, float or filepath are stored here
 as strings.
 
