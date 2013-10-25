@@ -500,6 +500,8 @@ CREATE TABLE FilepathResultManual
  inputPatternId int NOT NULL,
  name varchar(50) COMMENT "use label field from inputPattern",
  value varchar(255),
+ size  int DEFAULT "0",
+ sha1  char(40) NULL COMMENT "currently not required for manually-entered files",
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
@@ -514,8 +516,10 @@ COMMENT='Store filepath results from manual activities';
 
 CREATE TABLE FilepathResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
- name varchar(50) COMMENT "comes from schema",
+ name varchar(50) COMMENT "comes from schema; it is always 'path'",
  value  varchar(255),
+ size   int DEFAULT "0" COMMENT "another field in fileref schema",
+ sha1   char(40) NOT NULL COMMENT "still another field in fileref",
  schemaName varchar(50) NOT NULL,
  schemaVersion varchar(50) NOT NULL,
  schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result sumamry",
