@@ -526,6 +526,7 @@ int ProcessNode::readDb(const std::string& id, const std::string& edgeId) {
     handle->getRow(fields);
     m_processId = fields[0];   // child
     m_parentEdge->setCondition(fields[1]);
+    m_parentEdge->setId(edgeId);
     delete handle;
   } else {
      // check id arg is not ""

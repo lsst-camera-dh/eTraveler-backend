@@ -20,6 +20,7 @@ public:
     m_condition(condition), m_edgeId(""){};
   ~ProcessEdge() {};
   void setCondition(const std::string& cond) {m_condition = cond;}
+  void setId(const std::string& id) {m_edgeId = id;}
   int writeDb(rdbModel::Connection* connection, const std::string& user, 
               std::string& childId);    // , std::string& cond);
 
