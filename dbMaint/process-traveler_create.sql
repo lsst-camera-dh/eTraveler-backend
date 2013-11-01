@@ -499,7 +499,8 @@ CREATE TABLE FilepathResultManual
 (id int NOT NULL AUTO_INCREMENT,
  inputPatternId int NOT NULL,
  name varchar(50) COMMENT "use label field from inputPattern",
- value varchar(255),
+ value varchar(255) COMMENT "absolute path at creating site",
+ virtualPath  varchar(255) COMMENT "virtual path from Data Catalog",
  size  int DEFAULT "0",
  sha1  char(40) NULL COMMENT "currently not required for manually-entered files",
  activityId int NOT NULL COMMENT "activity producing this result",
@@ -517,7 +518,8 @@ COMMENT='Store filepath results from manual activities';
 CREATE TABLE FilepathResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
  name varchar(50) COMMENT "comes from schema; it is always 'path'",
- value  varchar(255),
+ value  varchar(255) COMMENT "absolute file path at creating site",
+ virtualPath  varchar(255) COMMENT "virtual path from Data Catalog",
  size   int DEFAULT "0" COMMENT "another field in fileref schema",
  sha1   char(40) NOT NULL COMMENT "still another field in fileref",
  schemaName varchar(50) NOT NULL,
@@ -566,4 +568,3 @@ CREATE TABLE StringResultHarnessed
  INDEX fk185 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Store arbitary non-filepath string results from activities';
-
