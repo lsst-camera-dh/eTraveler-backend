@@ -1,6 +1,6 @@
 YAML structure for a traveler (process step and arbitrary descendants).
 This document describes the format supported by processTraveler.git
-as of 2013-05-??
+as of 2013-12-02
 For db version 0.1.0
 
                         *  *  *  *  *  *  *  *  *  *
@@ -11,16 +11,23 @@ For db version 0.1.0
 ---
 
 2. Has a single top-level (YAML) node which describes a process.  All other
-nodes are descendants of this one.  Descendent nodes describe either
-a descendent process or a prerequisite for some process.
+nodes are descendants of this one.  Descendent nodes describe a descendent
+process, a prerequisite for some process, or a required input (to be
+supplied by operator when process is executed).
 
 3. Each process node is a dict.  All keys are string scalar and in the 
 remainder of this document will be represented by key followed by a colon, e.g.
 
 Condition:
 
-for the key "Condition".  Two keys have list values.  All the others have
-scalar values.
+for the key "Condition".  All keys have scalar values except for the 
+following, all of which have list values:
+
+   Sequence
+   Selection
+   Prerequisites
+   RequiredInputs
+   TravelerActions   
 
 4. The keys come from a known collection of allowable keys.
 Most of them are optional. 
@@ -61,11 +68,10 @@ optional.  Value if present must be a positive integer. If
 not present, defaults to 1.  (do we need a way to say "next"? Should
 that be the default instead of 1?)
 
-
 Condition: required if this node is a member of a list which is itself
 the value of a Selection: key; ignored otherwise.
 
-8. There are four keys with non-scalar values.
+8. There are five keys with non-scalar values.
 
 Sequence:
 Value is an ordered list of process nodes.  Intent is that the process steps 
@@ -83,6 +89,10 @@ Value is a list of prerequisite nodes.
 
 RequiredInputs:
 Value is a list of input nodes.
+
+TravelerActions:
+Value is a list of items, taken from a pre-defined set of properties which 
+may be associated with a step, such as HarnessedJob.
 
 9. Description of a prerequisite node.
 Each prerequisite node is a dict with the following keys:
