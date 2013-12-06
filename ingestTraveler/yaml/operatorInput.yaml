@@ -3,7 +3,7 @@
 Name:  InputTraveler
 HardwareType: Raft
 Description: Blah blah
-InstructionsURL: 
+InstructionsURL:   No instructions
 Sequence:
    - 
       Name: hasInputs

@@ -1,8 +1,9 @@
 %YAML 1.1 
+---
 Name:  Prepare2
 HardwareType: ASPIC chip
 Description: Blah blah
-InstructionsURL: 
+InstructionsURL: No instructions
 Sequence:
    -
       Name: Clean2
