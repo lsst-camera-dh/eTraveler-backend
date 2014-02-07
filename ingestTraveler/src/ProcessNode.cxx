@@ -65,6 +65,7 @@ bool ProcessNode::checkInputs() {
         std::cerr << "Version must be positive integer" << std::endl;
         return false;
     }
+    m_version = v;
   }
   //   Name must be present
   if (m_inputs.find("Name") == m_inputs.end()) {

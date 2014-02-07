@@ -71,6 +71,10 @@ that be the default instead of 1?)
 Condition: required if this node is a member of a list which is itself
 the value of a Selection: key; ignored otherwise.
 
+MaxIteration: optional; defaults to 1.  If > 1, operator
+may choose to re-execute the step as long as total number of executions is
+<= MaxIteration.
+
 8. There are five keys with non-scalar values.
 
 Sequence:

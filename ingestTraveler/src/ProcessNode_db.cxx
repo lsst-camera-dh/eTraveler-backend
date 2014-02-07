@@ -141,7 +141,10 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
   cols.push_back("hardwareTypeId");
   vals.push_back(m_hardwareId);
   cols.push_back("version");
-  vals.push_back("1");               // TEMPORARY
+  ///    vals.push_back("1");               // TEMPORARY
+  if (m_version.size() == 0) m_version = "1";
+  vals.push_back(m_version);
+
   // If version is not 1, verify stage should have done do 
   // SELECT id from Process where name=<our name> and
   // hardwareTypeId = <our type id> and version=1 and saved
