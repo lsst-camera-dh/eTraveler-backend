@@ -17,7 +17,8 @@ std::map<std::string, ProcessNode*> ProcessNode::s_processes;
 // stepNumber < 0 indicates we're an option, not a child
 ProcessNode::ProcessNode(ProcessNode* parent, int stepNumber) :
   BaseNode(), m_parent(parent), m_sequenceCount(0), 
-  m_optionCount(0), m_name(""),  m_hardwareId(""), m_processId(""),
+  m_optionCount(0), m_name(""),  m_hardwareId(""), 
+  m_hardwareRelationshipTypeId(""), m_processId(""),
   m_version(""), m_userVersionString(""), m_description(""), 
   m_maxIteration(""), m_substeps(""), m_isOption(false), 
   m_originalId(""), m_travelerActionMask(0),
@@ -103,9 +104,14 @@ bool ProcessNode::checkInputs() {
   return true;
 }
 
-
+/**
+ Initialize 
+ s_columns: array of ColumnDescriptor, used to form sql INSERT INTO Process 
+ s_yamlToColumn: maps yaml key to corresponding ColumnDescriptor
+ */
 void ProcessNode::initStatic() {
   if (s_yamlToColumn.size()  > 0 ) return;
+  s_relationTypes.clear();
 
   // ColumnDescriptor(string name, string dflt, bool noDefault=true,
   //    bool system=false, string joinTable="", string joinColumn="")

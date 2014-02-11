@@ -17,6 +17,13 @@ namespace YAML {
   class Node;
 }
 
+/**
+   Define bit values for traveler action mask
+*/
+#define ACTIONBIT_HARNESSED_JOB 1
+#define ACTIONBIT_MAKE_HARDWARE_RELATIONSHIP 2
+#define ACTIONBIT_BREAK_HARDWARE_RELATIONSHIP 4
+
 class ProcessNode : public virtual BaseNode {
 public:  
   ProcessNode(ProcessNode* parent=NULL, int stepNumber=0);
@@ -55,6 +62,7 @@ private:
   std::vector<InputNode* > m_inputNodes;
   std::string m_name;
   std::string m_hardwareId;  // set only for top node initially
+  std::string m_hardwareRelationshipTypeId;
   std::string m_processId;   // set when we write ourselves to db
   std::string m_version;
   std::string m_userVersionString;
@@ -75,6 +83,10 @@ private:
   // Map taking yaml key name to corresponding column name in Process table
   static std::map<std::string, ColumnDescriptor*> s_yamlToColumn;
   static std::vector<ColumnDescriptor> s_columns;
+  /**
+     Save all hardware relationship types seen in a map, to be compared with
+     db at verify time.
+   */
   static std::set<std::string> s_relationTypes;
   // Save all process nodes seen so far so that Clone can retrieve match
   static std::map<std::string, ProcessNode*> s_processes;
@@ -86,5 +98,9 @@ private:
 
   // Parse TravelerActions
   int parseTravelerActions(YAML::Node* val);
+
+  // Add component prerequisite needed by 'make hardware relationship'
+  // action if not already present
+  void addComponentPrerequisite(const std::string& componentId);
 };
 #endif

@@ -31,6 +31,11 @@ void BaseNode::clearDbConnection() {
   }
 }
 
+/**
+   Map hardware relationship type names to ids
+ */
+static std::map<std::string, std::string> relationshipTypes;
+
 // Regular member routines 
 
 // Return true iff major versions match and db minor version is >= s_minor
@@ -62,6 +67,7 @@ int ProcessNode::verify(rdbModel::Connection* connect) {
 
   // Certain things only need to be checked for root node
   if (m_parent == NULL) {
+    relationshipTypes.clear();
     try {
       m_hardwareId = 
         MysqlUtil::getColumnValue(s_connection, "HardwareType",
@@ -72,11 +78,12 @@ int ProcessNode::verify(rdbModel::Connection* connect) {
       return 2;
     }
 
-    // Now look for hardware relationship types
+    // Now look for hardware relationship types if any are used 
     if (s_relationTypes.size() > 0)  {
 
       std::vector<std::string> getCols;
       getCols.push_back("name");
+      getCols.push_back("id");
       rdbModel::ResultHandle* results = 
         s_connection->select("HardwareRelationshipType", getCols, getCols, "");
       int nRows = results->getNRows();
@@ -85,6 +92,7 @@ int ProcessNode::verify(rdbModel::Connection* connect) {
       for (int i=0; i < nRows; i++) {
         results->getRow(fields, i);
         dbvals.insert(fields[0]);
+        relationshipTypes[fields[0]] = fields[1];
       }
       delete results;
       std::set<std::string>::iterator dbvalsBegin, dbvalsEnd;
@@ -156,20 +164,38 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
   else vals.push_back("NONE");
   if (m_inputs.find("HardwareRelationshipType") != m_inputs.end()) {
     // find assoc. id and fill it in
-    std::string hrtId;
-    try {
-      hrtId =
-        MysqlUtil::getColumnValue(s_connection, 
-                                  "HardwareRelationshipType",
-                                  "id", "name", 
-                                  m_inputs["HardwareRelationshipType"]);
-    }
-    catch (rdbModel::MysqlUtilException ex) {
-      std::cerr << ex.what() << std::endl;
-      return 1;
-    }
+    std::string hrtId = relationshipTypes[m_inputs["HardwareRelationshipType"]];
     cols.push_back("hardwareRelationshipTypeId");
     vals.push_back(hrtId);
+    if ((m_travelerActionMask & ACTIONBIT_BREAK_HARDWARE_RELATIONSHIP) == 0){
+      m_travelerActionMask |= ACTIONBIT_MAKE_HARDWARE_RELATIONSHIP;
+    }
+    //  Find out what components are needed for this relationship type.
+    // Add new prerequisites if they weren't already in the yaml
+
+    //  BUT ONLY if relationship is a 'MAKE', not a 'BREAK' **** <--
+    if ((m_travelerActionMask & ACTIONBIT_MAKE_HARDWARE_RELATIONSHIP) != 0) {
+      std::string component1id;
+      std::string component2id;
+      try {
+        component1id = 
+          MysqlUtil::getColumnValue(s_connection, "HardwareRelationshipType",
+                                    "hardwareTypeId", "id", hrtId);
+        component2id = 
+          MysqlUtil::getColumnValue(s_connection, "HardwareRelationshipType",
+                                    "componentTypeId", "id", hrtId);
+      } catch (rdbModel::MysqlUtilException ex) {
+        std::cerr << ex.what() << std::endl;
+        return 1;
+      }
+      if (component1id != m_hardwareId) { // might need another prereq
+        addComponentPrerequisite(component1id);
+      }
+      if (component2id != m_hardwareId) { // might need another prereq
+        addComponentPrerequisite(component2id);
+      }
+    }
+
   } else nullCols.push_back("hardwareRelationshipTypeId");
   if (m_inputs.find("Description") != m_inputs.end()) {
     cols.push_back("description");
@@ -255,11 +281,48 @@ int ProcessNode::writeDb(rdbModel::Connection* connect) {
   return 0;
 }
 
+void ProcessNode::addComponentPrerequisite(const std::string& componentId) {
+  static std::string prereqTypeId = "";
+  // Check existing prerequisites to see if any have this component id
+  for (int ip = 0; ip < m_prerequisites.size(); ip++) {
+    if ((m_prerequisites[ip]->getComponent().size() > 0 ) &&
+        (m_prerequisites[ip]->getPrereqId() == componentId)) return;
+  }
+  std::string name;
+  using rdbModel::MysqlUtil;
+
+  try {
+    name = MysqlUtil::getColumnValue(s_connection, "HardwareType",
+                                     "name", "id", componentId);
+  } catch (rdbModel::MysqlUtilException ex) {
+    std::cerr << "Hardware type with id " << componentId << " not found"
+              << std::endl;
+    std::cerr << ex.what() << std::endl;
+    exit(1);
+  }
+  if (prereqTypeId == "") {
+    try {
+      prereqTypeId = 
+        MysqlUtil::getColumnValue(s_connection, "PrerequisiteType", "id",
+                                  "name", "COMPONENT");
+    } catch (rdbModel::MysqlUtilException ex) {
+      std::cerr << "Prerequisite type COMPONENT not found in db" << std::endl;
+      std::cerr << ex.what() << std::endl;
+      exit(1);
+    }
+  }
+  PrerequisiteNode* newNode = 
+    new PrerequisiteNode::PrerequisiteNode(this, s_user, name, componentId,
+                                   prereqTypeId);
+  m_prerequisites.push_back(newNode);
+
+}
+
 //                   ** ProcessEdge **
 
 int ProcessEdge::writeDb(rdbModel::Connection* connection, 
                          const std::string& user,
-                         std::string& childId) { // std::string& cond) {
+                         std::string& childId) {
   std::vector<std::string> cols;
   std::vector<std::string> vals;
   cols.push_back("parent");
@@ -345,7 +408,7 @@ int PrerequisiteNode::writeDb(rdbModel::Connection* connect) {
 
   // name = m_inputs["Name"]
   cols.push_back("name");
-  vals.push_back(m_inputs["Name"]);
+  vals.push_back(m_name);
 
   // prerequisiteTypeId = m_prereqTypeId
   cols.push_back("prerequisiteTypeId");
@@ -354,7 +417,6 @@ int PrerequisiteNode::writeDb(rdbModel::Connection* connect) {
   // processId = m_processId
   cols.push_back("processId");
   vals.push_back(m_parent->getProcessId());
-  // vals.push_back(BaseNode::getParent()->getProcessId());
 
   // prereqProcessId = m_prereqId  - if appropriate
   if (m_processName != "") {

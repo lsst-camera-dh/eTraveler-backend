@@ -18,6 +18,13 @@ namespace YAML {
 class PrerequisiteNode : public virtual AuxNode {
 public:  
   PrerequisiteNode(ProcessNode* parent=NULL, const std::string& user="");
+
+  /** Use this constructor when component-type prerequisite has to be
+      generated for process having hardware relationship type. */
+  PrerequisiteNode(ProcessNode* parent, const std::string& user,
+                   const std::string& component, const std::string& componentId,
+                   const std::string& prereqTypeId);
+
   ~PrerequisiteNode();
 
   // E.g. check that referred to hardware types exist, etc.
@@ -26,9 +33,13 @@ public:
   // Write row in PrerequisitePattern table
   int virtual writeDb(rdbModel::Connection* connect);
 
+  std::string getComponent() const {return m_component;}
+  std::string getPrereqId() const {return m_prereqId;}
+
 private:
   std::string m_processName;  // if prereq is PROCESS_STEP
   std::string m_component;    // if prereq is COMPONENT
+  std::string m_name;         // may be identical to one of above
 
   std::string m_prereqId;    // used for COMPONENT or PROCESS_STEP
   std::string m_prereqTypeId;

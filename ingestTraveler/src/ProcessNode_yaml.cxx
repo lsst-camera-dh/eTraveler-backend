@@ -276,7 +276,8 @@ int ProcessNode::parseTravelerActions(YAML::Node* actions) {
     return 6;
   }
   //  each elt. of sequence must be a scalar
-  //  only scalar we recognize is "HarnessedJob"
+  //  only scalars we recognize are "HarnessedJob", "MakeHardwareRelationship"
+  // and "BreakHardwareRelationship"
   for (int i=0; i <  actions->size(); i++) {
     YAML::Node val = (*actions)[i];
     if (!val.IsScalar() ) {
@@ -284,7 +285,16 @@ int ProcessNode::parseTravelerActions(YAML::Node* actions) {
       return 3;
     }
     std::string strVal = val.Scalar();
-    if (strVal == "HarnessedJob") m_travelerActionMask |= 1;
+    if (strVal == "HarnessedJob") {
+      m_travelerActionMask |=  ACTIONBIT_HARNESSED_JOB;
+    } else if (strVal == "MakeHardwareRelationship") {
+      m_travelerActionMask |= ACTIONBIT_MAKE_HARDWARE_RELATIONSHIP;
+    } else if (strVal == "BreakHardwareRelationship") {
+      m_travelerActionMask |= ACTIONBIT_BREAK_HARDWARE_RELATIONSHIP;
+    } else {
+      std::cerr << "Unknown traveler action " << strVal << std::endl;
+      return 3;
+    }
   }
   return 0;
 }

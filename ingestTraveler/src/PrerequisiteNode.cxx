@@ -10,12 +10,20 @@ std::vector<ColumnDescriptor> PrerequisiteNode::s_columns;
 PrerequisiteNode::PrerequisiteNode(ProcessNode* parent, 
                                    const std::string& user) :
   AuxNode(parent, user),
-  m_processName(""), m_component(""), m_prereqId(""), m_prereqTypeId(""),
-  m_version(""), m_userVersionString(false)
+  m_processName(""), m_component(""), m_name(""), m_prereqId(""), 
+  m_prereqTypeId(""),  m_version(""), m_userVersionString(false)
 {
   if (s_yamlToColumn.size() == 0) PrerequisiteNode::initStatic();
 
 }
+
+PrerequisiteNode::PrerequisiteNode(ProcessNode* parent, const std::string& user,
+                                   const std::string& component, 
+                                   const std::string& componentId,
+                                   const std::string& prereqTypeId) :
+  AuxNode(parent, user), m_processName(""), m_component(component), 
+  m_name(component), m_prereqId(componentId), m_prereqTypeId(prereqTypeId),
+  m_version(""), m_userVersionString(false) { }
 
 PrerequisiteNode::~PrerequisiteNode() {
 }
@@ -33,7 +41,7 @@ bool PrerequisiteNode::checkInputs() {
     std::cerr << "Every Prerequisite must have a Name! " << std::endl;
     return false;
   }
-
+  m_name = m_inputs["Name"];
   if (m_inputs["PrerequisiteType"] != std::string("PROCESS_STEP") ) {
     if ((m_inputs.find("Version") != m_inputs.end()) ||
         (m_inputs.find("UserVersionString") != m_inputs.end() ) ) {
