@@ -47,12 +47,15 @@ COMMENT='Identifies teststand, assembly station, etc.';
 # or, if there are just those two, add flag column.
 CREATE TABLE HardwareType 
 ( id int NOT NULL AUTO_INCREMENT, 
-  name varchar(50) NOT NULL COMMENT "common name; defaults to drawing", 
-  drawing varchar(60) NOT NULL COMMENT "drawing id without revision",
+  name varchar(50) NOT NULL COMMENT "common name; same as drawing if drawing non-null", 
+  drawing varchar(60) NULL COMMENT "drawing id without revision",
+  autoSequenceWidth int DEFAULT 0 COMMENT "width of zero-filled sequence #",
+  autoSequence int DEFAULT 0 COMMENT "used when autoSequenceWidth > 0",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
-  CONSTRAINT ix1 UNIQUE (drawing) 
+  CONSTRAINT ix1 UNIQUE (drawing),
+  CONSTRAINT ix2 UNIQUE (name) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE HardwareStatus
@@ -62,7 +65,7 @@ CREATE TABLE HardwareStatus
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
-  CONSTRAINT ix2 UNIQUE (name)
+  CONSTRAINT ix3 UNIQUE (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='just registered, ready for assembly, rejected, etc.';
 
@@ -79,7 +82,7 @@ CREATE TABLE Hardware
   PRIMARY KEY (id), 
   CONSTRAINT fk1 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType (id), 
   CONSTRAINT fk2 FOREIGN KEY (hardwareStatusId) REFERENCES HardwareStatus (id), 
-  CONSTRAINT ix3 UNIQUE INDEX (hardwareTypeId, lsstId),
+  CONSTRAINT ix4 UNIQUE INDEX (hardwareTypeId, lsstId),
   INDEX fk1 (hardwareTypeId),
   INDEX fk2 (hardwareStatusId) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
@@ -568,3 +571,16 @@ CREATE TABLE StringResultHarnessed
  INDEX fk185 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Store arbitary non-filepath string results from activities';
+
+CREATE TABLE NextProcessVersion
+(id int NOT NULL AUTO_INCREMENT,
+ name varchar(50) NOT NULL COMMENT 'will match something in Process.name',
+ nextVersion int DEFAULT 0,
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY (id),
+ UNIQUE INDEX(name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Serve up next available version number for NextProcessVersion.name';
+
+

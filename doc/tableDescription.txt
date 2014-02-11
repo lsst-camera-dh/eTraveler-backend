@@ -1,7 +1,8 @@
 HARDWARE 
 ----------
 1. HardwareType    [template]
-Corresponds to drawing id (without revision #)
+Corresponds to drawing id (without revision #) when there *is* a drawing id.
+Also has unique name field which equals drawing id when there is one.
 
 2. Hardware     [instance of HardwareType]
 Instance of hardware type
@@ -49,20 +50,25 @@ Primary hardware type, aux hardware type if any, children type
 2. ProcessEdge   [template]
 Defines relationships between process steps
 
-3. Activity [instance of Process]
+3. NextProcessVersion
+Does bookkeeping needed to reliably assign next verison number when a
+new version of existing process is needed.  (Not yet used, as of 
+Feb. 7, 2014.)
+
+4. Activity [instance of Process]
 Where the rubber hits the road.  Execute a particular process with
 particular component
 
-4. ActivityFinalStatus
+5. ActivityFinalStatus
 Enumeration of possible final states for an activity
 
-5. JobHarnessStep
+6. JobHarnessStep
 Enumerate states of job harness job.  Nullable fk in Activity references it.
 
-6. JobStepHistory
+7. JobStepHistory
 New entry each time a harnessed job changes state
 
-7. InternalAction
+8. InternalAction
 Enumerates special actions eTraveler may have to perform and assigns
 mask bit to each.  Process definition includes mask field in which
 these bits may be set.

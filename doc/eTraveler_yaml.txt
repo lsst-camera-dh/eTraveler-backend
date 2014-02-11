@@ -52,7 +52,7 @@ required for top node; ignored for all descendants (they inherit value from
 top node).
 
 HardwareRelationshipType:
-optional.  If not specified, value is inherited from parent.  May be null.
+optional.    May be null.  See also TravelerActions: below.
 
 InstructionsURL: 
 optional
@@ -96,7 +96,11 @@ Value is a list of input nodes.
 
 TravelerActions:
 Value is a list of items, taken from a pre-defined set of properties which 
-may be associated with a step, such as HarnessedJob.
+may be associated with a step.  Current list of recognized values is
+ HarnessedJob
+ MakeHardwareRelationship (only if HardwareRelationshipType is non-null)
+ BreakHardwareRelationship  (only if HardwareRelationshipType is non-null)
+
 
 9. Description of a prerequisite node.
 Each prerequisite node is a dict with the following keys:

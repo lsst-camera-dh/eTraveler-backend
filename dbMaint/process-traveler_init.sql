@@ -2,34 +2,36 @@
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 1, 0, 'TEST', 'jrb', NOW(), NOW(), 'Adding prerequisite tables');
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 2, 0, 'TEST', 'jrb', NOW(), NOW(), 'Adding history, result tables');
 insert into Site (name, jhVirtualEnv, jhOutputRoot, createdBy, creationTS) values ('SLAC', '/nfs/farm/g/lsst/u1/jobHarness/jh_inst', '/nfs/farm/g/lsst/u1/jobHarness/jh_stage', 'jrb', NOW());
-insert into HardwareType (name, drawing, createdBy, creationTS) values ('CCD', 'DRAWING_CCD', 'jrb', NOW());
-insert into HardwareType (name, drawing, createdBy, creationTS) values ('Raft', 'DRAWING_Raft', 'jrb', NOW());
-insert into HardwareType (name, drawing, createdBy, creationTS) values ('Lens', 'DRAWING_Lens', 'jrb', NOW());
-insert into HardwareType (name, drawing, createdBy, creationTS) values ('Filter', 'DRAWING_Filter', 'jrb', NOW());
-insert into HardwareType (name, drawing, createdBy, creationTS) values ('ASPIC chip', 'DRAWING_ASPIC', 'jrb', NOW());
-insert into HardwareType (name, drawing, createdBy, creationTS) values ('CABAC Chip', 'DRAWING_CABAC', 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('CCD', NULL, 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('LCA-Raft', 'LCA-Raft', 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('Lens', NULL, 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('LCA-Filter', 'LCA-Filter', 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('LCA-ASPIC', 'LCA-ASPIC', 'jrb', NOW());
+insert into HardwareType (name, drawing, createdBy, creationTS) values ('LCA-CABAC', 'LCA-CABAC', 'jrb', NOW());
 
 insert into HardwareIdentifierAuthority (name, createdBy, creationTS) values ('BNL', 'jrb', NOW());
 insert into HardwareIdentifierAuthority (name, createdBy, creationTS) values ('SerialNumber', 'jrb', NOW());
 
 insert into HardwareRelationshipType set name='Raft_CCD_0_0',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_0_1',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_0_2',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_1_0',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_1_1',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_1_2',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_2_0',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_2_1',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_2_2',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+insert into HardwareRelationshipType set name='Raft_remove_CCD_2_2',
+createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=NOW();
 insert into PrerequisiteType set name='COMPONENT', createdBy='jrb', creationTS=NOW();
 insert into PrerequisiteType set name='TEST_EQUIPMENT', createdBy='jrb', creationTS=NOW();
