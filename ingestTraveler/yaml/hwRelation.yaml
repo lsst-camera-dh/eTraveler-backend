@@ -37,7 +37,7 @@
       InstructionsURL:   http://somewhere/Install_CCD
    -
       Name: Remove_22
-      HardwareRelationshipType: Raft_remove_CCD_2_2
+      HardwareRelationshipType: Raft_CCD_2_2
       Description:  Remove ccd from raft slot 22
       InstructionsURL:   http://somewhere/Remove_CCD
       TravelerActions: 

@@ -30,8 +30,6 @@ insert into HardwareRelationshipType set name='Raft_CCD_2_1',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into HardwareRelationshipType set name='Raft_CCD_2_2',
 createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set name='Raft_remove_CCD_2_2',
-createdBy='jrb', creationTS=NOW(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=NOW();
 insert into PrerequisiteType set name='COMPONENT', createdBy='jrb', creationTS=NOW();
 insert into PrerequisiteType set name='TEST_EQUIPMENT', createdBy='jrb', creationTS=NOW();
