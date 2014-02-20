@@ -51,6 +51,7 @@ CREATE TABLE HardwareType
   drawing varchar(60) NULL COMMENT "drawing id without revision",
   autoSequenceWidth int DEFAULT 0 COMMENT "width of zero-filled sequence #",
   autoSequence int DEFAULT 0 COMMENT "used when autoSequenceWidth > 0",
+  description varchar(200) DEFAULT "",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
