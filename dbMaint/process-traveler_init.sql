@@ -2,13 +2,13 @@
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 1, 0, 'TEST', 'jrb', NOW(), NOW(), 'Adding prerequisite tables');
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 2, 0, 'TEST', 'jrb', NOW(), NOW(), 'Adding history, result tables');
 insert into Site (name, jhVirtualEnv, jhOutputRoot, createdBy, creationTS) values ('SLAC', '/nfs/farm/g/lsst/u1/jobHarness/jh_inst', '/nfs/farm/g/lsst/u1/jobHarness/jh_stage', 'jrb', NOW());
-insert into HardwareType (name, drawing, description, createdBy, creationTS) values ('CCD', NULL, 'CCD, aka Sensor', 'jrb', NOW());
-insert into HardwareType (name, drawing, description, createdBy, creationTS) values ('LCA-Raft_1', 'LCA-Raft_1', 'science raft', 'jrb', NOW());
-insert into HardwareType (name, drawing, description, createdBy, creationTS) values ('LCA-Raft_2', 'LCA-Raft_2', 'corner raft', 'jrb', NOW());
-insert into HardwareType (name, drawing, createdBy, creationTS) values ('Lens', NULL, 'jrb', NOW());
-insert into HardwareType (name, drawing, createdBy, creationTS) values ('LCA-Filter', 'LCA-Filter', 'jrb', NOW());
-insert into HardwareType (name, drawing, createdBy, creationTS) values ('LCA-ASPIC', 'LCA-ASPIC', 'jrb', NOW());
-insert into HardwareType (name, drawing, createdBy, creationTS) values ('LCA-CABAC', 'LCA-CABAC', 'jrb', NOW());
+insert into HardwareType (name, description, createdBy, creationTS) values ('CCD', 'CCD, aka Sensor', 'jrb', NOW());
+insert into HardwareType (name, description, createdBy, creationTS) values ('LCA-Raft_1', 'science raft', 'jrb', NOW());
+insert into HardwareType (name, description, createdBy, creationTS) values ('LCA-Raft_2',  'corner raft', 'jrb', NOW());
+insert into HardwareType (name, createdBy, creationTS) values ('Lens', 'jrb', NOW());
+insert into HardwareType (name, createdBy, creationTS) values ('LCA-Filter', 'jrb', NOW());
+insert into HardwareType (name, createdBy, creationTS) values ('LCA-ASPIC', 'jrb', NOW());
+insert into HardwareType (name, createdBy, creationTS) values ('LCA-CABAC', 'jrb', NOW());
 
 insert into HardwareIdentifierAuthority (name, createdBy, creationTS) values ('BNL', 'jrb', NOW());
 insert into HardwareIdentifierAuthority (name, createdBy, creationTS) values ('SerialNumber', 'jrb', NOW());

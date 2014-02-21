@@ -47,15 +47,13 @@ COMMENT='Identifies teststand, assembly station, etc.';
 # or, if there are just those two, add flag column.
 CREATE TABLE HardwareType 
 ( id int NOT NULL AUTO_INCREMENT, 
-  name varchar(50) NOT NULL COMMENT "common name; same as drawing if drawing non-null", 
-  drawing varchar(60) NULL COMMENT "drawing id without revision",
+  name varchar(50) NOT NULL COMMENT "drawing number without revision if available",
   autoSequenceWidth int DEFAULT 0 COMMENT "width of zero-filled sequence #",
   autoSequence int DEFAULT 0 COMMENT "used when autoSequenceWidth > 0",
   description varchar(200) DEFAULT "",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
-  CONSTRAINT ix1 UNIQUE (drawing),
   CONSTRAINT ix2 UNIQUE (name) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
