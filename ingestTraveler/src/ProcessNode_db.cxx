@@ -380,12 +380,11 @@ int PrerequisiteNode::verify(rdbModel::Connection* connect) {
     return 1;
   }
 
-  // If type is COMPONENT, check that name matches HardwareType.name or
-  //  HardwareType.drawing;  cache corresponding HardwareType.id
+  // If type is COMPONENT, check that name matches HardwareType.name 
+  //    cache corresponding HardwareType.id
   std::string where;
   if (m_component != "") {
-    where = std::string(" where name = '") + m_component + 
-      std::string("' or drawing = '") + m_component + "'";
+    where = std::string(" where name = '") + m_component +  "'";
 
     try {
       m_prereqId = MysqlUtil::getColumnWhere(s_connection, "HardwareType",
