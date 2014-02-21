@@ -100,7 +100,9 @@ may be associated with a step.  Current list of recognized values is
  HarnessedJob
  MakeHardwareRelationship (only if HardwareRelationshipType is non-null)
  BreakHardwareRelationship  (only if HardwareRelationshipType is non-null)
-
+If the process has a specified HardwareRelationship and 
+BreakHardwareRelationship has not been specified explicitly, TravelerActions
+defaults to MakeHardwareRelationship
 
 9. Description of a prerequisite node.
 Each prerequisite node is a dict with the following keys:
@@ -114,10 +116,8 @@ required for types.
 If type was PROCESS_STEP value must match Process.name for some row in
 Process table.  Probably we also need Process.hardwareTypeId to match
 hardware type of this traveler.
-If type was COMPONENT value must match  HardwareType.name or HarwareType.drawing
-for some row in HardwareType table.  [Maybe we someday get rid of
-HardwareType.name altogether?]
-
+If type was COMPONENT value must match  HardwareType.name
+for some row in HardwareType table. 
 
 UserVersionString:
 Optional. Ignored for types other than  PROCESS_STEP

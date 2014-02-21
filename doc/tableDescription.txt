@@ -1,8 +1,10 @@
 HARDWARE 
 ----------
 1. HardwareType    [template]
-Corresponds to drawing id (without revision #) when there *is* a drawing id.
-Also has unique name field which equals drawing id when there is one.
+'name' field  should have value = drawing id (without revision #) when there 
+*is* a drawing id.
+Also has a 'description' field and fields for maintaining auto-generated
+sequence numbers for a specific HardwareType (if requested).
 
 2. Hardware     [instance of HardwareType]
 Instance of hardware type
