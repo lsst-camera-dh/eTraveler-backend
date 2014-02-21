@@ -1,7 +1,7 @@
 %YAML 1.1 
 ---
 Name:  PrereqTraveler
-HardwareType: Raft
+HardwareType: LCA-Raft_1
 Description: Blah blah
 InstructionsURL:  No instructions
 Sequence:
@@ -23,10 +23,10 @@ Sequence:
           Name: ice cream
         -
           PrerequisiteType:  COMPONENT
-          Name: DRAWING_ASPIC
+          Name: LCA-ASPIC
         -
           PrerequisiteType:  COMPONENT
-          Name: ASPIC chip
+          Name: LCA-Filter
    -
       Clone: hasPrereqs
 

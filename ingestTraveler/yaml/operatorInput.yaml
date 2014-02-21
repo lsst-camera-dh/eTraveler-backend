@@ -1,7 +1,7 @@
 %YAML 1.1 
 ---
 Name:  InputTraveler
-HardwareType: Raft
+HardwareType: LCA-Raft_1
 Description: Blah blah
 InstructionsURL:   No instructions
 Sequence:
