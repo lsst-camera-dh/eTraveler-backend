@@ -1,8 +1,9 @@
 %YAML 1.1 
+---
 Name:  Prepare3
 HardwareType: LCA-ASPIC
 Description: Blah blah
-InstructionsURL: 
+InstructionsURL: someUrl
 Sequence:
    -
       Name: AnyOldStep
