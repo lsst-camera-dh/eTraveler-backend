@@ -22,25 +22,25 @@ Sequence:
          Name: TS1 Sensor receive
          # combine old Sensor receive,move to anteroom, file vendor data,init logging
          Description:  Unpack; discard loose packing; move to anteroom..
-         InstructionsURL: "http://www.slac.stanford.edu/~jrb/etraveler/sensor/T01/TS1_receive.html"
+         InstructionsURL: "http://www.slac.stanford.edu/~jrb/etraveler/instr/sensor/T01/TS1_receive.html"
 
        -  
-          Name: Sensor coffin clean
-          Description:  Full cleaning procedure
-          Prerequisites:
+         Name: Sensor coffin clean
+         Description:  Full cleaning procedure
+         Prerequisites:
              -
                 Name: gloves
                 PrerequisiteType: CONSUMABLE
              -  
                 Name: cleaning agent 1
                 PrerequisiteType: CONSUMABLE
-          InstructionsURL: "http://www.slac.stanford.edu/~jrb/etraveler/instr/sensor/T01/clean_coffin_1.html"
+         InstructionsURL: "http://www.slac.stanford.edu/~jrb/etraveler/instr/sensor/T01/clean_coffin_1.html"
        -  
-          Name: Sensor T01 in-jig inspection
-          # combines old clean_move, clean_2, inspect jig,
-          # take pictures
-          Description:  Move coffin into C10K, clean_2, inspect jig
-          Prerequisites:
+         Name: Sensor T01 in-jig inspection
+         # combines old clean_move, clean_2, inspect jig,
+         # take pictures
+         Description:  Move coffin into C10K, clean_2, inspect jig
+         Prerequisites:
              -
                 Name: gloves
                 PrerequisiteType: CONSUMABLE
@@ -51,10 +51,10 @@ Sequence:
              - 
                 Name: Web camera
                 PrerequisiteType: TEST_EQUIPMENT
-          InstructionsURL: "http://www.slac.stanford.edu/~jrb/etraveler/instr/sensor/T01/inspect_in_jig.html"
+         InstructionsURL: "http://www.slac.stanford.edu/~jrb/etraveler/instr/sensor/T01/inspect_in_jig.html"
   
        -
-          Name:  Sensor move to TS2
+         Name:  Sensor move to TS2
    -
      Name: Sensor at TS2
      Description:  Initial inspection
@@ -75,7 +75,7 @@ Sequence:
        -
           Name:  Sensor inspect edges
           Description: run edge inspection script; archive image photos
-          InstructionsURL:    "http://www.stanford.edu/~jrb/eTraveler/instr/sensor/T01/sensor/edgeInspection.html"
+          InstructionsURL:    "http://www.stanford.edu/~jrb/eTraveler/instr/sensor/T01/edgeInspection.html"
           Selection:
                - 
                  Condition: PASS
