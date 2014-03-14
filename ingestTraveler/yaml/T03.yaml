@@ -205,7 +205,7 @@ Sequence:
               UserVersionString: v0
        -  
           Name: dark_current
-          UserVersionString: v1r0
+          UserVersionString: v0
           TravelerActions:
             - HarnessedJob
           Prerequisites:
