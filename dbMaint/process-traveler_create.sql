@@ -50,6 +50,7 @@ CREATE TABLE HardwareType
   name varchar(50) NOT NULL COMMENT "drawing number without revision if available",
   autoSequenceWidth int DEFAULT 0 COMMENT "width of zero-filled sequence #",
   autoSequence int DEFAULT 0 COMMENT "used when autoSequenceWidth > 0",
+  trackingType enum('COMPONENT', 'TEST_EQUIPMENT') DEFAULT 'COMPONENT',
   description varchar(200) DEFAULT "",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -204,17 +205,20 @@ CREATE TABLE Process
    COMMENT 'determines where we go next',
   maxIteration tinyint unsigned DEFAULT 1,
   travelerActionMask int unsigned DEFAULT 0,
+  newHardwareStatusId int NULL COMMENT 'used if step is to change hw status',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
   CONSTRAINT fk40 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType (id), 
   CONSTRAINT fk41 FOREIGN KEY (hardwareRelationshipTypeId) REFERENCES HardwareRelationshipType (id), 
+  CONSTRAINT fk42 FOREIGN KEY (newHardwareStatusId) REFERENCES HardwareStatus (id),
   INDEX fk40 (hardwareTypeId),
   INDEX fk41 (hardwareRelationshipTypeId),
-  CONSTRAINT ix42 UNIQUE INDEX (name, hardwareTypeId, version),
-  CONSTRAINT ix43 UNIQUE INDEX (name, hardwareTypeId, userVersionString),
-  CONSTRAINT ix44 UNIQUE INDEX (originalId, version),
-  CONSTRAINT ix45 UNIQUE INDEX (originalId, userVersionString)
+  INDEX fk42 (newHardwareStatusId),
+  CONSTRAINT ix43 UNIQUE INDEX (name, hardwareTypeId, version),
+  CONSTRAINT ix44 UNIQUE INDEX (name, hardwareTypeId, userVersionString),
+  CONSTRAINT ix45 UNIQUE INDEX (originalId, version),
+  CONSTRAINT ix46 UNIQUE INDEX (originalId, userVersionString)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Describes procedure for a step within a traveler';
 

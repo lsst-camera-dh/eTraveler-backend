@@ -65,4 +65,5 @@ insert into InternalAction set name='makeHardwareRelationship', maskBit='2', cre
 insert into InternalAction set name='breakHardwareRelationship', maskBit='4', createdBy='jrb', creationTS=NOW();
 insert into InternalAction set name='setHardwareStatus', maskBit='8', createdBy='jrb', creationTS=NOW();
 insert into InternalAction set name='setHardwareLocation', maskBit='16', createdBy='jrb', creationTS=NOW();
+insert into InternalAction set name='async', maskBit='32', createdBy='jrb', creationTS=NOW();
 
