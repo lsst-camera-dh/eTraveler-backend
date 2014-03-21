@@ -422,7 +422,7 @@ CREATE TABLE JobStepHistory
 (id  int NOT NULL AUTO_INCREMENT,
   jobHarnessStepId int NOT NULL COMMENT "fk for the new status",
   activityId int NOT NULL COMMENT "activity whose status is being updated",
-  errorString varchar(120) NULL,
+  errorString varchar(255) NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
