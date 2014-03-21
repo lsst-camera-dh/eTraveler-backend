@@ -97,9 +97,14 @@ Value is a list of input nodes.
 TravelerActions:
 Value is a list of items, taken from a pre-defined set of properties which 
 may be associated with a step.  Current list of recognized values is
+
  HarnessedJob
  MakeHardwareRelationship (only if HardwareRelationshipType is non-null)
  BreakHardwareRelationship  (only if HardwareRelationshipType is non-null)
+ SetHardwareStatus
+ SetHardwareLocation
+ Async    (for now, may only apply if HarnessedJob is also set)
+
 If the process has a specified HardwareRelationship and 
 BreakHardwareRelationship has not been specified explicitly, TravelerActions
 defaults to MakeHardwareRelationship
