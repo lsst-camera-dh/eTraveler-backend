@@ -66,4 +66,9 @@ insert into InternalAction set name='breakHardwareRelationship', maskBit='4', cr
 insert into InternalAction set name='setHardwareStatus', maskBit='8', createdBy='jrb', creationTS=NOW();
 insert into InternalAction set name='setHardwareLocation', maskBit='16', createdBy='jrb', creationTS=NOW();
 insert into InternalAction set name='async', maskBit='32', createdBy='jrb', creationTS=NOW();
+insert into PermissionGroup set name='operator', maskBit='1', createdBy='jrb', creationTS=NOW();
+insert into PermissionGroup set name='supervisor', maskBit='2', createdBy='jrb', creationTS=NOW();
+insert into PermissionGroup set name='approver', maskBit='4', createdBy='jrb', creationTS=NOW();
+insert into PermissionGroup set name='admin', maskBit='8', createdBy='jrb', creationTS=NOW();
+
 

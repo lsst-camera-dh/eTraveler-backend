@@ -192,6 +192,18 @@ CREATE TABLE InternalAction
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Identify special actions eTraveler may have to perform assoc. with process';
 
+CREATE TABLE PermissionGroup
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(50) NOT NULL,
+  maskBit int unsigned NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  UNIQUE INDEX (maskBit),
+  UNIQUE INDEX (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Associate mask bit with each permission group';
+
 CREATE TABLE Process 
 ( id int NOT NULL AUTO_INCREMENT, 
   originalId int NULL COMMENT "set equal to id of 1st version of this Process",
@@ -205,6 +217,7 @@ CREATE TABLE Process
    COMMENT 'determines where we go next',
   maxIteration tinyint unsigned DEFAULT 1,
   travelerActionMask int unsigned DEFAULT 0,
+  permissionMask int unsigned DEFAULT 127 COMMENT 'Set bit for each group authorized to execute this process',
   newHardwareStatusId int NULL COMMENT 'used if step is to change hw status',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -249,18 +262,15 @@ COMMENT='Describe condition under which one branches to NCR';
 
 CREATE TABLE Exception
 ( id int NOT NULL AUTO_INCREMENT, 
-  exitProcessId int NOT NULL, 
-  returnProcessId int NOT NULL,
+  exitProcessPath varchar(2000)  NOT NULL COMMENT 'comma separated list of process ids from traveler root to exit process', 
+  returnProcessPath varchar(2000) NOT NULL COMMENT 'comma separated list of process ids from traveler root to return process', 
   NCRProcessId int NOT NULL,  
   conditionId int NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
-  CONSTRAINT fk80 FOREIGN KEY (exitProcessId) REFERENCES Process (id),  
-  CONSTRAINT fk81 FOREIGN KEY (returnProcessId) REFERENCES Process (id),  
   CONSTRAINT fk82 FOREIGN KEY (NCRProcessId) REFERENCES Process (id),
   CONSTRAINT fk83 FOREIGN KEY (conditionId) REFERENCES NCRcondition (id),
-  INDEX fk80 (exitProcessId), INDEX fk81 (returnProcessId),
   INDEX fk82 (NCRProcessId) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

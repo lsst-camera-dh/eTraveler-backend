@@ -75,6 +75,11 @@ Enumerates special actions eTraveler may have to perform and assigns
 mask bit to each.  Process definition includes mask field in which
 these bits may be set.
 
+9. PermissionGroup
+Enumerates permission groups (operator, supervisor, etc.) and assigns
+mask bit to each.  Process definition includes mask field in which
+these bits may be set.
+
 
 EXCEPTIONS
 ----------
