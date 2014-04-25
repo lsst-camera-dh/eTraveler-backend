@@ -262,15 +262,22 @@ COMMENT='Describe condition under which one branches to NCR';
 
 CREATE TABLE Exception
 ( id int NOT NULL AUTO_INCREMENT, 
-  exitProcessPath varchar(2000)  NOT NULL COMMENT 'comma separated list of process ids from traveler root to exit process', 
-  returnProcessPath varchar(2000) NOT NULL COMMENT 'comma separated list of process ids from traveler root to return process', 
+  exitProcessPath varchar(2000)  NOT NULL COMMENT 'comma separated list of processEdge ids from traveler root to exit process', 
+  returnProcessPath varchar(2000) NOT NULL COMMENT 'comma separated list of processEdge ids from traveler root to return process', 
+  exitProcessId int NOT NULL,
+  rootProcessId int NOT NULL COMMENT 'id of root process for traveler exception is assoc. with',
   NCRProcessId int NOT NULL,  
   conditionId int NOT NULL,
+  status ENUM('ENABLED', 'DISABLED') default 'ENABLED',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
+  CONSTRAINT fk80 FOREIGN KEY (exitProcessId) REFERENCES Process (id),
+  CONSTRAINT fk81 FOREIGN KEY (rootProcessId) REFERENCES Process (id),
   CONSTRAINT fk82 FOREIGN KEY (NCRProcessId) REFERENCES Process (id),
   CONSTRAINT fk83 FOREIGN KEY (conditionId) REFERENCES NCRcondition (id),
+  INDEX fk80 (exitProcessId),
+  INDEX fk81 (rootProcessId),
   INDEX fk82 (NCRProcessId) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -596,4 +603,33 @@ CREATE TABLE NextProcessVersion
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Serve up next available version number for NextProcessVersion.name';
 
+
+CREATE TABLE TravelerType
+( id int NOT NULL AUTO_INCREMENT,
+  rootProcessId int NOT NULL,
+  state ENUM('NEW', 'ACTIVE', 'DEACTIVATED', 'SUPERSEDED') DEFAULT 'NEW',
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT  fk192 FOREIGN KEY(rootProcessId) REFERENCES Process(id),
+  INDEX fk192 (rootProcessId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='List of traveler types';
+
+CREATE TABLE StopWorkHistory
+( id  int NOT NULL AUTO_INCREMENT,
+  activityId int NOT NULL COMMENT "current activity being stopped or resumed",
+  rootActivityId int NOT NULL COMMENT "root activity of this traveler instance",
+  reason varchar(1024) NOT NULL COMMENT "why stop work is necessary",
+  approvalGroup  int NOT NULL COMMENT "bitmask using PermissionGroup.maskBit",
+  creationTS timestamp NULL COMMENT "when stop work occurred",
+  createdBy varchar(50) NOT NULL,
+  resolution ENUM('NONE', 'RESUMED', 'QUIT') DEFAULT 'NONE',
+  resolutionTS timestamp NULL COMMENT "when activity was resumed or killed",
+  resolvedBy varchar(50) NULL,  
+  PRIMARY KEY(id),
+  CONSTRAINT fk195 FOREIGN KEY(activityId) REFERENCES Activity(id),
+  CONSTRAINT fk196 FOREIGN KEY(rootActivityId) REFERENCES Activity(id)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='an entry for each STOP WORK event';
 
