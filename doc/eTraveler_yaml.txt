@@ -28,6 +28,7 @@ following, all of which have list values:
    Prerequisites
    RequiredInputs
    TravelerActions   
+   PermissionGroups
 
 4. The keys come from a known collection of allowable keys.
 Most of them are optional. 
@@ -75,7 +76,7 @@ MaxIteration: optional; defaults to 1.  If > 1, operator
 may choose to re-execute the step as long as total number of executions is
 <= MaxIteration.
 
-8. There are five keys with non-scalar values.
+8. There are six keys with non-scalar values.
 
 Sequence:
 Value is an ordered list of process nodes.  Intent is that the process steps 
@@ -104,6 +105,20 @@ may be associated with a step.  Current list of recognized values is
  SetHardwareStatus
  SetHardwareLocation
  Async    (for now, may only apply if HarnessedJob is also set)
+
+PermissionGroups:
+Value is a list, taken from pre-defined set.  Current recognized values are
+
+ Operator     (the default)
+ Supervisor
+ Approver
+ Admin
+
+For now (because each category implies all the ones above it in the list)
+if one of these values is specified, the mask bits corresponding to it and
+all categories above it will be set.  If need be, will define additional
+values like SupervisorOnly to indicate that just the supervisor bit should
+be set.
 
 If the process has a specified HardwareRelationship and 
 BreakHardwareRelationship has not been specified explicitly, TravelerActions
