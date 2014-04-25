@@ -80,6 +80,11 @@ Enumerates permission groups (operator, supervisor, etc.) and assigns
 mask bit to each.  Process definition includes mask field in which
 these bits may be set.
 
+10. TravelerType
+Enumerate traveler types, indicating status (available, superseded, etc.)
+
+11. StopWorkHistory
+Create new entry for stop work action.  Update for resume or quit.
 
 EXCEPTIONS
 ----------
