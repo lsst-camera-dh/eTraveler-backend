@@ -42,11 +42,17 @@ nodes may optionally have a Condition:  key.  No other keys are allowed.
 The intent is to allow specification of the same process (and all its 
 descendants) in more than one place in the traveler.
 
-7. Allowable scalar-valued keys for non-clones are listed below along 
-with some of their properties.  Value is a string unless otherwise noted.
+7. If a node is a reference (key = "RefName") it is supposed to refer to
+an already-existing (in db) Process.  All other keys are ignored
+except "RefVersion", which defaults to most recent version (in whatever db
+traveler is being injested into).  HardwareType is inherited as usual.
+[Ideally have option for ingest program 
+
+8. Allowable scalar-valued keys for non-clones and non-refs are listed below 
+along with some of their properties.  Value is a string unless otherwise noted.
 
 Name:   
-must appear unless the key Clone appears
+must appear unless the key Clone or RefName appears
 
 HardwareType:
 required for top node; ignored for all descendants (they inherit value from 
@@ -76,7 +82,11 @@ MaxIteration: optional; defaults to 1.  If > 1, operator
 may choose to re-execute the step as long as total number of executions is
 <= MaxIteration.
 
-8. There are six keys with non-scalar values.
+SourceDb: optional; defaults to "[none]".  Must be present with a
+sensible value (starting with "jdbc/" perhaps? Or one of enumerated
+dataSourceMode values?) if any sub-elements use the RefName key.
+
+9. There are six keys with non-scalar values.
 
 Sequence:
 Value is an ordered list of process nodes.  Intent is that the process steps 
@@ -124,7 +134,7 @@ If the process has a specified HardwareRelationship and
 BreakHardwareRelationship has not been specified explicitly, TravelerActions
 defaults to MakeHardwareRelationship
 
-9. Description of a prerequisite node.
+10. Description of a prerequisite node.
 Each prerequisite node is a dict with the following keys:
 
 PrerequisiteType:
@@ -154,7 +164,7 @@ optional
 Quantity:
 optional.  If present must be positive integer.  Defaults to 1
 
-10. Input nodes
+11. Input nodes
 Each input node is a dict with the following keys:
 
 Label:
@@ -176,7 +186,7 @@ Description:
 Optional.  Could be useful if label is not sufficient to clearly indicate
 what's needed.
 
-11. Other constraints.
+12. Other constraints.
 
 Documents satisfying 1-7 above will pass the first stage of ingest.  The
 next stage makes some checks against the database before attempting to 
@@ -186,6 +196,12 @@ write anything.
 
  - values of HardwareRelationshipType: (if present) must correspond to 
    to some value of HardwareRelationshipType.name
+
+ - RefName must match some value of Process.name for traveler's hardware type 
+
+ - If RefVersion is used, there must be a (necessarily unique) entry in
+   Process with name=value(RefName), version=value(RefVersion) and correct
+   hardware type.
  
 Constraints having to do with contents of the eTraveler db at the time
 the YAML file is ingested are described in step 9.
