@@ -3,6 +3,7 @@
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 1, 0, 'TEST', 'jrb', NOW(), NOW(), 'Adding prerequisite tables');
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 2, 0, 'TEST', 'jrb', NOW(), NOW(), 'Adding history, result tables');
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 3, 0, 'TEST', 'jrb', NOW(), NOW(), 'Adding stop/resume history, traveler type directory tables');
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 4, 0, 'TEST', 'jrb', NOW(), NOW(), 'Merge Exception and NCRcondition; rename to ExceptionType. Add new table Exception for exception instances. Beef up TravelerType');
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=NOW();
 insert into PrerequisiteType set name='COMPONENT', createdBy='jrb', creationTS=NOW();
 insert into PrerequisiteType set name='TEST_EQUIPMENT', createdBy='jrb', creationTS=NOW();

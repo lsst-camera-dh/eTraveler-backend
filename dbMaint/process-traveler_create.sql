@@ -111,8 +111,8 @@ CREATE TABLE HardwareLocationHistory
   PRIMARY KEY(id),
   CONSTRAINT fk210 FOREIGN KEY(locationId) REFERENCES Location(id),
   CONSTRAINT fk211 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
-  INDEX fk200 (locationId),
-  INDEX fk201 (hardwareId)
+  INDEX fk210 (locationId),
+  INDEX fk211 (hardwareId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all hardware location updates';
 
@@ -250,24 +250,15 @@ CREATE TABLE ProcessEdge
 )  ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Encapsulates information on how to traverse hierarchy of process steps';
 
-CREATE TABLE NCRcondition
-( id int NOT NULL AUTO_INCREMENT, 
-  conditionString varchar(80) NOT NULL,
-  createdBy varchar(50) NOT NULL,
-  creationTS timestamp NULL,
-  PRIMARY KEY (id), 
-  CONSTRAINT ix30 UNIQUE (conditionString) 
-)  ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='Describe condition under which one branches to NCR';
 
-CREATE TABLE Exception
+CREATE TABLE ExceptionType
 ( id int NOT NULL AUTO_INCREMENT, 
+  conditionString varchar(80) NOT NULL,  
   exitProcessPath varchar(2000)  NOT NULL COMMENT 'comma separated list of processEdge ids from traveler root to exit process', 
   returnProcessPath varchar(2000) NOT NULL COMMENT 'comma separated list of processEdge ids from traveler root to return process', 
   exitProcessId int NOT NULL,
   rootProcessId int NOT NULL COMMENT 'id of root process for traveler exception is assoc. with',
   NCRProcessId int NOT NULL,  
-  conditionId int NOT NULL,
   status ENUM('ENABLED', 'DISABLED') default 'ENABLED',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -275,7 +266,6 @@ CREATE TABLE Exception
   CONSTRAINT fk80 FOREIGN KEY (exitProcessId) REFERENCES Process (id),
   CONSTRAINT fk81 FOREIGN KEY (rootProcessId) REFERENCES Process (id),
   CONSTRAINT fk82 FOREIGN KEY (NCRProcessId) REFERENCES Process (id),
-  CONSTRAINT fk83 FOREIGN KEY (conditionId) REFERENCES NCRcondition (id),
   INDEX fk80 (exitProcessId),
   INDEX fk81 (rootProcessId),
   INDEX fk82 (NCRProcessId) 
@@ -473,7 +463,7 @@ CREATE TABLE IntResultHarnessed
  value  int,
  schemaName varchar(50) NOT NULL,
  schemaVersion varchar(50) NOT NULL,
- schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result sumamry",
+ schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result summary",
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
@@ -507,7 +497,7 @@ CREATE TABLE FloatResultHarnessed
  value  float,
  schemaName varchar(50) NOT NULL,
  schemaVersion varchar(50) NOT NULL,
- schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result sumamry",
+ schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result summary",
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
@@ -547,7 +537,7 @@ CREATE TABLE FilepathResultHarnessed
  sha1   char(40) NOT NULL COMMENT "still another field in fileref",
  schemaName varchar(50) NOT NULL,
  schemaVersion varchar(50) NOT NULL,
- schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result sumamry",
+ schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result summary",
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
@@ -581,7 +571,7 @@ CREATE TABLE StringResultHarnessed
  value  varchar(255),
  schemaName varchar(50) NOT NULL,
  schemaVersion varchar(50) NOT NULL,
- schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result sumamry",
+ schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result summary",
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
@@ -608,6 +598,8 @@ CREATE TABLE TravelerType
 ( id int NOT NULL AUTO_INCREMENT,
   rootProcessId int NOT NULL,
   state ENUM('NEW', 'ACTIVE', 'DEACTIVATED', 'SUPERSEDED') DEFAULT 'NEW',
+  owner varchar(50) COMMENT 'responsible party',
+  reason varchar(255) COMMENT 'purpose of traveler or of this version',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
@@ -632,4 +624,26 @@ CREATE TABLE StopWorkHistory
   CONSTRAINT fk196 FOREIGN KEY(rootActivityId) REFERENCES Activity(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='an entry for each STOP WORK event';
+
+CREATE TABLE Exception
+( id int NOT NULL AUTO_INCREMENT,
+  exceptionTypeId int NOT NULL COMMENT "ref. to exception definition",
+  exitActivityId int NOT NULL COMMENT "normal activity in which exception occurs",
+  NCRActivityId int NOT NULL COMMENT "first activity in NCR procedure",
+  returnActivityId int NULL COMMENT "first normal activity after NCR",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT fk220 FOREIGN KEY(exceptionTypeId) REFERENCES ExceptionType(id),
+  CONSTRAINT fk221 FOREIGN KEY(exitActivityId) REFERENCES Activity(id),
+  CONSTRAINT fk222 FOREIGN KEY(NCRActivityId) REFERENCES Activity(id),
+  CONSTRAINT fk223 FOREIGN KEY(returnActivityId) REFERENCES Activity(id),
+  INDEX fk220 (exceptionTypeId),
+  INDEX fk221 (exitActivityId),
+  INDEX fk222 (NCRActivityId),
+  INDEX fk223 (returnActivityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='describes exception instance';
+
+   
 
