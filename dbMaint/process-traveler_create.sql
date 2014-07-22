@@ -257,6 +257,7 @@ CREATE TABLE ExceptionType
   exitProcessPath varchar(2000)  NOT NULL COMMENT 'comma separated list of processEdge ids from traveler root to exit process', 
   returnProcessPath varchar(2000) NOT NULL COMMENT 'comma separated list of processEdge ids from traveler root to return process', 
   exitProcessId int NOT NULL,
+  returnProcessId int NOT NULL,
   rootProcessId int NOT NULL COMMENT 'id of root process for traveler exception is assoc. with',
   NCRProcessId int NOT NULL,  
   status ENUM('ENABLED', 'DISABLED') default 'ENABLED',
@@ -266,9 +267,11 @@ CREATE TABLE ExceptionType
   CONSTRAINT fk80 FOREIGN KEY (exitProcessId) REFERENCES Process (id),
   CONSTRAINT fk81 FOREIGN KEY (rootProcessId) REFERENCES Process (id),
   CONSTRAINT fk82 FOREIGN KEY (NCRProcessId) REFERENCES Process (id),
+  CONSTRAINT fk83 FOREIGN KEY (returnProcessId) REFERENCES Process (id),
   INDEX fk80 (exitProcessId),
   INDEX fk81 (rootProcessId),
-  INDEX fk82 (NCRProcessId) 
+  INDEX fk82 (NCRProcessId),
+  INDEX fk83 (returnProcessId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE JobHarnessStep
