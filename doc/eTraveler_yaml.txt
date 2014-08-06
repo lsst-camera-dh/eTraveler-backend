@@ -83,8 +83,8 @@ may choose to re-execute the step as long as total number of executions is
 <= MaxIteration.
 
 SourceDb: optional; defaults to "[none]".  Must be present with a
-sensible value (starting with "jdbc/" perhaps? Or one of enumerated
-dataSourceMode values?) if any sub-elements use the RefName key.
+sensible value (one of enumerated dataSourceMode values: Prod, Dev, Test,
+Raw) if any sub-elements use the RefName key.
 
 9. There are six keys with non-scalar values.
 
