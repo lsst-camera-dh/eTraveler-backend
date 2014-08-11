@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS PrerequisiteType;
 DROP TABLE IF EXISTS JobStepHistory;
 DROP TABLE IF EXISTS StopWorkHistory;
 DROP TABLE IF EXISTS Exception;
+DROP TABLE IF EXISTS ActivityStatusHistory;
 DROP TABLE IF EXISTS Activity;
 DROP TABLE IF EXISTS HardwareLocationHistory;
 DROP TABLE IF EXISTS Location;

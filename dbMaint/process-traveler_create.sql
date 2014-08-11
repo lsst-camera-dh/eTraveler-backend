@@ -254,8 +254,8 @@ COMMENT='Encapsulates information on how to traverse hierarchy of process steps'
 CREATE TABLE ExceptionType
 ( id int NOT NULL AUTO_INCREMENT, 
   conditionString varchar(80) NOT NULL,  
-  exitProcessPath varchar(2000)  NOT NULL COMMENT 'comma separated list of processEdge ids from traveler root to exit process', 
-  returnProcessPath varchar(2000) NOT NULL COMMENT 'comma separated list of processEdge ids from traveler root to return process', 
+  exitProcessPath varchar(2000)  NOT NULL COMMENT 'period separated list of processEdge ids from traveler root to exit process', 
+  returnProcessPath varchar(2000) NOT NULL COMMENT 'period separated list of processEdge ids from traveler root to return process', 
   exitProcessId int NOT NULL,
   returnProcessId int NOT NULL,
   rootProcessId int NOT NULL COMMENT 'id of root process for traveler exception is assoc. with',
@@ -648,5 +648,16 @@ CREATE TABLE Exception
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='describes exception instance';
 
-   
-
+CREATE TABLE ActivityStatusHistory
+(id  int NOT NULL AUTO_INCREMENT,
+  activityStatusId int NOT NULL COMMENT "fk for the new status",
+  activityId int NOT NULL COMMENT "activity whose status is being updated",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT fk230 FOREIGN KEY(activityStatusId) REFERENCES ActivityFinalStatus(id),
+  CONSTRAINT fk231 FOREIGN KEY(ActivityId) REFERENCES Activity(id),
+  INDEX fk230 (activityStatusId),
+  INDEX fk231 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Keep track of all activity status updates';

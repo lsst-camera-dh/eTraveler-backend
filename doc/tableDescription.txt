@@ -72,20 +72,23 @@ Enumerate states of job harness job.  Nullable fk in Activity references it.
 7. JobStepHistory
 New entry each time a harnessed job changes state
 
-8. InternalAction
+8. ActivityStatusHistory
+New entry each time an activity changes status (so-called "final status")
+
+9. InternalAction
 Enumerates special actions eTraveler may have to perform and assigns
 mask bit to each.  Process definition includes mask field in which
 these bits may be set.
 
-9. PermissionGroup
+10. PermissionGroup
 Enumerates permission groups (operator, supervisor, etc.) and assigns
 mask bit to each.  Process definition includes mask field in which
 these bits may be set.
 
-10. TravelerType
+11. TravelerType
 Enumerate traveler types, indicating status (available, superseded, etc.)
 
-11. StopWorkHistory
+12. StopWorkHistory
 Create new entry for stop work action.  Update for resume or quit.
 
 EXCEPTIONS

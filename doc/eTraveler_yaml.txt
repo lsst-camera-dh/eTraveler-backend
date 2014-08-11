@@ -115,6 +115,8 @@ may be associated with a step.  Current list of recognized values is
  SetHardwareStatus
  SetHardwareLocation
  Async    (for now, may only apply if HarnessedJob is also set)
+ Automatable (applies only to step with sequence substeps, all of which
+   have HarnessedJob bit set) 
 
 PermissionGroups:
 Value is a list, taken from pre-defined set.  Current recognized values are
