@@ -607,7 +607,7 @@ CREATE TABLE TravelerType
   creationTS timestamp NULL,
   PRIMARY KEY(id),
   CONSTRAINT  fk192 FOREIGN KEY(rootProcessId) REFERENCES Process(id),
-  INDEX fk192 (rootProcessId)
+  UNIQUE INDEX fk192 (rootProcessId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='List of traveler types';
 
