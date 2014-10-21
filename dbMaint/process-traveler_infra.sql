@@ -37,6 +37,8 @@ insert into JobHarnessStep set name="ingested", createdBy='jrb', creationTS=UTC_
 insert into ActivityFinalStatus set name="success", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into ActivityFinalStatus set name="failure", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into ActivityFinalStatus set name="superseded", createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="ncrExit", createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="stopped", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InternalAction set name='harnessedJob', maskBit='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InternalAction set name='makeHardwareRelationship', maskBit='2', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InternalAction set name='breakHardwareRelationship', maskBit='4', createdBy='jrb', creationTS=UTC_TIMESTAMP();

@@ -17,10 +17,13 @@ Sequence:
         -
           PrerequisiteType:  PROCESS_STEP
           Name: stepWhichIsPrereq
+          Description: Redundant since prereq must have been executed
           UserVersionString: 1.2X
         -
           PrerequisiteType:  CONSUMABLE
+          Description: coffee, peach and chocolate chip cookie dough
           Name: ice cream
+          Quantity: 3
         -
           PrerequisiteType:  COMPONENT
           Name: LCA-ASPIC
