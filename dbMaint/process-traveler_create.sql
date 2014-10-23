@@ -229,9 +229,7 @@ CREATE TABLE Process
   INDEX fk41 (hardwareRelationshipTypeId),
   INDEX fk42 (newHardwareStatusId),
   CONSTRAINT ix43 UNIQUE INDEX (name, hardwareTypeId, version),
-  CONSTRAINT ix44 UNIQUE INDEX (name, hardwareTypeId, userVersionString),
   CONSTRAINT ix45 UNIQUE INDEX (originalId, version),
-  CONSTRAINT ix46 UNIQUE INDEX (originalId, userVersionString)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Describes procedure for a step within a traveler';
 
@@ -358,6 +356,7 @@ CREATE TABLE PrerequisitePattern
   prerequisiteTypeId int NOT NULL COMMENT "prerequisiteType determines which field below, if any, is non-null",
   processId int NOT NULL COMMENT "process step for which this is a prereq",
   prereqProcessId  int NULL COMMENT "Non-null if prereq is another proc. step",
+  prereqUserVersionString varchar(64) NULL COMMENT "optional cut on PROCESS_STEP candidates",
   hardwareTypeId    int NULL COMMENT "non-null if prereq is tracked hardware",
   quantity         int NOT NULL DEFAULT 1,
   createdBy varchar(50) NOT NULL,
