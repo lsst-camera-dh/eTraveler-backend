@@ -44,8 +44,10 @@ descendants) in more than one place in the traveler.
 
 7. If a node is a reference (key = "RefName") it is supposed to refer to
 an already-existing (in db) Process.  All other keys are ignored
-except "RefVersion", which defaults to most recent version (in whatever db
-traveler is being injested into).  HardwareType is inherited as usual.
+except "RefVersion", which defaults  version 1 (in whatever db
+traveler is being injested into). If a value is supplied for RefVersion,
+it must be a positive integer or the string "last".
+ HardwareType is inherited as usual.
 [Ideally have option for ingest program 
 
 8. Allowable scalar-valued keys for non-clones and non-refs are listed below 
@@ -61,6 +63,10 @@ top node).
 HardwareRelationshipType:
 optional.    May be null.  See also TravelerActions: below.
 
+HardwareRelationshipSlot:
+ignored unless HardwareRelationshipType is present and non-null. Otherwise,
+must be non-negative integer if present; defaults to 1.
+
 InstructionsURL: 
 optional
 
@@ -71,9 +77,8 @@ UserVersionString:
 optional.
 
 Version:
-optional.  Value if present must be a positive integer. If
-not present, defaults to 1.  (do we need a way to say "next"? Should
-that be the default instead of 1?)
+optional.  Value if present must be a positive integer or the string
+"next".  If not present, defaults to 1. 
 
 Condition: required if this node is a member of a list which is itself
 the value of a Selection: key; ignored otherwise.

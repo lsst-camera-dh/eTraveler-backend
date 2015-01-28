@@ -11,23 +11,32 @@ insert into HardwareType (name, createdBy, creationTS) values ('LCA-CABAC', 'jrb
 insert into HardwareIdentifierAuthority (name, createdBy, creationTS) values ('BNL', 'jrb', UTC_TIMESTAMP());
 insert into HardwareIdentifierAuthority (name, createdBy, creationTS) values ('SerialNumber', 'jrb', UTC_TIMESTAMP());
 
-insert into HardwareRelationshipType set name='Raft_CCD_0_0',
+insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='1',
 createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set name='Raft_CCD_0_1',
+
+insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='2',
 createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set name='Raft_CCD_0_2',
+
+insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='3',
 createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set name='Raft_CCD_1_0',
+
+insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='4',
 createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set name='Raft_CCD_1_1',
+
+insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='5',
 createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set name='Raft_CCD_1_2',
+
+insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='6',
 createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set name='Raft_CCD_2_0',
+
+insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='7',
 createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set name='Raft_CCD_2_1',
+
+insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='8',
 createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-insert into HardwareRelationshipType set name='Raft_CCD_2_2',
+
+insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='9',
 createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+
 
 

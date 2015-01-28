@@ -40,9 +40,13 @@ Hardware relationships
 ----------------------
 1. HardwareRelationshipType    [template]
 Associates two kinds of hardware, one subsidiary to the other, e.g.
-raft and sensor where relationship is 'in slot 11'
+raft and sensor where relationship is 'sensor installed in raft'. 
+Relationship descriptions also have a 'slot' associated with them.
+It defaults to 1, but for, e.g., installing CCD in a REB, there
+would be three hardware relationship definitions with the same name
+and different slot numbers.
 
-2. HardwareRelastionship    [instance of HardwareRelationshipType]
+2. HardwareRelationship    [instance of HardwareRelationshipType]
 Instance of 1. for specific components
 
 PROCESS

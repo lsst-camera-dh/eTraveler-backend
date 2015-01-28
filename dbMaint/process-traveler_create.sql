@@ -148,6 +148,8 @@ CREATE TABLE HardwareRelationshipType
   name varchar(50) NOT NULL,
   hardwareTypeId int NOT NULL,
   componentTypeId int NOT NULL,
+  slot int unsigned NOT NULL DEFAULT '1',
+  description varchar(255) DEFAULT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
@@ -212,7 +214,8 @@ CREATE TABLE Process
   hardwareRelationshipTypeId int NULL, 
   version int NOT NULL, 
   userVersionString varchar(64) NULL COMMENT 'e.g. git tag',
-  description text, instructionsURL varchar(256), 
+  description text, 
+  instructionsURL varchar(255), 
   substeps  ENUM('NONE', 'SEQUENCE', 'SELECTION') default 'NONE'
    COMMENT 'determines where we go next',
   maxIteration tinyint unsigned DEFAULT 1,
@@ -229,14 +232,14 @@ CREATE TABLE Process
   INDEX fk41 (hardwareRelationshipTypeId),
   INDEX fk42 (newHardwareStatusId),
   CONSTRAINT ix43 UNIQUE INDEX (name, hardwareTypeId, version),
-  CONSTRAINT ix45 UNIQUE INDEX (originalId, version),
+  CONSTRAINT ix45 UNIQUE INDEX (originalId, version)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Describes procedure for a step within a traveler';
 
 CREATE TABLE ProcessEdge 
 ( id int NOT NULL AUTO_INCREMENT, parent int NOT NULL, 
   child int NOT NULL, step int NOT NULL, 
-  cond varchar(256) 
+  cond varchar(255) 
    COMMENT 'condition under which edge is traversed; used only if parent process has navigation type SELECTION',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -412,7 +415,7 @@ CREATE TABLE InputPattern
   inputSemanticsId int NOT NULL,
   label   varchar(50) NOT NULL COMMENT "required label to appear on form", 
   units  varchar(5) DEFAULT "none",
-  description varchar(256) NULL COMMENT "if label is not sufficient",
+  description varchar(255) NULL COMMENT "if label is not sufficient",
   minV float  NULL COMMENT "allowed minimum (optional)",  
   maxV float  NULL COMMENT "allowed maximum (optional)",  
   choiceField varchar(50) NULL COMMENT "may be set to table.field, e.g. HardwareStatus.name",
