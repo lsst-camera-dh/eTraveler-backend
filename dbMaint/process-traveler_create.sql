@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS DbRelease
 ##CREATE TABLE IF NOT EXISTS Site
 CREATE TABLE Site
 ( id int NOT NULL AUTO_INCREMENT,
-  name varchar(20) NOT NULL,
-  jhVirtualEnv varchar(200) NULL COMMENT "path to root of virtual env for job harmenss",
-  jhOutputRoot  varchar(200) NULL COMMENT "path to root of job harness output directory, corresponds to environment variable LCATR_ROOT",
+  name varchar(255) NOT NULL,
+  jhVirtualEnv varchar(255) NULL COMMENT "path to root of virtual env for job harmenss",
+  jhOutputRoot  varchar(255) NULL COMMENT "path to root of job harness output directory, corresponds to environment variable LCATR_ROOT",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
@@ -30,7 +30,7 @@ COMMENT='Keep site-specific information here';
 #CREATE TABLE IF NOT EXISTS Location
 CREATE TABLE Location
 ( id int NOT NULL AUTO_INCREMENT,
-  name varchar(20) NOT NULL,
+  name varchar(255) NOT NULL,
   siteId int NOT NULL COMMENT "responsible site, even if, e.g., in transit",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -47,11 +47,11 @@ COMMENT='Identifies teststand, assembly station, etc.';
 # or, if there are just those two, add flag column.
 CREATE TABLE HardwareType 
 ( id int NOT NULL AUTO_INCREMENT, 
-  name varchar(50) NOT NULL COMMENT "drawing number without revision if available",
+  name varchar(255) NOT NULL COMMENT "drawing number without revision if available",
   autoSequenceWidth int DEFAULT 0 COMMENT "width of zero-filled sequence #",
   autoSequence int DEFAULT 0 COMMENT "used when autoSequenceWidth > 0",
   trackingType enum('COMPONENT', 'TEST_EQUIPMENT') DEFAULT 'COMPONENT',
-  description varchar(200) DEFAULT "",
+  description varchar(255) DEFAULT "",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
@@ -60,8 +60,8 @@ CREATE TABLE HardwareType
 
 CREATE TABLE HardwareStatus
 ( id int NOT NULL AUTO_INCREMENT,
-  name varchar(50) NOT NULL,
-  description varchar(200) NOT NULL,
+  name varchar(255) NOT NULL,
+  description varchar(255) NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
@@ -71,10 +71,10 @@ COMMENT='just registered, ready for assembly, rejected, etc.';
 
 CREATE TABLE Hardware 
 ( id int NOT NULL AUTO_INCREMENT, 
-  lsstId varchar(50) NOT NULL,
+  lsstId varchar(255) NOT NULL,
   hardwareTypeId int NOT NULL, 
-  manufacturer varchar(50) NOT NULL,
-  model varchar(50) NULL,
+  manufacturer varchar(255) NOT NULL,
+  model varchar(255) NULL,
   manufactureDate timestamp NULL,
   hardwareStatusId int NULL,
   createdBy varchar(50) NOT NULL,
@@ -118,7 +118,7 @@ COMMENT='Keep track of all hardware location updates';
 
 CREATE TABLE HardwareIdentifierAuthority 
 ( id int NOT NULL AUTO_INCREMENT, 
-  name varchar(100) NOT NULL, 
+  name varchar(255) NOT NULL, 
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
@@ -130,7 +130,7 @@ CREATE TABLE HardwareIdentifier
   authorityId int NOT NULL COMMENT "site or other authority for assigning this identifier", 
   hardwareId int NOT NULL    COMMENT "reference to hardware instance getting identifier", 
   hardwareTypeId int NOT NULL COMMENT "references type of hardware instance getting identifier",
-  identifier varchar(100) NOT NULL,
+  identifier varchar(255) NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
@@ -145,7 +145,7 @@ CREATE TABLE HardwareIdentifier
 
 CREATE TABLE HardwareRelationshipType 
 ( id int NOT NULL AUTO_INCREMENT, 
-  name varchar(50) NOT NULL,
+  name varchar(255) NOT NULL,
   hardwareTypeId int NOT NULL,
   componentTypeId int NOT NULL,
   slot int unsigned NOT NULL DEFAULT '1',
@@ -184,7 +184,7 @@ CREATE TABLE HardwareRelationship
 COMMENT='Instance of HardwareRelationshipType between actual pieces of hardware';
 CREATE TABLE InternalAction
 ( id int NOT NULL AUTO_INCREMENT,
-  name varchar(50) NOT NULL,
+  name varchar(255) NOT NULL,
   maskBit int unsigned NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -196,7 +196,7 @@ COMMENT='Identify special actions eTraveler may have to perform assoc. with proc
 
 CREATE TABLE PermissionGroup
 ( id int NOT NULL AUTO_INCREMENT,
-  name varchar(50) NOT NULL,
+  name varchar(255) NOT NULL,
   maskBit int unsigned NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -209,11 +209,11 @@ COMMENT='Associate mask bit with each permission group';
 CREATE TABLE Process 
 ( id int NOT NULL AUTO_INCREMENT, 
   originalId int NULL COMMENT "set equal to id of 1st version of this Process",
-  name varchar(50) NOT NULL, 
+  name varchar(255) NOT NULL, 
   hardwareTypeId int NOT NULL, 
   hardwareRelationshipTypeId int NULL, 
   version int NOT NULL, 
-  userVersionString varchar(64) NULL COMMENT 'e.g. git tag',
+  userVersionString varchar(255) NULL COMMENT 'e.g. git tag',
   description text, 
   instructionsURL varchar(255), 
   substeps  ENUM('NONE', 'SEQUENCE', 'SELECTION') default 'NONE'
@@ -254,7 +254,7 @@ COMMENT='Encapsulates information on how to traverse hierarchy of process steps'
 
 CREATE TABLE ExceptionType
 ( id int NOT NULL AUTO_INCREMENT, 
-  conditionString varchar(80) NOT NULL,  
+  conditionString varchar(255) NOT NULL,  
   exitProcessPath varchar(2000)  NOT NULL COMMENT 'period separated list of processEdge ids from traveler root to exit process', 
   returnProcessPath varchar(2000) NOT NULL COMMENT 'period separated list of processEdge ids from traveler root to return process', 
   exitProcessId int NOT NULL,
@@ -277,7 +277,7 @@ CREATE TABLE ExceptionType
 
 CREATE TABLE JobHarnessStep
 ( id int NOT NULL AUTO_INCREMENT,
-  name varchar(32) NOT NULL,
+  name varchar(255) NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
@@ -287,7 +287,7 @@ COMMENT='Steps within for job harness job';
 
 CREATE TABLE ActivityFinalStatus
 ( id int NOT NULL AUTO_INCREMENT,
-  name varchar(32) NOT NULL,
+  name varchar(255) NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
@@ -345,7 +345,7 @@ CREATE TABLE Result
 
 CREATE TABLE PrerequisiteType
 ( id int NOT NULL AUTO_INCREMENT,
-  name varchar(50) COMMENT "e.g. PROCESS_STEP, COMPONENT, CONSUMABLE, etc.",
+  name varchar(255) COMMENT "e.g. PROCESS_STEP, COMPONENT, CONSUMABLE, etc.",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
@@ -354,12 +354,12 @@ CREATE TABLE PrerequisiteType
 
 CREATE TABLE PrerequisitePattern
 ( id int NOT NULL AUTO_INCREMENT,
-  name varchar(50)  NOT NULL,
+  name varchar(255)  NOT NULL,
   description text COMMENT "describe in detail",
   prerequisiteTypeId int NOT NULL COMMENT "prerequisiteType determines which field below, if any, is non-null",
   processId int NOT NULL COMMENT "process step for which this is a prereq",
   prereqProcessId  int NULL COMMENT "Non-null if prereq is another proc. step",
-  prereqUserVersionString varchar(64) NULL COMMENT "optional cut on PROCESS_STEP candidates",
+  prereqUserVersionString varchar(255) NULL COMMENT "optional cut on PROCESS_STEP candidates",
   hardwareTypeId    int NULL COMMENT "non-null if prereq is tracked hardware",
   quantity         int NOT NULL DEFAULT 1,
   createdBy varchar(50) NOT NULL,
@@ -401,7 +401,7 @@ COMMENT='Describes item satisfying a prereq. for a specific activity';
 # corresponding results table?
 CREATE TABLE InputSemantics
 ( id int NOT NULL AUTO_INCREMENT,
-  name varchar(32) NOT NULL,
+  name varchar(255) NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
@@ -413,12 +413,12 @@ CREATE TABLE InputPattern
 (id int NOT NULL AUTO_INCREMENT,
   processId int NOT NULL COMMENT "process step this input belongs to",
   inputSemanticsId int NOT NULL,
-  label   varchar(50) NOT NULL COMMENT "required label to appear on form", 
-  units  varchar(5) DEFAULT "none",
+  label   varchar(255) NOT NULL COMMENT "required label to appear on form", 
+  units  varchar(255) DEFAULT "none",
   description varchar(255) NULL COMMENT "if label is not sufficient",
   minV float  NULL COMMENT "allowed minimum (optional)",  
   maxV float  NULL COMMENT "allowed maximum (optional)",  
-  choiceField varchar(50) NULL COMMENT "may be set to table.field, e.g. HardwareStatus.name",
+  choiceField varchar(255) NULL COMMENT "may be set to table.field, e.g. HardwareStatus.name",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
@@ -448,7 +448,7 @@ COMMENT='Keep track of all job harness status updates';
 CREATE TABLE IntResultManual
 (id int NOT NULL AUTO_INCREMENT,
  inputPatternId int NOT NULL,
- name varchar(50) COMMENT " use label field from inputPatternId",
+ name varchar(255) COMMENT " use label field from inputPatternId",
  value  int,
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
@@ -464,9 +464,9 @@ COMMENT='Store scalar int results from manual activities';
 
 CREATE TABLE IntResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
- name varchar(50) COMMENT "comes from schema",
+ name varchar(255) COMMENT "comes from schema",
  value  int,
- schemaName varchar(50) NOT NULL,
+ schemaName varchar(255) NOT NULL,
  schemaVersion varchar(50) NOT NULL,
  schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result summary",
  activityId int NOT NULL COMMENT "activity producing this result",
@@ -482,7 +482,7 @@ COMMENT='Store scalar int results from harnessed activities';
 CREATE TABLE FloatResultManual
 (id int NOT NULL AUTO_INCREMENT,
  inputPatternId int NOT NULL,
- name varchar(50) COMMENT "use label field from inputPatternId",
+ name varchar(255) COMMENT "use label field from inputPatternId",
  value  float,
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
@@ -498,9 +498,9 @@ COMMENT='Store scalar float results from manual activities';
 
 CREATE TABLE FloatResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
- name varchar(50) COMMENT "comes from schema",
+ name varchar(255) COMMENT "comes from schema",
  value  float,
- schemaName varchar(50) NOT NULL,
+ schemaName varchar(255) NOT NULL,
  schemaVersion varchar(50) NOT NULL,
  schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result summary",
  activityId int NOT NULL COMMENT "activity producing this result",
@@ -516,7 +516,7 @@ COMMENT='Store scalar float results from harnessed activities';
 CREATE TABLE FilepathResultManual
 (id int NOT NULL AUTO_INCREMENT,
  inputPatternId int NOT NULL,
- name varchar(50) COMMENT "use label field from inputPattern",
+ name varchar(255) COMMENT "use label field from inputPattern",
  value varchar(255) COMMENT "absolute path at creating site",
  virtualPath  varchar(255) COMMENT "virtual path from Data Catalog",
  size  int DEFAULT "0",
@@ -535,12 +535,12 @@ COMMENT='Store filepath results from manual activities';
 
 CREATE TABLE FilepathResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
- name varchar(50) COMMENT "comes from schema; it is always 'path'",
+ name varchar(255) COMMENT "comes from schema; it is always 'path'",
  value  varchar(255) COMMENT "absolute file path at creating site",
  virtualPath  varchar(255) COMMENT "virtual path from Data Catalog",
  size   int DEFAULT "0" COMMENT "another field in fileref schema",
  sha1   char(40) NOT NULL COMMENT "still another field in fileref",
- schemaName varchar(50) NOT NULL,
+ schemaName varchar(255) NOT NULL,
  schemaVersion varchar(50) NOT NULL,
  schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result summary",
  activityId int NOT NULL COMMENT "activity producing this result",
@@ -556,7 +556,7 @@ COMMENT='Store filepath results from harnessed activities';
 CREATE TABLE StringResultManual
 (id int NOT NULL AUTO_INCREMENT,
  inputPatternId int NOT NULL,
- name varchar(50) COMMENT "use label field from inputPattern",
+ name varchar(255) COMMENT "use label field from inputPattern",
  value varchar(255),
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
@@ -572,9 +572,9 @@ COMMENT='Store arbitrary non-filepath string results from manual activities';
 
 CREATE TABLE StringResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
- name varchar(50) COMMENT "comes from schema",
+ name varchar(255) COMMENT "comes from schema",
  value  varchar(255),
- schemaName varchar(50) NOT NULL,
+ schemaName varchar(255) NOT NULL,
  schemaVersion varchar(50) NOT NULL,
  schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result summary",
  activityId int NOT NULL COMMENT "activity producing this result",
