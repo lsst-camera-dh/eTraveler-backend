@@ -155,6 +155,7 @@ CREATE TABLE HardwareRelationshipType
   PRIMARY KEY (id), 
   constraint fk8 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType(id),
   constraint fk9 FOREIGN KEY (componentTypeId) REFERENCES HardwareType(id),
+  constraint cui1 UNIQUE INDEX (name, slot),
   INDEX fk8 (hardwareTypeId),
   INDEX fk9 (componentTypeId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
