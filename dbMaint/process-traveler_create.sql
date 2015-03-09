@@ -74,6 +74,7 @@ CREATE TABLE Hardware
   lsstId varchar(255) NOT NULL,
   hardwareTypeId int NOT NULL, 
   manufacturer varchar(255) NOT NULL,
+  manufacturerId varchar(255) NOT NULL default "",
   model varchar(255) NULL,
   manufactureDate timestamp NULL,
   hardwareStatusId int NULL,
@@ -223,6 +224,7 @@ CREATE TABLE Process
   travelerActionMask int unsigned DEFAULT 0,
   permissionMask int unsigned DEFAULT 127 COMMENT 'Set bit for each group authorized to execute this process',
   newHardwareStatusId int NULL COMMENT 'used if step is to change hw status',
+  newLocationId int NULL COMMENT "set new location in this step",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
@@ -449,7 +451,7 @@ COMMENT='Keep track of all job harness status updates';
 CREATE TABLE IntResultManual
 (id int NOT NULL AUTO_INCREMENT,
  inputPatternId int NOT NULL,
- name varchar(255) COMMENT " use label field from inputPatternId",
+ name varchar(255) NULL COMMENT "deprecated",
  value  int,
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
@@ -483,7 +485,7 @@ COMMENT='Store scalar int results from harnessed activities';
 CREATE TABLE FloatResultManual
 (id int NOT NULL AUTO_INCREMENT,
  inputPatternId int NOT NULL,
- name varchar(255) COMMENT "use label field from inputPatternId",
+ name varchar(255) NULL COMMENT "deprecated",
  value  float,
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
@@ -517,7 +519,7 @@ COMMENT='Store scalar float results from harnessed activities';
 CREATE TABLE FilepathResultManual
 (id int NOT NULL AUTO_INCREMENT,
  inputPatternId int NOT NULL,
- name varchar(255) COMMENT "use label field from inputPattern",
+ name varchar(255) NULL COMMENT "deprecated",
  value varchar(255) COMMENT "absolute path at creating site",
  virtualPath  varchar(255) COMMENT "virtual path from Data Catalog",
  size  int DEFAULT "0",
@@ -557,7 +559,7 @@ COMMENT='Store filepath results from harnessed activities';
 CREATE TABLE StringResultManual
 (id int NOT NULL AUTO_INCREMENT,
  inputPatternId int NOT NULL,
- name varchar(255) COMMENT "use label field from inputPattern",
+ name varchar(255) NULL COMMENT "deprecated",
  value varchar(255),
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
