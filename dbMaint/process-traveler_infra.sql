@@ -49,8 +49,6 @@ insert into InternalAction set name='setHardwareStatus', maskBit='8', createdBy=
 insert into InternalAction set name='setHardwareLocation', maskBit='16', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InternalAction set name='async', maskBit='32', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InternalAction set name='automatable', maskBit='64', createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into InternalAction set name='componentStatus', maskBit='128', createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into InternalAction set name='componentLocation', maskBit='256', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into PermissionGroup set name='operator', maskBit='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into PermissionGroup set name='supervisor', maskBit='2', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into PermissionGroup set name='approver', maskBit='4', createdBy='jrb', creationTS=UTC_TIMESTAMP();
