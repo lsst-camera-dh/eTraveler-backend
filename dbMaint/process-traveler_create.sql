@@ -58,6 +58,17 @@ CREATE TABLE HardwareType
   CONSTRAINT ix2 UNIQUE (name) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE HardwareGroup
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  description varchar(255) DEFAULT "",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT cui10 UNIQUE (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Allows grouping of hardware types';
+
 CREATE TABLE HardwareStatus
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
@@ -212,7 +223,7 @@ CREATE TABLE Process
 ( id int NOT NULL AUTO_INCREMENT, 
   originalId int NULL COMMENT "set equal to id of 1st version of this Process",
   name varchar(255) NOT NULL, 
-  hardwareTypeId int NOT NULL, 
+  hardwareTypeId int NULL, 
   hardwareRelationshipTypeId int NULL, 
   version int NOT NULL, 
   userVersionString varchar(255) NULL COMMENT 'e.g. git tag',
@@ -227,14 +238,17 @@ CREATE TABLE Process
   newLocationId int NULL COMMENT "set new location in this step",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
+  hardwareGroupId int NOT NULL,
   PRIMARY KEY (id), 
   CONSTRAINT fk40 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType (id), 
   CONSTRAINT fk41 FOREIGN KEY (hardwareRelationshipTypeId) REFERENCES HardwareRelationshipType (id), 
   CONSTRAINT fk42 FOREIGN KEY (newHardwareStatusId) REFERENCES HardwareStatus (id),
+  CONSTRAINT fk45 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup (id), 
   INDEX fk40 (hardwareTypeId),
   INDEX fk41 (hardwareRelationshipTypeId),
   INDEX fk42 (newHardwareStatusId),
-  CONSTRAINT ix43 UNIQUE INDEX (name, hardwareTypeId, version),
+  INDEX fk45 (hardwareGroupId),
+  CONSTRAINT ix44 UNIQUE INDEX (name, hardwareGroupId, version),
   CONSTRAINT ix45 UNIQUE INDEX (originalId, version)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Describes procedure for a step within a traveler';
@@ -666,3 +680,18 @@ CREATE TABLE ActivityStatusHistory
   INDEX fk231 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all activity status updates';
+
+
+CREATE TABLE HardwareTypeGroupMapping
+( id int NOT NULL AUTO_INCREMENT,
+  hardwareTypeId int NOT NULL,
+  hardwareGroupId int NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id), 
+  CONSTRAINT fk240 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType (id), 
+  CONSTRAINT fk241 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup (id),
+  CONSTRAINT cui20 UNIQUE(hardwareTypeId, hardwareGroupId)
+) ENGINE =InnoDB DEFAULT CHARSET=latin1
+COMMENT='Many-to-many mapping of hardware types, groups';
+
