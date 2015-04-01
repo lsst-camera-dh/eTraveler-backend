@@ -47,7 +47,7 @@ an already-existing (in db) Process.  All other keys are ignored
 except "RefVersion", which defaults  version 1 (in whatever db
 traveler is being injested into). If a value is supplied for RefVersion,
 it must be a positive integer or the string "last".
- HardwareType is inherited as usual.
+ HardwareGroup is inherited as usual.
 [Ideally have option for ingest program 
 
 8. Allowable scalar-valued keys for non-clones and non-refs are listed below 
@@ -56,9 +56,12 @@ along with some of their properties.  Value is a string unless otherwise noted.
 Name:   
 must appear unless the key Clone or RefName appears
 
-HardwareType:
+HardwareGroup:
 required for top node; ignored for all descendants (they inherit value from 
-top node).
+top node). 
+
+HardwareType:
+deprecated.  Use HardwareGroup instead
 
 HardwareRelationshipType:
 optional.    May be null.  See also TravelerActions: below.
