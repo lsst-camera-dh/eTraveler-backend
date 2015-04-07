@@ -1,5 +1,5 @@
 source process-traveler_drop.sql
-## last fk:  210s
+## last fk:  250s
 CREATE TABLE IF NOT EXISTS DbRelease
 ( id int NOT NULL AUTO_INCREMENT,
   major int NOT NULL COMMENT "major release number",
@@ -435,6 +435,7 @@ CREATE TABLE InputPattern
   description varchar(255) NULL COMMENT "if label is not sufficient",
   minV float  NULL COMMENT "allowed minimum (optional)",  
   maxV float  NULL COMMENT "allowed maximum (optional)",  
+  datatype varchar(255) NULL DEFAULT "LSST_TEST_TYPE" COMMENT 'used in cataloging when type is filepath',
   choiceField varchar(255) NULL COMMENT "may be set to table.field, e.g. HardwareStatus.name",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -621,9 +622,9 @@ COMMENT='Serve up next available version number for NextProcessVersion.name';
 CREATE TABLE TravelerType
 ( id int NOT NULL AUTO_INCREMENT,
   rootProcessId int NOT NULL,
-  state ENUM('NEW', 'ACTIVE', 'DEACTIVATED', 'SUPERSEDED') DEFAULT 'NEW',
+  state ENUM('NEW', 'ACTIVE', 'DEACTIVATED', 'SUPERSEDED') NULL,
   owner varchar(50) COMMENT 'responsible party',
-  reason varchar(255) COMMENT 'purpose of traveler or of this version',
+  reason text COMMENT 'purpose of traveler or of this version',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
@@ -696,4 +697,29 @@ CREATE TABLE HardwareTypeGroupMapping
   CONSTRAINT cui20 UNIQUE(hardwareTypeId, hardwareGroupId)
 ) ENGINE =InnoDB DEFAULT CHARSET=latin1
 COMMENT='Many-to-many mapping of hardware types, groups';
+
+CREATE TABLE TravelerTypeState
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT ix36 UNIQUE (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Possible states for process traveler type';
+
+CREATE TABLE TravelerTypeStateHistory
+( id int NOT NULL AUTO_INCREMENT,
+  reason varchar(255) COMMENT "why the state change",
+  travelerTypeId int NOT NULL,
+  travelerTypeStateId int NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT  fk250 FOREIGN KEY(travelerTypeId) REFERENCES TravelerType(id),
+  CONSTRAINT  fk251 FOREIGN KEY(travelerTypeStateId) REFERENCES TravelerTypeState(id),
+  INDEX ix250 (travelerTypeId),
+  INDEX ix251 (travelerTypeStateId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Keep track of all traveler type state updates';
 
