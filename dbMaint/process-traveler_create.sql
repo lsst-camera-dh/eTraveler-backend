@@ -305,6 +305,7 @@ COMMENT='Steps within for job harness job';
 CREATE TABLE ActivityFinalStatus
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
+  isFinal bool DEFAULT '0',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),

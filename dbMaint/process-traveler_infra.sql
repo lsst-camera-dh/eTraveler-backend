@@ -43,15 +43,15 @@ insert into JobHarnessStep set name="archived", createdBy='jrb', creationTS=UTC_
 insert into JobHarnessStep set name="purged", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into JobHarnessStep set name="ingested", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 
-insert into ActivityFinalStatus set name="success", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="failure", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="superseded", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="ncrExit", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="stopped", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="new", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="skipped", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="paused", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="inProgress", createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="success", isFinal='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="failure", isFinal='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="superseded", isFinal='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="ncrExit", isFinal='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="stopped", isFinal='0', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="new", isFinal='0', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="skipped", isFinal='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="paused", isFinal='0', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="inProgress", isFinal='0', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 
 insert into TravelerTypeState set name="new", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into TravelerTypeState set name="active", createdBy='jrb', creationTS=UTC_TIMESTAMP();

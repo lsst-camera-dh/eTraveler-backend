@@ -1,5 +1,7 @@
+# New columns
 alter table InputPattern add datatype varchar(255) NULL DEFAULT "LSST_TEST_TYPE" COMMENT 'used in cataloging when type is filepath' after maxV;
-#   Update remarks based on what actually goes in!
+
+alter table ActivityFinalStatus add isFinal bool DEFAULT '1' COMMENT 'default is final' after name;
 
 alter table TravelerType modify state ENUM('NEW', 'ACTIVE', 'DEACTIVATED', 'SUPERSEDED') NULL;
 
@@ -33,10 +35,11 @@ COMMENT='Keep track of all traveler type state updates';
 
 
 # to be copied to process-traveler_infra.sql
-insert into ActivityFinalStatus set name="new", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="skipped", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="paused", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into ActivityFinalStatus set name="inProgress", createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="new", isFinal=0, createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="skipped", isFinal=1, createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="paused",isFinal=0, createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="inProgress", isFinal=0, createdBy='jrb', creationTS=UTC_TIMESTAMP();
+update ActivityFinalStatus set isFinal='0' where name='stopped';
 
 insert into TravelerTypeState set name="new", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 
