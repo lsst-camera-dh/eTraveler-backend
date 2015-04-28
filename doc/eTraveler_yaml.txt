@@ -90,6 +90,20 @@ MaxIteration: optional; defaults to 1.  If > 1, operator
 may choose to re-execute the step as long as total number of executions is
 <= MaxIteration.
 
+NewLocation: optional.  If it is used, its value must be either the name
+of a location or the special string "(?)"  in which case the operator
+will be prompted with a menu of available locations. (There is another
+way to get the operator-prompt outcome.  Omit the NewLocation: key,
+but use TravelerActions: and include SetHardwareLocation in its list
+of values.) 
+
+NewStatus: optional.  If it is used, its value must be either the name
+of a recognized status or the special string "(?)"  in which case the 
+operator will be prompted with a menu of known status values. (There 
+is another way to get the operator-prompt outcome.  Omit NewStatus: 
+but use TravelerActions: and include SetHardwareStatus in its list
+of values.) 
+
 SourceDb: optional; defaults to "[none]".  Must be present with a
 sensible value (one of enumerated dataSourceMode values: Prod, Dev, Test,
 Raw) if any sub-elements use the RefName key.
@@ -121,8 +135,8 @@ may be associated with a step.  Current list of recognized values is
  MakeHardwareRelationship (only if HardwareRelationshipType is non-null)
  BreakHardwareRelationship  (only if HardwareRelationshipType is non-null)
  SetHardwareStatus
- SetHardwareLocation
- Async    (for now, may only apply if HarnessedJob is also set)
+ SetHardwareLocation  (may be omitted if NewLocation: is used)
+ Async    (for now has no effect)
  Automatable (applies only to step with sequence substeps, all of which
    have HarnessedJob bit set) 
 

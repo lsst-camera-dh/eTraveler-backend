@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS StopWorkHistory;
 DROP TABLE IF EXISTS Exception;
 DROP TABLE IF EXISTS ActivityStatusHistory;
 DROP TABLE IF EXISTS Activity;
+DROP TABLE IF EXISTS JobHarness;
 DROP TABLE IF EXISTS HardwareLocationHistory;
 DROP TABLE IF EXISTS TravelerTypeStateHistory;
 DROP TABLE IF EXISTS Location;

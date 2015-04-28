@@ -40,6 +40,20 @@ CREATE TABLE Location
   INDEX fk190 (siteId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Identifies teststand, assembly station, etc.';
+
+CREATE TABLE JobHarness
+( id int NOT NULL AUTO_INCREMENT,
+  jhVirtualEnv varchar(255) NOT NULL,
+  jhOutputRoot varchar(255) NOT NULL,
+  jhCfg varchar(255) NULL COMMENT "path to installation-wide cfg (if any) relative to jhVirtualEnv",
+  siteId    int NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk260 FOREIGN KEY(siteId) REFERENCES Site(id),
+  INDEX ix260 (siteId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Information pertaining to a job harness installation';
   
 # May need to add additional table for subsystem (name, id and boilerplate)
 # and add column to HardwareType: fk to subsystem
@@ -104,13 +118,16 @@ CREATE TABLE HardwareStatusHistory
 (id  int NOT NULL AUTO_INCREMENT,
   hardwareStatusId int NOT NULL COMMENT "fk for the new status",
   hardwareId int NOT NULL COMMENT "component whose status is being updated",
+  activityId int NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
   CONSTRAINT fk200 FOREIGN KEY(hardwareStatusId) REFERENCES HardwareStatus(id),
   CONSTRAINT fk201 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
+  CONSTRAINT fk202 FOREIGN KEY(activityId) REFERENCES Activity(id),
   INDEX fk200 (hardwareStatusId),
-  INDEX fk201 (hardwareId)
+  INDEX fk201 (hardwareId),
+  INDEX ix202 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all hardware status updates';
 
@@ -118,13 +135,16 @@ CREATE TABLE HardwareLocationHistory
 (id  int NOT NULL AUTO_INCREMENT,
   locationId int NOT NULL COMMENT "fk for the new location",
   hardwareId int NOT NULL COMMENT "component whose location is being updated",
+  activityId int NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
   CONSTRAINT fk210 FOREIGN KEY(locationId) REFERENCES Location(id),
   CONSTRAINT fk211 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
+  CONSTRAINT fk212 FOREIGN KEY(activityId) REFERENCES Activity(id),
   INDEX fk210 (locationId),
-  INDEX fk211 (hardwareId)
+  INDEX fk211 (hardwareId),
+  INDEX ix212 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all hardware location updates';
 
@@ -235,7 +255,7 @@ CREATE TABLE Process
   travelerActionMask int unsigned DEFAULT 0,
   permissionMask int unsigned DEFAULT 127 COMMENT 'Set bit for each group authorized to execute this process',
   newHardwareStatusId int NULL COMMENT 'used if step is to change hw status',
-  newLocationId int NULL COMMENT "set new location in this step",
+  newLocation varchar(255) NULL COMMENT "set new location in this step",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   hardwareGroupId int NOT NULL,
@@ -322,6 +342,7 @@ CREATE TABLE Activity
   processEdgeId int NULL
    COMMENT "edge used to get to process; NULL for root",
   parentActivityId int NULL,
+  jobHarnessId int NULL,
   activityFinalStatusId int NULL COMMENT "Set only when activity is closed out",
   iteration tinyint unsigned DEFAULT 1 COMMENT "Set to non-default for rework",
   begin timestamp NULL, 
@@ -337,12 +358,14 @@ CREATE TABLE Activity
   CONSTRAINT fk73 FOREIGN KEY (processEdgeId) REFERENCES ProcessEdge (id), 
   CONSTRAINT fk74 FOREIGN KEY (parentActivityId) REFERENCES Activity (id), 
   CONSTRAINT fk75 FOREIGN KEY (activityFinalStatusId) REFERENCES ActivityFinalStatus (id), 
+  CONSTRAINT fk76 FOREIGN KEY (jobHarnessId) REFERENCES JobHarness (id), 
   INDEX fk70 (hardwareId),
   INDEX fk71 (hardwareRelationshipId),
   INDEX fk72 (processId), 
   INDEX fk73 (processEdgeId),
   INDEX fk74 (parentActivityId),
   INDEX fk75 (activityFinalStatusId),
+  INDEX ix76 (jobHarnessId),
   INDEX ix70 (begin),
   INDEX ix71 (end),
   INDEX ix72 (parentActivityId, processEdgeId)
