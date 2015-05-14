@@ -15,10 +15,13 @@ INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, last
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 6, 2, 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Add InputPattern.datatype; TravelerTypeState and TravelerTypeStateHistory tables; insert into TravelerTypeState, ActivityFinalStatus ');
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 6, 3, 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Upgrades for setting new location in traveler step; addition of JobHarness table');
 
+INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 6, 4, 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Add NON-COMPLIANT hardware status; PREPARATION prereq type, tweaks to JobHarness table');
+
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into PrerequisiteType set name='COMPONENT', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into PrerequisiteType set name='TEST_EQUIPMENT', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into PrerequisiteType set name='CONSUMABLE', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into PrerequisiteType set name='PREPARATION', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 
 insert into HardwareStatus set name='NEW', description='Available for preparation and testing', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into HardwareStatus set name='IN_PROGRESS', description='At least one traveler begun; at least one applicable traveler not complete', createdBy='jrb', creationTS=UTC_TIMESTAMP();
@@ -26,6 +29,7 @@ insert into HardwareStatus set name='REJECTED', description='Beyond hope', creat
 insert into HardwareStatus set name='READY', description='Testing/preparation complete; ready for integration', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into HardwareStatus set name='USED', description='Fully tested component has been integrated', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into HardwareStatus set name='PENDING', description='Component has irregularities; acceptance under review', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into HardwareStatus set name='NON-COMPLIANT', description='part is not fully compliant', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 
 insert into InputSemantics set name="int", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InputSemantics set name="float", createdBy='jrb', creationTS=UTC_TIMESTAMP();

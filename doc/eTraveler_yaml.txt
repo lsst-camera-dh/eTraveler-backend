@@ -162,8 +162,8 @@ defaults to MakeHardwareRelationship
 Each prerequisite node is a dict with the following keys:
 
 PrerequisiteType:
-Required.  Value would normally come from an enumerated set including at least
-PROCESS_STEP, COMPONENT, TEST_EQUIPMENT, CONSUMABLE
+Required.  Value comes from an enumerated set including at least
+PROCESS_STEP, COMPONENT, TEST_EQUIPMENT, CONSUMABLE, PREPARATION
 
 Name: 
 required for types. 
@@ -183,7 +183,9 @@ Otherwise if type is PROCESS_STEP value for Version defaults to most
 current version of specified Process.
 
 Description:
-optional
+Optional. Typically takes the form of instructions for prerequisite of type
+PREPARATION; could describe equipment and procedures associated with it
+for type TEST_EQUIPMENT.
 
 Quantity:
 optional.  If present must be positive integer.  Defaults to 1

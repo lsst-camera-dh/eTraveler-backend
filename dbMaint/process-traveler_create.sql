@@ -45,6 +45,7 @@ CREATE TABLE JobHarness
 ( id int NOT NULL AUTO_INCREMENT,
   jhVirtualEnv varchar(255) NOT NULL,
   jhOutputRoot varchar(255) NOT NULL,
+  jhStageRoot varchar(255) NOT NULL,
   jhCfg varchar(255) NULL COMMENT "path to installation-wide cfg (if any) relative to jhVirtualEnv",
   siteId    int NOT NULL,
   createdBy varchar(50) NOT NULL,
@@ -114,39 +115,6 @@ CREATE TABLE Hardware
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Create a row here to register new component';
 
-CREATE TABLE HardwareStatusHistory
-(id  int NOT NULL AUTO_INCREMENT,
-  hardwareStatusId int NOT NULL COMMENT "fk for the new status",
-  hardwareId int NOT NULL COMMENT "component whose status is being updated",
-  activityId int NULL,
-  createdBy varchar(50) NOT NULL,
-  creationTS timestamp NULL,
-  PRIMARY KEY(id),
-  CONSTRAINT fk200 FOREIGN KEY(hardwareStatusId) REFERENCES HardwareStatus(id),
-  CONSTRAINT fk201 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
-  CONSTRAINT fk202 FOREIGN KEY(activityId) REFERENCES Activity(id),
-  INDEX fk200 (hardwareStatusId),
-  INDEX fk201 (hardwareId),
-  INDEX ix202 (activityId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='Keep track of all hardware status updates';
-
-CREATE TABLE HardwareLocationHistory
-(id  int NOT NULL AUTO_INCREMENT,
-  locationId int NOT NULL COMMENT "fk for the new location",
-  hardwareId int NOT NULL COMMENT "component whose location is being updated",
-  activityId int NULL,
-  createdBy varchar(50) NOT NULL,
-  creationTS timestamp NULL,
-  PRIMARY KEY(id),
-  CONSTRAINT fk210 FOREIGN KEY(locationId) REFERENCES Location(id),
-  CONSTRAINT fk211 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
-  CONSTRAINT fk212 FOREIGN KEY(activityId) REFERENCES Activity(id),
-  INDEX fk210 (locationId),
-  INDEX fk211 (hardwareId),
-  INDEX ix212 (activityId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='Keep track of all hardware location updates';
 
 CREATE TABLE HardwareIdentifierAuthority 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -707,6 +675,40 @@ CREATE TABLE ActivityStatusHistory
   INDEX fk231 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all activity status updates';
+
+CREATE TABLE HardwareStatusHistory
+(id  int NOT NULL AUTO_INCREMENT,
+  hardwareStatusId int NOT NULL COMMENT "fk for the new status",
+  hardwareId int NOT NULL COMMENT "component whose status is being updated",
+  activityId int NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT fk200 FOREIGN KEY(hardwareStatusId) REFERENCES HardwareStatus(id),
+  CONSTRAINT fk201 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
+  CONSTRAINT fk202 FOREIGN KEY(activityId) REFERENCES Activity(id),
+  INDEX fk200 (hardwareStatusId),
+  INDEX fk201 (hardwareId),
+  INDEX ix202 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Keep track of all hardware status updates';
+
+CREATE TABLE HardwareLocationHistory
+(id  int NOT NULL AUTO_INCREMENT,
+  locationId int NOT NULL COMMENT "fk for the new location",
+  hardwareId int NOT NULL COMMENT "component whose location is being updated",
+  activityId int NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT fk210 FOREIGN KEY(locationId) REFERENCES Location(id),
+  CONSTRAINT fk211 FOREIGN KEY(hardwareId) REFERENCES Hardware(id),
+  CONSTRAINT fk212 FOREIGN KEY(activityId) REFERENCES Activity(id),
+  INDEX fk210 (locationId),
+  INDEX fk211 (hardwareId),
+  INDEX ix212 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Keep track of all hardware location updates';
 
 
 CREATE TABLE HardwareTypeGroupMapping
