@@ -28,6 +28,17 @@ Make an entry whenever a hardware item changes status
 Make an entry whenever a hardware item is moved to a new station or
 other location
 
+6. HardwareGroup
+A hardware group encompasses one or more hardware types.  For each type,
+there is an associated, identically named group.  There are also groups
+containing more than one hardware type.  Traveler definitions are now
+associated with a hardware group rather than a hardware type.
+
+7. HardwareTypeGroupMapping
+Keeps track of which types are associated with which groups.  A group may 
+contain more than one type.  A type may be associated with more than one
+group.
+
 Hardware identifiers
 --------------------
 1. HardwareIdentifierAuthority  
@@ -68,7 +79,8 @@ Where the rubber hits the road.  Execute a particular process with
 particular component
 
 5. ActivityFinalStatus
-Enumeration of possible final states for an activity
+Enumeration of possible states for an activity (not necessarily final,
+in spite of table name)
 
 6. JobHarnessStep
 Enumerate states of job harness job.  Nullable fk in Activity references it.
@@ -77,7 +89,8 @@ Enumerate states of job harness job.  Nullable fk in Activity references it.
 New entry each time a harnessed job changes state
 
 8. ActivityStatusHistory
-New entry each time an activity changes status (so-called "final status")
+New entry each time an activity changes status (so-called "final status"
+but it isn't always)
 
 9. InternalAction
 Enumerates special actions eTraveler may have to perform and assigns
@@ -90,9 +103,17 @@ mask bit to each.  Process definition includes mask field in which
 these bits may be set.
 
 11. TravelerType
-Enumerate traveler types, indicating status (available, superseded, etc.)
+Enumerate traveler types.  ['state' field is no longer used; should
+be eliminated in future release]
 
-12. StopWorkHistory
+12. TravelerTypeState
+Lists possible states.  Current list is 'new', 'validated', 'active',
+'superseded', 'deactivated'
+
+13. TravelerTypeStateHistory
+Make an entry whenever a travelertype changes state.
+
+14. StopWorkHistory
 Create new entry for stop work action.  Update for resume or quit.
 
 EXCEPTIONS
@@ -171,3 +192,9 @@ use for $VIRTUAL_ENV environment variable required by Job Harness
 Lists locations where components might be: teststands, assembly stations, etc.
 References Site. Could conceivably include things like "in transit UPS", 
 in which case the site fk references responsible site.
+
+4. JobHarness
+Information associated with a particular job harness installation, such
+as archive root, and also reference to Site. Not yet in actual use.
+Currently job harness information is kept in Site table.
+
