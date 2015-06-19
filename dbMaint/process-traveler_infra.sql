@@ -74,7 +74,8 @@ insert into InternalAction set name='setHardwareStatus', maskBit='8', createdBy=
 insert into InternalAction set name='setHardwareLocation', maskBit='16', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InternalAction set name='async', maskBit='32', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InternalAction set name='automatable', maskBit='64', createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into InternalAction (name, maskBit,createdBy, creationTS) values ('removeLabel', maskBit='128', 'jrb', UTC_TIMESTAMP());
+insert into InternalAction (name, maskBit,createdBy, creationTS) values ('removeLabel', '128', 'jrb', UTC_TIMESTAMP());
+insert into InternalAction (name, maskBit,createdBy, creationTS) values ('addLabel', '256', 'jrb', UTC_TIMESTAMP());
 
 insert into PermissionGroup set name='operator', maskBit='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into PermissionGroup set name='supervisor', maskBit='2', createdBy='jrb', creationTS=UTC_TIMESTAMP();

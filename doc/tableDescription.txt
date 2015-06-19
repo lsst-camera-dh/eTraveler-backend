@@ -13,16 +13,26 @@ Instance of hardware type
 
 3. HardwareStatus
 List of allowed states for hardware, to include at least the following
-values, likely others to come:
+values:
 
 NEW (default value when new row is added to Hardware table)
 IN_PROGRESS (at least one traveler has been begun)
 REJECTED
 READY    (preparation, testing, etc. complete. ready for integration)
 USED
+PENDING
+
+as well as possibility for so-called labels: attributes which may be
+applied to a hardware component but which are not among the standard
+status values.
+
+Also includes fields to specify whether entry is a legitimate status or
+just a label, and whether it is a value required for proper operation of
+eTraveler ("system") or not ("user").
 
 4. HardwareStatusHistory
-Make an entry whenever a hardware item changes status
+Make an entry whenever a hardware item changes status and whenever a label
+is added or removed.
 
 5. HardwareLocationHistory
 Make an entry whenever a hardware item is moved to a new station or
@@ -71,8 +81,8 @@ Defines relationships between process steps
 
 3. NextProcessVersion
 Does bookkeeping needed to reliably assign next verison number when a
-new version of existing process is needed.  (Not yet used, as of 
-Feb. 7, 2014.)
+new version of existing process is needed.  Not used, as of 
+June 19, 2015; probably should be dropped
 
 4. Activity [instance of Process]
 Where the rubber hits the road.  Execute a particular process with
@@ -152,7 +162,8 @@ file path, arbitrary string.
 
 2. InputPattern
 References InputSemantics and Process (process this particular input
-belongs to).  Required field "label". Optional fields for units, and
+belongs to).  Required field "label". Required field to specify whether
+or not the input is optional.  Optional fields for units, and
 min and max values allowed.
 
 3a. IntResultManual

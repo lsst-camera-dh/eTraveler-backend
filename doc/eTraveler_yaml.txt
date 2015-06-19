@@ -104,11 +104,18 @@ is another way to get the operator-prompt outcome.  Omit NewStatus:
 but use TravelerActions: and include SetHardwareStatus in its list
 of values.) 
 
+AddLabel: optional.  If it is used, its value must be either the name
+of a recognized hardware label or the special string "(?)" in which
+case the operator will be prompted with a menu of known labels.
+
+RemoveLabel: optional.  If used, its value must be the name of a
+recognized hardware label. 
+
 SourceDb: optional; defaults to "[none]".  Must be present with a
 sensible value (one of enumerated dataSourceMode values: Prod, Dev, Test,
 Raw) if any sub-elements use the RefName key.
 
-9. There are six keys with non-scalar values.
+9. There are seven keys with non-scalar values.
 
 Sequence:
 Value is an ordered list of process nodes.  Intent is that the process steps 
@@ -127,6 +134,9 @@ Value is a list of prerequisite nodes.
 RequiredInputs:
 Value is a list of input nodes.
 
+OptionalInputs:
+Value is a list of input nodes.
+
 TravelerActions:
 Value is a list of items, taken from a pre-defined set of properties which 
 may be associated with a step.  Current list of recognized values is
@@ -134,11 +144,24 @@ may be associated with a step.  Current list of recognized values is
  HarnessedJob
  MakeHardwareRelationship (only if HardwareRelationshipType is non-null)
  BreakHardwareRelationship  (only if HardwareRelationshipType is non-null)
- SetHardwareStatus
+ *SetHardwareStatus
  SetHardwareLocation  (may be omitted if NewLocation: is used)
  Async    (for now has no effect)
  Automatable (applies only to step with sequence substeps, all of which
    have HarnessedJob bit set) 
+ *AddLabel
+ *RemoveLabel
+
+Notes: 
+1. Instead of specifying TravelerActions ("SetHardwareStatus", "AddLabel", 
+   or "RemoveLabel") YAML file writers should use the corresponding keys
+   taking values ("NewStatus", "AddLabel", "RemoveLabel") instead.
+2. Only one of these three operations may be specified in any one
+   process step.
+3. If the process has a specified HardwareRelationship and 
+   BreakHardwareRelationship has not been specified explicitly, 
+   TravelerActions defaults to MakeHardwareRelationship
+
 
 PermissionGroups:
 Value is a list, taken from pre-defined set.  Current recognized values are
@@ -154,9 +177,8 @@ all categories above it will be set.  If need be, will define additional
 values like SupervisorOnly to indicate that just the supervisor bit should
 be set.
 
-If the process has a specified HardwareRelationship and 
-BreakHardwareRelationship has not been specified explicitly, TravelerActions
-defaults to MakeHardwareRelationship
+A new value, QualityAssurance, will be available soon.
+
 
 10. Description of a prerequisite node.
 Each prerequisite node is a dict with the following keys:

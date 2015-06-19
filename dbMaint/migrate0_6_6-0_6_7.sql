@@ -11,7 +11,8 @@ alter table InputPattern add isOptional tinyint default 0 NOT NULL COMMENT "oper
 
 # New entries
 insert into HardwareStatus (name, actualStatus, systemEntry, description, createdBy, creationTS) values ("non-compliant", 0, 1, 'mark a part as suspect', 'jrb', UTC_TIMESTAMP());
-insert into InternalAction (name, maskBit,createdBy, creationTS) values ('removeLabel', maskBit='128', 'jrb', UTC_TIMESTAMP());
+insert into InternalAction (name, maskBit,createdBy, creationTS) values ('removeLabel', '128', 'jrb', UTC_TIMESTAMP());
+insert into InternalAction (name, maskBit,createdBy, creationTS) values ('addLabel', '256', 'jrb', UTC_TIMESTAMP());
 
 insert into PermissionGroup set name='qualityAssurance', maskBit='16', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into TravelerTypeState set name="approved", createdBy='jrb', creationTS=UTC_TIMESTAMP();
