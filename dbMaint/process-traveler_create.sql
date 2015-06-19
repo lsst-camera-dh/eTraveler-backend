@@ -683,6 +683,7 @@ CREATE TABLE HardwareStatusHistory
   hardwareStatusId int NOT NULL COMMENT "fk for the new status",
   hardwareId int NOT NULL COMMENT "component whose status is being updated",
   activityId int NULL,
+  reason varchar(1024) NOT NULL default "" COMMENT "why change was made",
   adding tinyint default 1 NOT NULL COMMENT "set to 0 for removal of label. Regular status cannot be explicitly removed",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
