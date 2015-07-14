@@ -18,6 +18,7 @@ INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, last
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 6, 5, 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'delete obsolete stuff; add validated trav type state');
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 6, 6, 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'add a couple columns');
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 6, 8, 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support labels: non-status attributes of hardware components. Also optional operator inputs, new PermissionGroup for QA and approved entry in TravelerTypeState');
+INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 7, 0, 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Begin to support batched hardware, Process.shortDescription');
 
 
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=UTC_TIMESTAMP();
@@ -67,6 +68,10 @@ insert into TravelerTypeState set name="deactivated", createdBy='jrb', creationT
 insert into TravelerTypeState set name="superseded", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into TravelerTypeState set name="validated", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into TravelerTypeState set name="approved", createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into TravelerTypeState set name="subsystemApproved", createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into TravelerTypeState set name="softwareApproved", createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into TravelerTypeState set name="subjectApproved", createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into TravelerTypeState set name="workflowApproved", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 
 insert into InternalAction set name='harnessedJob', maskBit='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InternalAction set name='makeHardwareRelationship', maskBit='2', createdBy='jrb', creationTS=UTC_TIMESTAMP();

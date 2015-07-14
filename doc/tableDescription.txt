@@ -1,4 +1,4 @@
-Corresponds to db version 0.4.0
+Corresponds to db version 0.7.0
 
 HARDWARE 
 ----------
@@ -38,13 +38,17 @@ is added or removed.
 Make an entry whenever a hardware item is moved to a new station or
 other location
 
-6. HardwareGroup
+6. BatchedInventoryHistory
+Make an entry whenever items are added to or removed from an instance of
+a batched hardware type
+
+7. HardwareGroup
 A hardware group encompasses one or more hardware types.  For each type,
 there is an associated, identically named group.  There are also groups
 containing more than one hardware type.  Traveler definitions are now
 associated with a hardware group rather than a hardware type.
 
-7. HardwareTypeGroupMapping
+8. HardwareTypeGroupMapping
 Keeps track of which types are associated with which groups.  A group may 
 contain more than one type.  A type may be associated with more than one
 group.

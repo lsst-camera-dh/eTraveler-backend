@@ -27,24 +27,24 @@ update HardwareTypeGroupMapping set createdBy="jrb", creationTS=UTC_TIMESTAMP();
 insert into HardwareIdentifierAuthority (name, createdBy, creationTS) values ('BNL', 'jrb', UTC_TIMESTAMP());
 insert into HardwareIdentifierAuthority (name, createdBy, creationTS) values ('SerialNumber', 'jrb', UTC_TIMESTAMP());
 
-# Cannot add relationship types when we do not yet have official hardware types
-#insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='1',createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+# Relationship types TBD
 
-#insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='2',createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
+# Sites
+insert into Site (name, jhVirtualEnv, jhOutputRoot, createdBy, creationTS) values ('BNL', "/home/ts3prod/prod/lcatr", "/gpfs01/astro/workarea/ccdtest/prod", "jrb", UTC_TIMESTAMP());
+insert into Site (name, jhVirtualEnv, jhOutputRoot, createdBy, creationTS) values ('SLAC', "/nfs/farm/g/lsst/u1/jobHarness/jh_inst", "/nfs/farm/g/lsst/u1/jobHarness/jh_archive", "jrb", UTC_TIMESTAMP());
 
-#insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='3',createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-
-#insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='4',createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-
-#insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='5',createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-
-#insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='6',createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-
-#insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='7',createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-
-#insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='8',createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-
-#insert into HardwareRelationshipType set name='LCA-Raft_1andCCD', slot='9',createdBy='jrb', creationTS=UTC_TIMESTAMP(), hardwareTypeId=(select id from HardwareType where HardwareType.name='LCA-Raft_1'),componentTypeId=(select id from HardwareType where HardwareType.name='CCD');
-
+# Locations
+insert into Location (name, siteId, createdBy, creationTS) select "Storage Room",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "Anteroom",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "TS1",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "TS2",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "TS3-1",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "TS3-2",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "Long-term Storage",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "ITL Vendor",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "e2v Vendor",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "Receiving",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "In Transit to BNL",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
+insert into Location (name, siteId, createdBy, creationTS) select "Laminar Flow Hood",id,"jrb",UTC_TIMESTAMP() from Site where name="BNL"; 
 
 

@@ -66,6 +66,7 @@ CREATE TABLE HardwareType
   autoSequenceWidth int DEFAULT 0 COMMENT "width of zero-filled sequence #",
   autoSequence int DEFAULT 0 COMMENT "used when autoSequenceWidth > 0",
   trackingType enum('COMPONENT', 'TEST_EQUIPMENT') DEFAULT 'COMPONENT',
+  isBatched tinyint NOT NULL default "0",
   description varchar(255) DEFAULT "",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -218,6 +219,7 @@ CREATE TABLE Process
   hardwareRelationshipTypeId int NULL, 
   version int NOT NULL, 
   userVersionString varchar(255) NULL COMMENT 'e.g. git tag',
+  shortDescription varchar(255) NOT NULL default "",
   description text, 
   instructionsURL varchar(255), 
   substeps  ENUM('NONE', 'SEQUENCE', 'SELECTION') default 'NONE'
@@ -677,6 +679,22 @@ CREATE TABLE ActivityStatusHistory
   INDEX fk231 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all activity status updates';
+
+CREATE TABLE BatchedInventoryHistory 
+( id int NOT NULL AUTO_INCREMENT,
+  hardwareId int NOT NULL COMMENT 'batch being adjusted',
+  adjustment int NOT NULL COMMENT '# of items used, discarded, or returned. Negative for used, discarded; positive for returned, initialized',
+  reason varchar(255) default "" COMMENT "e.g. initialized, used, discarded..",
+  activityId int NULL COMMENT 'activity (if any) associated with change',
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk270 FOREIGN KEY (hardwareId) REFERENCES Hardware(id),
+  CONSTRAINT fk271 FOREIGN KEY (activityId) REFERENCES Activity(id),
+  INDEX ix270 (hardwareId),
+  INDEX ix271 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='track use of batched items';
 
 CREATE TABLE HardwareStatusHistory
 (id  int NOT NULL AUTO_INCREMENT,
