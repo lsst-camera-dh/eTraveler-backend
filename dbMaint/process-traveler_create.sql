@@ -187,6 +187,79 @@ CREATE TABLE HardwareRelationship
   INDEX ix12 (creationTS)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Instance of HardwareRelationshipType between actual pieces of hardware';
+
+CREATE TABLE BatchedRelationshipType 
+( id int NOT NULL AUTO_INCREMENT, 
+  name varchar(255) NOT NULL,
+  hardwareTypeId int NOT NULL,
+  batchedTypeId int NOT NULL,
+  description varchar(255) DEFAULT NULL,
+  singleBatch tinyint NOT NULL default "1" COMMENT "By default batched relationship is satisfied with a single batch",
+  nBatchedItems int NOT NULL default "1" COMMENT "By default use just one batched item in a relationship but may be more",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id), 
+  CONSTRAINT fk280 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType(id),
+  CONSTRAINT fk281 FOREIGN KEY (batchedTypeId) REFERENCES HardwareType(id),
+  INDEX ix280 (hardwareTypeId),
+  INDEX ix281 (batchedTypeId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='describes relationship between two hardware types, one batched and subsidiary to the other';
+
+# BatchedRelationshipSlotType  (references a BatchedRelationshipType)
+# if relationship type has singleBatch=1 (true), just need one of these to
+# represent all slots.  Otherwise slots may be distinguishable, so need
+# nBatchedItems of them
+CREATE TABLE BatchedRelationshipSlotType
+( id int NOT NULL AUTO_INCREMENT,
+  batchedRelationshipTypeId int NOT NULL,
+  slotname varchar(255) NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk286 FOREIGN KEY (batchedRelationshipTypeId) REFERENCES BatchedRelationshipType(id),
+  INDEX ix286 (batchedRelationshipTypeId),
+  CONSTRAINT ix287 UNIQUE (batchedRelationshipTypeId, slotname)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='names for slots for each subsidiary batched item';
+
+CREATE TABLE BatchedRelationship 
+( id int NOT NULL AUTO_INCREMENT, 
+  hardwareId int NOT NULL, 
+  begin timestamp NULL, 
+  end timestamp NULL, 
+  batchedRelationshipTypeId int NOT NULL, 
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id), 
+  CONSTRAINT fk290 FOREIGN KEY (hardwareId) REFERENCES Hardware (id) , 
+  CONSTRAINT fk291 FOREIGN KEY (batchedRelationshipTypeId) REFERENCES BatchedRelationshipType (id), 
+  INDEX ix290 (hardwareId), 
+  INDEX ix291 (batchedRelationshipTypeId),
+  INDEX ix292 (begin),
+  INDEX ix293 (end),
+  INDEX ix294 (creationTS)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Instance of BatchedRelationshipType';
+
+# BatchedRelationshipSlot (instance.  May represent one or many batched items)
+CREATE TABLE BatchedRelationshipSlot
+( id int NOT NULL AUTO_INCREMENT,
+  batchedRelationshipSlotTypeId int NOT NULL,
+  batchId int NOT NULL COMMENT "batch from which 1 or nBatchedItems come",
+  batchedRelationshipId int NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk300 FOREIGN KEY (batchedRelationshipSlotTypeId) REFERENCES BatchedRelationshipSlotType(id),
+  CONSTRAINT fk301 FOREIGN KEY (batchId) REFERENCES Hardware(id),
+  CONSTRAINT fk302 FOREIGN KEY (batchedRelationshipId) REFERENCES BatchedRelationship(id),
+  INDEX ix300 (batchedRelationshipSlotTypeId),
+  INDEX ix301 (batchId),
+  INDEX ix302 (batchedRelationshipId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='batched slot instance. May represent 1 or several items';
+
 CREATE TABLE InternalAction
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
@@ -217,6 +290,7 @@ CREATE TABLE Process
   name varchar(255) NOT NULL, 
   hardwareTypeId int NULL, 
   hardwareRelationshipTypeId int NULL, 
+  batchedRelationshipTypeId int NULL,
   version int NOT NULL, 
   userVersionString varchar(255) NULL COMMENT 'e.g. git tag',
   shortDescription varchar(255) NOT NULL default "",
@@ -237,10 +311,12 @@ CREATE TABLE Process
   CONSTRAINT fk41 FOREIGN KEY (hardwareRelationshipTypeId) REFERENCES HardwareRelationshipType (id), 
   CONSTRAINT fk42 FOREIGN KEY (newHardwareStatusId) REFERENCES HardwareStatus (id),
   CONSTRAINT fk45 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup (id), 
+  CONSTRAINT fk46 FOREIGN KEY (batchedRelationshipTypeId) REFERENCE BatchedRelationshipType (id),
   INDEX fk40 (hardwareTypeId),
   INDEX fk41 (hardwareRelationshipTypeId),
   INDEX fk42 (newHardwareStatusId),
   INDEX fk45 (hardwareGroupId),
+  INDEX ix46 (batchedRelationshipTypeId),
   CONSTRAINT ix44 UNIQUE INDEX (name, hardwareGroupId, version),
   CONSTRAINT ix45 UNIQUE INDEX (originalId, version)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
@@ -311,6 +387,7 @@ CREATE TABLE Activity
 ( id int NOT NULL AUTO_INCREMENT, 
   hardwareId int NOT NULL COMMENT "hardware in whose behalf activity occurred", 
   hardwareRelationshipId int NULL COMMENT "relationship pertinent to activity, if any", 
+  batchedRelationshipId int NULL COMMENT "relationship involving batched hardware if any",
   processId int NOT NULL, 
   processEdgeId int NULL
    COMMENT "edge used to get to process; NULL for root",
@@ -330,6 +407,7 @@ CREATE TABLE Activity
   CONSTRAINT fk73 FOREIGN KEY (processEdgeId) REFERENCES ProcessEdge (id), 
   CONSTRAINT fk74 FOREIGN KEY (parentActivityId) REFERENCES Activity (id), 
   CONSTRAINT fk76 FOREIGN KEY (jobHarnessId) REFERENCES JobHarness (id), 
+  CONSTRAINT fk77 FOREIGN KEY (batchedRelationshipId) REFERENCES BatchedRelationship (id), 
   INDEX fk70 (hardwareId),
   INDEX fk71 (hardwareRelationshipId),
   INDEX fk72 (processId), 
@@ -338,9 +416,28 @@ CREATE TABLE Activity
   INDEX ix76 (jobHarnessId),
   INDEX ix70 (begin),
   INDEX ix71 (end),
-  INDEX ix72 (parentActivityId, processEdgeId)
+  INDEX ix72 (parentActivityId, processEdgeId),
+  INDEX ix77 (batchedRelationshipId)
 )   ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Instance of process step executed on a particular component';
+
+# BatchedRelationshipSlot (instance.  May represent one or many batched items)
+CREATE TABLE BatchedRelationshipSlot
+( id int NOT NULL AUTO_INCREMENT,
+  batchedRelationshipSlotTypeId int NOT NULL,
+  batchId int NOT NULL COMMENT "batch from which 1 or nBatchedItems come",
+  batchedRelationshipId int NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk300 FOREIGN KEY (batchedRelationshipSlotTypeId) REFERENCES BatchedRelationshipSlotType(id),
+  CONSTRAINT fk301 FOREIGN KEY (batchId) REFERENCES Hardware(id),
+  CONSTRAINT fk302 FOREIGN KEY (batchedRelationshipId) REFERENCES BatchedRelationship(id),
+  INDEX ix290 (batchedRelationshipSlotTypeId),
+  INDEX ix291 (batchId),
+  INDEX ix292 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='batched slot instance. May represent 1 or several items';
 
 CREATE TABLE Result 
 ( id int NOT NULL AUTO_INCREMENT, 

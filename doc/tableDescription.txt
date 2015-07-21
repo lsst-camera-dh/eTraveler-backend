@@ -74,6 +74,23 @@ and different slot numbers.
 2. HardwareRelationship    [instance of HardwareRelationshipType]
 Instance of 1. for specific components
 
+3. BatchedRelationshipType [template]
+Gives a name to a relationship whose child component is batched. Unlike
+HardwareRelationshipType, relationships involving batched types may have
+more than one batched items in the relationship along with (non-batched) parent.
+
+4. BatchedRelationshipSlotType [template]
+Need one of these for each batched item in the batched relationship
+
+5. BatchedRelationship [instance]
+Instance of 3.  Like HardwareRelationship, it has begin/end fields to keep
+track of interval over which relationship holds.  
+
+6. BatchedRelationshipSlot [instance]
+When a relationship is created, create just one of these if
+  - relationship only involves one batched item   OR
+  - boolean BatchedRelationshipType.singleBatch is true for referenced type
+
 PROCESS
 -------
 1. Process   [template]

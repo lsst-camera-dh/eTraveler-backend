@@ -70,6 +70,9 @@ HardwareRelationshipSlot:
 ignored unless HardwareRelationshipType is present and non-null. Otherwise,
 must be non-negative integer if present; defaults to 1.
 
+BatchedRelationshipType:
+optional. See also TravelerActions: below.
+
 InstructionsURL: 
 optional
 
@@ -144,6 +147,8 @@ may be associated with a step.  Current list of recognized values is
  HarnessedJob
  MakeHardwareRelationship (only if HardwareRelationshipType is non-null)
  BreakHardwareRelationship  (only if HardwareRelationshipType is non-null)
+ MakeBatchedRelationship (only if BatchedRelationshipTYpe is non-null)
+ BreakBatchedRelationship (only if BatchedRelationshipTYpe is non-null)
  *SetHardwareStatus
  SetHardwareLocation  (may be omitted if NewLocation: is used)
  Async    (for now has no effect)
