@@ -4,4 +4,6 @@ lib
 bin
 *.log
 redhat*
+yaml-cpp
+yaml
 

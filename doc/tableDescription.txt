@@ -63,6 +63,31 @@ Identifier unique to referenced authority for hardware of specific type
 
 Hardware relationships
 ----------------------
+1. MultiRelationshipType [template]
+Gives a name to a relationship whose child component may be batched. Unlike
+HardwareRelationshipType, relationships involving batched types may have
+more than one batched items in the relationship along with (non-batched) parent.
+
+2. MultiRelationshipSlotType [template]
+Need one of these for each subordinate item (batched or not) in the 
+multi relationship
+
+3. MultiRelationshipAction
+e.g. "assign", "install", "uninstall"
+
+4. ProcessRelationshipTag
+Associates process step with relationship type and action to be performed 
+on it
+
+5. MultiRelationshipSlot [instance]
+When a relationship undergoes the "assign" step, create one of these for
+each of its associated MultiRelationshipSlotType entries. 
+
+6. MultiRelationshipHistory
+Make an entry associated activity with each multirelationship slot which
+has undergone some action in the step.
+
+Deprecated, may be dropped:
 1. HardwareRelationshipType    [template]
 Associates two kinds of hardware, one subsidiary to the other, e.g.
 raft and sensor where relationship is 'sensor installed in raft'. 
@@ -74,22 +99,6 @@ and different slot numbers.
 2. HardwareRelationship    [instance of HardwareRelationshipType]
 Instance of 1. for specific components
 
-3. BatchedRelationshipType [template]
-Gives a name to a relationship whose child component is batched. Unlike
-HardwareRelationshipType, relationships involving batched types may have
-more than one batched items in the relationship along with (non-batched) parent.
-
-4. BatchedRelationshipSlotType [template]
-Need one of these for each batched item in the batched relationship
-
-5. BatchedRelationship [instance]
-Instance of 3.  Like HardwareRelationship, it has begin/end fields to keep
-track of interval over which relationship holds.  
-
-6. BatchedRelationshipSlot [instance]
-When a relationship is created, create just one of these if
-  - relationship only involves one batched item   OR
-  - boolean BatchedRelationshipType.singleBatch is true for referenced type
 
 PROCESS
 -------
