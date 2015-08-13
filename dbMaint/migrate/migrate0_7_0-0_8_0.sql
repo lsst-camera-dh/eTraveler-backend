@@ -21,7 +21,7 @@ CREATE TABLE MultiRelationshipType
   INDEX ix281 (minorTypeId),
   CONSTRAINT ix282 UNIQUE INDEX (name, hardwareTypeId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='describes relationship between two hardware types, one batched and subsidiary to the other';
+COMMENT='describes relationship between two hardware types, one (which may be batched) subsidiary to the other';
 
 # MultiRelationshipSlotType  (references a MultiRelationshipType)
 # if relationship type has singleBatch=1 (true), just need one of these to
@@ -38,23 +38,26 @@ CREATE TABLE MultiRelationshipSlotType
   INDEX ix286 (multiRelationshipTypeId),
   CONSTRAINT ix287 UNIQUE (multiRelationshipTypeId, slotname)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='names for slots for each subsidiary batched item';
+COMMENT='names for slots for each subsidiary item';
 
 # MultiRelationshipSlot (instance.  May represent one or many batched items
 # or one "regular" item)
 CREATE TABLE MultiRelationshipSlot
 ( id int NOT NULL AUTO_INCREMENT,
   multiRelationshipSlotTypeId int NOT NULL,
-  hardwareId int NOT NULL COMMENT "batch from which 1 or nBatchedItems come or regular tracked hardware instance",
+  minorId int NOT NULL COMMENT "batch from which 1 or nBatchedItems come or regular tracked hardware instance",
+  hardwareId int NOT NULL COMMENT "parent component in assembly",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk300 FOREIGN KEY (multiRelationshipSlotTypeId) REFERENCES MultiRelationshipSlotType(id),
   CONSTRAINT fk301 FOREIGN KEY (hardwareId) REFERENCES Hardware(id),
+  CONSTRAINT fk302 FOREIGN KEY (minorId) REFERENCES Hardware(id),
   INDEX ix300 (multiRelationshipSlotTypeId),
-  INDEX ix301 (hardwareId)
+  INDEX ix301 (hardwareId),
+  INDEX ix302 (minorId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='batched slot instance. May represent 1 or several items';
+COMMENT='batched (or not) slot instance. May represent 1 or several items';
 
 CREATE TABLE MultiRelationshipAction
 ( id int NOT NULL AUTO_INCREMENT,

@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS DbRelease
   UNIQUE INDEX (major, minor, patch)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-##CREATE TABLE IF NOT EXISTS Site
 CREATE TABLE Site
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
@@ -27,7 +26,6 @@ CREATE TABLE Site
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep site-specific information here';
 
-#CREATE TABLE IF NOT EXISTS Location
 CREATE TABLE Location
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
@@ -187,6 +185,67 @@ CREATE TABLE HardwareRelationship
   INDEX ix12 (creationTS)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Instance of HardwareRelationshipType between actual pieces of hardware';
+
+CREATE TABLE MultiRelationshipType 
+( id int NOT NULL AUTO_INCREMENT, 
+  name varchar(255) NOT NULL,
+  hardwareTypeId int NOT NULL,
+  minorTypeId int NOT NULL,
+  description varchar(255) DEFAULT NULL,
+  singleBatch tinyint NOT NULL default "1" COMMENT "By default batched relationship is satisfied with a single batch",
+  nMinorItems int NOT NULL default "1" COMMENT "By default use just one subordinate item in a relationship but may be more",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id), 
+  CONSTRAINT fk280 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType(id),
+  CONSTRAINT fk281 FOREIGN KEY (minorTypeId) REFERENCES HardwareType(id),
+  INDEX ix280 (hardwareTypeId),
+  INDEX ix281 (minorTypeId),
+  CONSTRAINT ix282 UNIQUE INDEX (name, hardwareTypeId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='describes relationship between two hardware types, one (which may be batched) subsidiary to the other';
+
+CREATE TABLE MultiRelationshipSlotType
+( id int NOT NULL AUTO_INCREMENT,
+  multiRelationshipTypeId int NOT NULL,
+  slotname varchar(255) NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk286 FOREIGN KEY (multiRelationshipTypeId) REFERENCES MultiRelationshipType(id),
+  INDEX ix286 (multiRelationshipTypeId),
+  CONSTRAINT ix287 UNIQUE (multiRelationshipTypeId, slotname)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='names for slots for each subsidiary item';
+
+CREATE TABLE MultiRelationshipSlot
+( id int NOT NULL AUTO_INCREMENT,
+  multiRelationshipSlotTypeId int NOT NULL,
+  minorId int NOT NULL COMMENT "batch from which 1 or nBatchedItems come or regular tracked hardware instance",
+  hardwareId int NOT NULL COMMENT "parent component in assembly",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk300 FOREIGN KEY (multiRelationshipSlotTypeId) REFERENCES MultiRelationshipSlotType(id),
+  CONSTRAINT fk301 FOREIGN KEY (hardwareId) REFERENCES Hardware(id),
+  CONSTRAINT fk302 FOREIGN KEY (minorId) REFERENCES Hardware(id),
+  INDEX ix300 (multiRelationshipSlotTypeId),
+  INDEX ix301 (hardwareId),
+  INDEX ix302 (minorId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='batched (or not) slot instance. May represent 1 or several items';
+
+CREATE TABLE MultiRelationshipAction
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  UNIQUE INDEX ix305 (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='values assign, install, uninstall...';
+
+
 CREATE TABLE InternalAction
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
@@ -234,11 +293,9 @@ CREATE TABLE Process
   hardwareGroupId int NOT NULL,
   PRIMARY KEY (id), 
   CONSTRAINT fk40 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType (id), 
-  CONSTRAINT fk41 FOREIGN KEY (hardwareRelationshipTypeId) REFERENCES HardwareRelationshipType (id), 
   CONSTRAINT fk42 FOREIGN KEY (newHardwareStatusId) REFERENCES HardwareStatus (id),
   CONSTRAINT fk45 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup (id), 
   INDEX fk40 (hardwareTypeId),
-  INDEX fk41 (hardwareRelationshipTypeId),
   INDEX fk42 (newHardwareStatusId),
   INDEX fk45 (hardwareGroupId),
   CONSTRAINT ix44 UNIQUE INDEX (name, hardwareGroupId, version),
@@ -325,13 +382,11 @@ CREATE TABLE Activity
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
   CONSTRAINT fk70 FOREIGN KEY (hardwareId) REFERENCES Hardware (id), 
-  CONSTRAINT fk71 FOREIGN KEY (hardwareRelationshipId) REFERENCES HardwareRelationship (id), 
   CONSTRAINT fk72 FOREIGN KEY (processId) REFERENCES Process (id) , 
   CONSTRAINT fk73 FOREIGN KEY (processEdgeId) REFERENCES ProcessEdge (id), 
   CONSTRAINT fk74 FOREIGN KEY (parentActivityId) REFERENCES Activity (id), 
   CONSTRAINT fk76 FOREIGN KEY (jobHarnessId) REFERENCES JobHarness (id), 
   INDEX fk70 (hardwareId),
-  INDEX fk71 (hardwareRelationshipId),
   INDEX fk72 (processId), 
   INDEX fk73 (processEdgeId),
   INDEX fk74 (parentActivityId),
@@ -679,6 +734,38 @@ CREATE TABLE ActivityStatusHistory
   INDEX fk231 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all activity status updates';
+
+CREATE TABLE MultiRelationshipHistory
+( id int NOT NULL AUTO_INCREMENT,
+  multiRelationshipSlotId int NOT NULL,
+  multiRelationshipActionId int NOT NULL,
+  activityId int NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk310 FOREIGN KEY (multiRelationshipSlotId) REFERENCES MultiRelationshipSlot(id),
+  CONSTRAINT fk311 FOREIGN KEY (multiRelationshipActionId) REFERENCES MultiRelationshipAction(id),
+  CONSTRAINT fk312 FOREIGN KEY (activityId) REFERENCES Activity(id),
+  INDEX ix310 (multiRelationshipSlotId),
+  INDEX ix311 (multiRelationshipActionId),
+  INDEX ix312 (activityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE ProcessRelationshipTag
+( id int NOT NULL AUTO_INCREMENT,
+  processId int NOT NULL,
+  multiRelationshipTypeId int NOT NULL,
+  multiRelationshipActionId int NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk320 FOREIGN KEY (processId) REFERENCES Process(id),
+  CONSTRAINT fk321 FOREIGN KEY (multiRelationshipTypeId) REFERENCES MultiRelationshipType(id),
+  CONSTRAINT fk322 FOREIGN KEY (multiRelationshipActionId) REFERENCES MultiRelationshipAction(id),
+  INDEX ix320 (processId),
+  INDEX ix321 (multiRelationshipTypeId),
+  INDEX ix322 (multiRelationshipActionId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE BatchedInventoryHistory 
 ( id int NOT NULL AUTO_INCREMENT,

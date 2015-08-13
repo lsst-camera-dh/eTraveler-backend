@@ -12,6 +12,8 @@ delete from StringResultManual;
 delete from Prerequisite;
 delete from JobStepHistory;
 delete from StopWorkHistory;
+delete from MultiRelationshipHistory;
+delete from MultiRelationshipSlot;
 delete from Exception;
 delete from ActivityStatusHistory;
 delete from HardwareStatusHistory where hardwareStatusId != (select id from HardwareStatus where name="NEW");

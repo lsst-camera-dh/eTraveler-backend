@@ -5,6 +5,7 @@ delete from NextProcessVersion;
 delete from InputPattern;
 delete from PrerequisitePattern;
 delete from ExceptionType;
+delete from ProcessRelationshipTag;
 delete from TravelerTypeStateHistory;
 delete from TravelerType;
 delete from ProcessEdge;
