@@ -73,7 +73,7 @@ CREATE TABLE MultiRelationshipHistory
 ( id int NOT NULL AUTO_INCREMENT,
   multiRelationshipSlotId int NOT NULL,
   multiRelationshipActionId int NOT NULL,
-  activityId int NOT NULL,
+  activityId int  NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
