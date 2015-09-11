@@ -56,6 +56,9 @@ along with some of their properties.  Value is a string unless otherwise noted.
 Name:   
 must appear unless the key Clone or RefName appears
 
+Subsystem:
+Ignored for any but top node.
+
 HardwareGroup:
 required for top node; ignored for all descendants (they inherit value from 
 top node). 
@@ -170,7 +173,7 @@ may be associated with a step.  Current list of recognized values is
 Notes: 
 1. Instead of specifying TravelerActions ("SetHardwareStatus", "AddLabel", 
    or "RemoveLabel") YAML file writers should use the corresponding keys
-   taking values ("NewStatus", "AddLabel", "RemoveLabel") instead.
+   taking values ("NewStatus", "AddLabel", "RemoveLabel").
 2. Only one of these three operations may be specified in any one
    process step.
 
@@ -181,15 +184,14 @@ Value is a list, taken from pre-defined set.  Current recognized values are
  Supervisor
  Approver
  Admin
+ QA
 
-For now (because each category implies all the ones above it in the list)
-if one of these values is specified, the mask bits corresponding to it and
-all categories above it will be set.  If need be, will define additional
-values like SupervisorOnly to indicate that just the supervisor bit should
-be set.
-
-A new value, QualityAssurance, will be available soon.
-
+These are not really groups; they're roles. The expectation is that 
+permission groups will be defined for each pair (subsystem, role).
+The traveler definition will be associated with a particular subsystem.
+If a particular role is specified for a step, that means it can only
+be executed by someone in the group corresponding to (subsystem, role)
+where subsystem is the one associated with the traveler definition.
 
 10. Description of a prerequisite node.
 Each prerequisite node is a dict with the following keys:
