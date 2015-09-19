@@ -41,6 +41,8 @@ COMMENT='Identifies teststand, assembly station, etc.';
 
 CREATE TABLE JobHarness
 ( id int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  description varchar(255) NOT NULL DEFAULT "",
   jhVirtualEnv varchar(255) NOT NULL,
   jhOutputRoot varchar(255) NOT NULL,
   jhStageRoot varchar(255) NOT NULL,
@@ -50,7 +52,8 @@ CREATE TABLE JobHarness
   creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk260 FOREIGN KEY(siteId) REFERENCES Site(id),
-  INDEX ix260 (siteId)
+  INDEX ix260 (siteId),
+  UNIQUE INDEX ix261 (name, siteId) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Information pertaining to a job harness installation';
   
