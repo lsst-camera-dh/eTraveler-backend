@@ -57,6 +57,23 @@ CREATE TABLE JobHarness
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Information pertaining to a job harness installation';
   
+CREATE TABLE Subsystem
+(id int NOT NULL AUTO_INCREMENT,
+ name varchar(255) NOT NULL,
+ shortName varchar(16) NOT NULL default "" COMMENT "Prefix for perm. groups and traveler names",
+ description varchar(255) default "",
+ generic tinyint NOT NULL default "0" COMMENT "if True permission group name = role name",
+ parentId int NULL,
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk350 FOREIGN KEY(parentId) REFERENCES Subsystem(id),
+ CONSTRAINT ix351 UNIQUE (parentId, name),
+ UNIQUE INDEX ix352 (shortName),
+ INDEX ix350 (parentId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='';
+
 # May need to add additional table for subsystem (name, id and boilerplate)
 # and add column to HardwareType: fk to subsystem
 # Maybe do something similar for "component type"  ("part" or "assembly")
@@ -681,7 +698,7 @@ CREATE TABLE TravelerType
   state ENUM('NEW', 'ACTIVE', 'DEACTIVATED', 'SUPERSEDED') NULL,
   owner varchar(50) COMMENT 'responsible party',
   reason text COMMENT 'purpose of traveler or of this version',
-  subsytemId int NULL,
+  subsystemId int NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
@@ -868,19 +885,3 @@ CREATE TABLE TravelerTypeStateHistory
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all traveler type state updates';
 
-CREATE TABLE Subsystem
-(id int NOT NULL AUTO_INCREMENT,
- name varchar(255) NOT NULL,
- shortName varchar(16) NOT NULL default "" COMMENT "Prefix for perm. groups and traveler names",
- description varchar(255) default "",
- generic tinyint NOT NULL default "0" COMMENT "if True permission group name = role name",
- parentId int NULL,
- createdBy varchar(50) NOT NULL,
- creationTS timestamp NULL,
- PRIMARY KEY(id),
- CONSTRAINT fk350 FOREIGN KEY(parentId) REFERENCES Subsystem(id),
- CONSTRAINT ix351 UNIQUE (parentId, name),
- UNIQUE INDEX ix352 (shortName),
- INDEX ix350 (parentId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='';

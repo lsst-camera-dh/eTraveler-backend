@@ -50,4 +50,5 @@ DROP TABLE IF EXISTS HardwareRelationshipType;
 DROP TABLE IF EXISTS HardwareGroup;
 DROP TABLE IF EXISTS HardwareType;
 DROP TABLE IF EXISTS HardwareStatus;
+DROP TABLE IF EXISTS Subsystem;
 
