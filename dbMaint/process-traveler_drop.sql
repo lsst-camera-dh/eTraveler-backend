@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS Subsystem;
 DROP TABLE IF EXISTS NextProcessVersion;
 DROP TABLE IF EXISTS Result;
 DROP TABLE IF EXISTS StringResultManual;

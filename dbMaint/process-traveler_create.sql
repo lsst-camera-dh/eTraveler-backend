@@ -69,10 +69,13 @@ CREATE TABLE HardwareType
   trackingType enum('COMPONENT', 'TEST_EQUIPMENT') DEFAULT 'COMPONENT',
   isBatched tinyint NOT NULL default "0",
   description varchar(255) DEFAULT "",
+  subsystemId int NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
-  CONSTRAINT ix2 UNIQUE (name) 
+  CONSTRAINT ix2 UNIQUE (name),
+  CONSTRAINT fkk2 FOREIGN KEY (subsystemId) REFERENCES Subsystem(id),
+  INDEX ixx2(subsystemId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE HardwareGroup
@@ -678,11 +681,14 @@ CREATE TABLE TravelerType
   state ENUM('NEW', 'ACTIVE', 'DEACTIVATED', 'SUPERSEDED') NULL,
   owner varchar(50) COMMENT 'responsible party',
   reason text COMMENT 'purpose of traveler or of this version',
+  subsytemId int NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
   CONSTRAINT  fk192 FOREIGN KEY(rootProcessId) REFERENCES Process(id),
-  UNIQUE INDEX fk192 (rootProcessId)
+  UNIQUE INDEX fk192 (rootProcessId),
+  CONSTRAINT fk193 FOREIGN KEY(subsystemId) REFERENCES Subsystem(id),
+  INDEX ix193 (subsystemId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='List of traveler types';
 
@@ -810,6 +816,7 @@ CREATE TABLE HardwareLocationHistory
   locationId int NOT NULL COMMENT "fk for the new location",
   hardwareId int NOT NULL COMMENT "component whose location is being updated",
   activityId int NULL,
+  reason varchar(1024) NOT NULL DEFAULT '',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
@@ -861,3 +868,19 @@ CREATE TABLE TravelerTypeStateHistory
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all traveler type state updates';
 
+CREATE TABLE Subsystem
+(id int NOT NULL AUTO_INCREMENT,
+ name varchar(255) NOT NULL,
+ shortName varchar(16) NOT NULL default "" COMMENT "Prefix for perm. groups and traveler names",
+ description varchar(255) default "",
+ generic tinyint NOT NULL default "0" COMMENT "if True permission group name = role name",
+ parentId int NULL,
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk350 FOREIGN KEY(parentId) REFERENCES Subsystem(id),
+ CONSTRAINT ix351 UNIQUE (parentId, name),
+ UNIQUE INDEX ix352 (shortName),
+ INDEX ix350 (parentId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='';

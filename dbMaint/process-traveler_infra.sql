@@ -20,6 +20,7 @@ INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, last
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 6, 8, 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support labels: non-status attributes of hardware components. Also optional operator inputs, new PermissionGroup for QA and approved entry in TravelerTypeState');
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 7, 0, 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Begin to support batched hardware, Process.shortDescription');
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 8, 0, 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Complete support of batched hardware; generalize handling of hardware relationships');
+INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '9', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for subsystems');
 
 
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=UTC_TIMESTAMP();
@@ -94,3 +95,10 @@ insert into PermissionGroup set name='qualityAssurance', maskBit='16', createdBy
 insert into MultiRelationshipAction (name, createdBy, creationTS) values ('assign', 'jrb', UTC_TIMESTAMP());
 insert into MultiRelationshipAction (name, createdBy, creationTS) values ('install', 'jrb', UTC_TIMESTAMP());
 insert into MultiRelationshipAction (name, createdBy, creationTS) values ('uninstall', 'jrb', UTC_TIMESTAMP());
+
+insert into Subsystem (name, shortName, description, parentId, createdBy, creationTS) values ("Camera", "Cam", "Full camera", NULL, 'jrb', UTC_TIMESTAMP());
+
+
+insert into Subsystem (name, shortName, description, generic, createdBy, creationTS) values ("Legacy", "Legacy", "Used for traveler types predating Subsystem table", '1', 'jrb', UTC_TIMESTAMP());
+
+insert into Subsystem (name, shortName, description, generic, createdBy, creationTS) values ("Default", "Default", "Used for traveler types not associated with any particular subsystem", '1', 'jrb', UTC_TIMESTAMP());
