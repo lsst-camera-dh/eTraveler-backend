@@ -3,7 +3,7 @@ CREATE TABLE SignatureResultManual
 (id int NOT NULL AUTO_INCREMENT,
  activityId int NOT NULL,
  inputPatternId int NOT NULL,
- signerRequest varchar(255) NOT NULL COMMENT 'name or bitmask, e.g. 0x00001010',
+ signerRequest varchar(255) NOT NULL,
  signerValue   varchar(255),
  signatureTS   timestamp NULL,
  createdBy     varchar(50) NOT NULL,
@@ -16,9 +16,19 @@ CREATE TABLE SignatureResultManual
 COMMENT='an entry for each signature at execution time';
 
 # alter existing tables: add columns
-# Input pattern may now have associated permission group bit mask if it's
-# of signature type
-ALTER TABLE InputPattern add column roleBitmask int unsigned DEFAULT 0 COMMENT 'For signature type only. 0 means dynamically determined; else use bits from PermissionGroup' after isOptional;
+
+# Make constraints in xxResultManual tables reasonable
+ALTER TABLE FloatResultManual drop index ix162;
+ALTER TABLE FloatResultManual add unique key ix162 (activityId, inputPatternId);
+
+ALTER TABLE IntResultManual drop index ix152;
+ALTER TABLE IntResultManual add unique key ix152 (activityId, inputPatternId);
+
+ALTER TABLE StringResultManual drop index ix182;
+ALTER TABLE StringResultManual add unique key ix182 (activityId, inputPatternId);
+
+ALTER TABLE FilepathResultManual drop index ix172;
+ALTER TABLE FilepathResultManual add unique key ix172 (activityId, inputPatternId);
 
 # Add information to InputSemantics about table to stuff results into
 ALTER TABLE InputSemantics add column tableName varchar(255) NOT NULL default '' COMMENT 'where the result should go' after name;
