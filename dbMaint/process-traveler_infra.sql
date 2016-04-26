@@ -37,13 +37,14 @@ insert into HardwareStatus set name='USED', description='Fully tested component 
 insert into HardwareStatus set name='PENDING', description='Component has irregularities; acceptance under review', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into HardwareStatus (name, isStatusValue, systemEntry, description, createdBy, creationTS) values ("non-compliant", 0, 1, 'mark a part as suspect', 'jrb', UTC_TIMESTAMP());
 
-insert into InputSemantics set name="int", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into InputSemantics set name="float", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into InputSemantics set name="boolean", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into InputSemantics set name="checkbox", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into InputSemantics set name="filepath", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into InputSemantics set name="timestamp", createdBy='jrb', creationTS=UTC_TIMESTAMP();
-insert into InputSemantics set name="string", createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into InputSemantics set name="int", tableName='IntResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into InputSemantics set name="float", tableName='FloatResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into InputSemantics set name="boolean", tableName='IntResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into InputSemantics set name="checkbox", tableName='IntResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into InputSemantics set name="filepath", tableName='FilepathResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into InputSemantics set name="timestamp", tableName='StringResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into InputSemantics set name="string", tableName='StringResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into InputSemantics set name="signature", tableName='SignatureResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 
 insert into JobHarnessStep set name="registered", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into JobHarnessStep set name="configured", createdBy='jrb', creationTS=UTC_TIMESTAMP();

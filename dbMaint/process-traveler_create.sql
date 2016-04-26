@@ -491,6 +491,7 @@ COMMENT='Describes item satisfying a prereq. for a specific activity';
 CREATE TABLE InputSemantics
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
+  tableName varchar(255) NOT NULL default '' COMMENT 'where the result should go',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
@@ -547,7 +548,7 @@ CREATE TABLE IntResultManual
  PRIMARY KEY(id),
  CONSTRAINT fk150 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
  CONSTRAINT fk151 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix152 UNIQUE (activityId, name),
+ CONSTRAINT ix152 UNIQUE (activityId, inputPatternId),
  INDEX fk150 (inputPatternId),
  INDEX fk151 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
@@ -581,7 +582,7 @@ CREATE TABLE FloatResultManual
  PRIMARY KEY(id),
  CONSTRAINT fk160 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
  CONSTRAINT fk161 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix162 UNIQUE (activityId, name),
+ CONSTRAINT ix162 UNIQUE (activityId, inputPatternId),
  INDEX fk160 (inputPatternId),
  INDEX fk161 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
@@ -619,7 +620,7 @@ CREATE TABLE FilepathResultManual
  PRIMARY KEY(id),
  CONSTRAINT fk170 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
  CONSTRAINT fk171 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix172 UNIQUE (activityId, name),
+ CONSTRAINT ix172 UNIQUE (activityId, inputPatternId),
  INDEX fk160 (inputPatternId),
  INDEX fk161 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
@@ -657,7 +658,7 @@ CREATE TABLE StringResultManual
  PRIMARY KEY(id),
  CONSTRAINT fk180 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
  CONSTRAINT fk181 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix182 UNIQUE (activityId, name),
+ CONSTRAINT ix182 UNIQUE (activityId, inputPatternId),
  INDEX fk180 (inputPatternId),
  INDEX fk181 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
@@ -885,3 +886,18 @@ CREATE TABLE TravelerTypeStateHistory
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Keep track of all traveler type state updates';
 
+CREATE TABLE SignatureResultManual
+(id int NOT NULL AUTO_INCREMENT,
+ activityId int NOT NULL,
+ inputPatternId int NOT NULL,
+ signerRequest varchar(255) NOT NULL,
+ signerValue   varchar(255),
+ signatureTS   timestamp NULL,
+ createdBy     varchar(50) NOT NULL,
+ creationTS    timestamp NULL,
+ PRIMARY KEY (id),
+ CONSTRAINT fk360 FOREIGN KEY(activityId) REFERENCES Activity(id),
+ CONSTRAINT fk361 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
+ CONSTRAINT ix360 UNIQUE (activityId, signerRequest)
+ ) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='an entry for each signature at execution time';
