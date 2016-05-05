@@ -27,18 +27,6 @@ ALTER TABLE PermissionGroup add column stepPermission tinyint NOT NULL  default 
 ALTER TABLE Activity add column rootActivityId int NULL after parentActivityId;
 ALTER TABLE Activity add CONSTRAINT fk77 FOREIGN KEY(rootActivityId) REFERENCES Activity (id);
 
-# Make constraints in xxResultManual tables reasonable
-ALTER TABLE FloatResultManual drop index ix162;
-ALTER TABLE FloatResultManual add unique key ix162 (activityId, inputPatternId);
-
-ALTER TABLE IntResultManual drop index ix152;
-ALTER TABLE IntResultManual add unique key ix152 (activityId, inputPatternId);
-
-ALTER TABLE StringResultManual drop index ix182;
-ALTER TABLE StringResultManual add unique key ix182 (activityId, inputPatternId);
-
-ALTER TABLE FilepathResultManual drop index ix172;
-ALTER TABLE FilepathResultManual add unique key ix172 (activityId, inputPatternId);
 
 
 # insert new data into existing tables
@@ -53,6 +41,19 @@ UPDATE InputSemantics set tableName='FloatResultManual' where name='float';
 UPDATE InputSemantics set tableName='FilepathResultManual' where name='filepath';
 UPDATE InputSemantics set tableName='StringResultManual' where name='string';
 UPDATE InputSemantics set tableName='StringResultManual' where name='timestamp';
+
+# Make constraints in xxResultManual tables reasonable
+ALTER TABLE FloatResultManual drop index ix162;
+ALTER TABLE FloatResultManual add unique key ix162 (activityId, inputPatternId);
+
+ALTER TABLE IntResultManual drop index ix152;
+ALTER TABLE IntResultManual add unique key ix152 (activityId, inputPatternId);
+
+ALTER TABLE StringResultManual drop index ix182;
+ALTER TABLE StringResultManual add unique key ix182 (activityId, inputPatternId);
+
+ALTER TABLE FilepathResultManual drop index ix172;
+ALTER TABLE FilepathResultManual add unique key ix172 (activityId, inputPatternId);
 
 # Mark this release
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '10', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for signatures');
