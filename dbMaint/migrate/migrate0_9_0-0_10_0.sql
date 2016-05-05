@@ -16,6 +16,16 @@ CREATE TABLE SignatureResultManual
 COMMENT='an entry for each signature at execution time';
 
 # alter existing tables: add columns
+ALTER TABLE InputPattern add column permissionGroupId int NULL after isOptional;
+ALTER TABLE InputPattern add CONSTRAINT fk133 FOREIGN KEY(permissionGroupId) REFERENCES PermissionGroup(id);
+
+# Add information to InputSemantics about table to stuff results into
+ALTER TABLE InputSemantics add column tableName varchar(255) NOT NULL default '' COMMENT 'where the result should go' after name;
+
+ALTER TABLE PermissionGroup add column stepPermission tinyint NOT NULL  default '1' COMMENT 'If 1 this group is used for step execute permission' after maskBit;
+
+ALTER TABLE Activity add column rootActivityId int NULL after parentActivityId;
+ALTER TABLE Activity add CONSTRAINT fk77 FOREIGN KEY(rootActivityId) REFERENCES Activity (id);
 
 # Make constraints in xxResultManual tables reasonable
 ALTER TABLE FloatResultManual drop index ix162;
@@ -30,10 +40,9 @@ ALTER TABLE StringResultManual add unique key ix182 (activityId, inputPatternId)
 ALTER TABLE FilepathResultManual drop index ix172;
 ALTER TABLE FilepathResultManual add unique key ix172 (activityId, inputPatternId);
 
-# Add information to InputSemantics about table to stuff results into
-ALTER TABLE InputSemantics add column tableName varchar(255) NOT NULL default '' COMMENT 'where the result should go' after name;
 
 # insert new data into existing tables
+INSERT into MultiRelationshipAction (name, createdBy, creationTS) values ('deassign', 'jrb', UTC_TIMESTAMP());
 INSERT into InputSemantics (name, tableName, createdBy, creationTS) values ('signature', 'SignatureResultManual', 'jrb', UTC_TIMESTAMP());
 
 # update InputSemantics.tableName for existing entries
@@ -46,6 +55,6 @@ UPDATE InputSemantics set tableName='StringResultManual' where name='string';
 UPDATE InputSemantics set tableName='StringResultManual' where name='timestamp';
 
 # Mark this release
-##INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '10', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for signatures');
+INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '10', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for signatures');
 
 

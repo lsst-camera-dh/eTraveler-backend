@@ -285,6 +285,7 @@ CREATE TABLE PermissionGroup
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
   maskBit int unsigned NOT NULL,
+  stepPermission tinyint NOT NULL default '1' COMMENT 'If 1 this group is used for step execute permission',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
@@ -395,6 +396,7 @@ CREATE TABLE Activity
   processEdgeId int NULL
    COMMENT "edge used to get to process; NULL for root",
   parentActivityId int NULL,
+  rootActivityId int NULL,
   jobHarnessId int NULL,
   iteration tinyint unsigned DEFAULT 1 COMMENT "Set to non-default for rework",
   begin timestamp NULL, 
@@ -409,6 +411,7 @@ CREATE TABLE Activity
   CONSTRAINT fk73 FOREIGN KEY (processEdgeId) REFERENCES ProcessEdge (id), 
   CONSTRAINT fk74 FOREIGN KEY (parentActivityId) REFERENCES Activity (id), 
   CONSTRAINT fk76 FOREIGN KEY (jobHarnessId) REFERENCES JobHarness (id), 
+  CONSTRAINT fk77 FOREIGN KEY (rootActivityId) REFERENCES Activity (id), 
   INDEX fk70 (hardwareId),
   INDEX fk72 (processId), 
   INDEX fk73 (processEdgeId),
@@ -511,12 +514,14 @@ CREATE TABLE InputPattern
   datatype varchar(255) NULL DEFAULT "LSST_TEST_TYPE" COMMENT 'used in cataloging when type is filepath',
   choiceField varchar(255) NULL COMMENT "may be set to table.field, e.g. HardwareStatus.name",
   isOptional tinyint default 0 NOT NULL COMMENT "operator need not supply optional input",
+  permissionGroupId int NULL;
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
   CONSTRAINT fk130 FOREIGN KEY(processId) REFERENCES Process(id),
   CONSTRAINT fk131 FOREIGN KEY(inputSemanticsId) REFERENCES InputSemantics(id),
   CONSTRAINT ix132 UNIQUE (processId, label),
+  CONSTRAINT fk133 FOREIGN KEY(permissionGroupId) REFERENCES PermissionGroup,
   INDEX fk130 (processId),
   INDEX fk131 (inputSemanticsId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1

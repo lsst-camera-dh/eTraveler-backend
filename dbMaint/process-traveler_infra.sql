@@ -21,7 +21,7 @@ INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, last
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 7, 0, 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Begin to support batched hardware, Process.shortDescription');
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 8, 0, 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Complete support of batched hardware; generalize handling of hardware relationships');
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '9', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for subsystems');
-
+INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '10', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for signatures');
 
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into PrerequisiteType set name='COMPONENT', createdBy='jrb', creationTS=UTC_TIMESTAMP();
@@ -96,6 +96,7 @@ insert into PermissionGroup set name='qualityAssurance', maskBit='16', createdBy
 insert into MultiRelationshipAction (name, createdBy, creationTS) values ('assign', 'jrb', UTC_TIMESTAMP());
 insert into MultiRelationshipAction (name, createdBy, creationTS) values ('install', 'jrb', UTC_TIMESTAMP());
 insert into MultiRelationshipAction (name, createdBy, creationTS) values ('uninstall', 'jrb', UTC_TIMESTAMP());
+insert into MultiRelationshipAction (name, createdBy, creationTS) values ('deassign', 'jrb', UTC_TIMESTAMP());
 
 insert into Subsystem (name, shortName, description, parentId, createdBy, creationTS) values ("Camera", "Cam", "Full camera", NULL, 'jrb', UTC_TIMESTAMP());
 
