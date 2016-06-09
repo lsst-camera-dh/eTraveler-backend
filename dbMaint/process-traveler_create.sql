@@ -1,5 +1,5 @@
 source process-traveler_drop.sql
-## last fk:  250s
+## last fk:  360s
 CREATE TABLE IF NOT EXISTS DbRelease
 ( id int NOT NULL AUTO_INCREMENT,
   major int NOT NULL COMMENT "major release number",
@@ -514,14 +514,14 @@ CREATE TABLE InputPattern
   datatype varchar(255) NULL DEFAULT "LSST_TEST_TYPE" COMMENT 'used in cataloging when type is filepath',
   choiceField varchar(255) NULL COMMENT "may be set to table.field, e.g. HardwareStatus.name",
   isOptional tinyint default 0 NOT NULL COMMENT "operator need not supply optional input",
-  permissionGroupId int NULL;
+  permissionGroupId int NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY(id),
   CONSTRAINT fk130 FOREIGN KEY(processId) REFERENCES Process(id),
   CONSTRAINT fk131 FOREIGN KEY(inputSemanticsId) REFERENCES InputSemantics(id),
   CONSTRAINT ix132 UNIQUE (processId, label),
-  CONSTRAINT fk133 FOREIGN KEY(permissionGroupId) REFERENCES PermissionGroup,
+  CONSTRAINT fk133 FOREIGN KEY(permissionGroupId) REFERENCES PermissionGroup(id),
   INDEX fk130 (processId),
   INDEX fk131 (inputSemanticsId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
