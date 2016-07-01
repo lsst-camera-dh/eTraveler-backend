@@ -1,5 +1,4 @@
-source process-traveler_drop.sql
-## last fk:  360s
+-- last fk:  360s
 CREATE TABLE IF NOT EXISTS DbRelease
 ( id int NOT NULL AUTO_INCREMENT,
   major int NOT NULL COMMENT "major release number",
@@ -167,47 +166,6 @@ CREATE TABLE HardwareIdentifier
   CONSTRAINT ix6 UNIQUE INDEX (identifier, authorityId, hardwareTypeId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE HardwareRelationshipType 
-( id int NOT NULL AUTO_INCREMENT, 
-  name varchar(255) NOT NULL,
-  hardwareTypeId int NOT NULL,
-  componentTypeId int NOT NULL,
-  slot int unsigned NOT NULL DEFAULT '1',
-  slotname varchar(255) COMMENT "identify slot in user friendly fashion",
-  description varchar(255) DEFAULT NULL,
-  createdBy varchar(50) NOT NULL,
-  creationTS timestamp NULL,
-  PRIMARY KEY (id), 
-  constraint fk8 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType(id),
-  constraint fk9 FOREIGN KEY (componentTypeId) REFERENCES HardwareType(id),
-  constraint cui1 UNIQUE INDEX (name, slot),
-  INDEX fk8 (hardwareTypeId),
-  INDEX fk9 (componentTypeId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='describes relationship between two hardware types, one subsidiary to the other';
-
-
-CREATE TABLE HardwareRelationship 
-( id int NOT NULL AUTO_INCREMENT, 
-  hardwareId int NOT NULL, 
-  componentId int NOT NULL, 
-  begin timestamp NULL, 
-  end timestamp NULL, 
-  hardwareRelationshipTypeId int NOT NULL, 
-  createdBy varchar(50) NOT NULL,
-  creationTS timestamp NULL,
-  PRIMARY KEY (id), 
-  CONSTRAINT fk10 FOREIGN KEY (hardwareId) REFERENCES Hardware (id) , 
-  CONSTRAINT fk11 FOREIGN KEY (componentId) REFERENCES Hardware (id) , 
-  CONSTRAINT fk12 FOREIGN KEY (hardwareRelationshipTypeId) REFERENCES HardwareRelationshipType (id), 
-  INDEX fk10 (hardwareId), 
-  INDEX fk11 (componentId), 
-  INDEX fk12 (hardwareRelationshipTypeId),
-  INDEX ix10 (begin),
-  INDEX ix11 (end),
-  INDEX ix12 (creationTS)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='Instance of HardwareRelationshipType between actual pieces of hardware';
 
 CREATE TABLE MultiRelationshipType 
 ( id int NOT NULL AUTO_INCREMENT, 
@@ -299,7 +257,6 @@ CREATE TABLE Process
   originalId int NULL COMMENT "set equal to id of 1st version of this Process",
   name varchar(255) NOT NULL, 
   hardwareTypeId int NULL, 
-  hardwareRelationshipTypeId int NULL, 
   version int NOT NULL, 
   userVersionString varchar(255) NULL COMMENT 'e.g. git tag',
   shortDescription varchar(255) NOT NULL default "",
@@ -391,7 +348,6 @@ COMMENT='Final status';
 CREATE TABLE Activity 
 ( id int NOT NULL AUTO_INCREMENT, 
   hardwareId int NOT NULL COMMENT "hardware in whose behalf activity occurred", 
-  hardwareRelationshipId int NULL COMMENT "relationship pertinent to activity, if any", 
   processId int NOT NULL, 
   processEdgeId int NULL
    COMMENT "edge used to get to process; NULL for root",
@@ -802,6 +758,7 @@ CREATE TABLE ProcessRelationshipTag
 CREATE TABLE BatchedInventoryHistory 
 ( id int NOT NULL AUTO_INCREMENT,
   hardwareId int NOT NULL COMMENT 'batch being adjusted',
+  sourceBatchId int NULL COMMENT 'batch items came from, if any',
   adjustment int NOT NULL COMMENT '# of items used, discarded, or returned. Negative for used, discarded; positive for returned, initialized',
   reason varchar(255) default "" COMMENT "e.g. initialized, used, discarded..",
   activityId int NULL COMMENT 'activity (if any) associated with change',
@@ -810,6 +767,7 @@ CREATE TABLE BatchedInventoryHistory
   PRIMARY KEY (id),
   CONSTRAINT fk270 FOREIGN KEY (hardwareId) REFERENCES Hardware(id),
   CONSTRAINT fk271 FOREIGN KEY (activityId) REFERENCES Activity(id),
+  CONSTRAINT fk272 FOREIGN KEY (sourceBatchId) REFERENCES Hardware(id),
   INDEX ix270 (hardwareId),
   INDEX ix271 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
