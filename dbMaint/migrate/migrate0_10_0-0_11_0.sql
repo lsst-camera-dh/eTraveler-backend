@@ -6,6 +6,11 @@ ALTER TABLE Activity drop hardwareRelationshipId;
 DROP  TABLE HardwareRelationship;
 DROP  TABLE HardwareRelationshipType;
 
+ALTER TABLE MultiRelationshipSlot drop FOREIGN KEY fk302;
+ALTER TABLE MultiRelationshipSlot modify minorId int NULL COMMENT "obsolete; moved to MultiRelationshipHistory" after hardwareId;
+ALTER TABLE MultiRelationshipHistory add minorId int NULL COMMENT "batch from which 1 or nBatchedItems come or regular tracked hardware instance" after multiRelationshipSlotId;
+ALTER TABLE MultiRelationshipHistory add CONSTRAINT fk313 FOREIGN KEY (minorId) REFERENCES Hardware(id);
+
 ALTER TABLE BatchedInventoryHistory add column sourceBatchId int NULL COMMENT 'batch items came from, if any' after hardwareId;
 ALTER TABLE BatchedInventoryHistory  add CONSTRAINT fk272 FOREIGN KEY (sourceBatchId) REFERENCES Hardware(id);
 

@@ -45,4 +45,10 @@ ALTER TABLE Activity add hardwareRelationshipId int NULL;
 ALTER TABLE BatchedInventoryHistory drop foreign key fk272;
 ALTER TABLE BatchedInventoryHistory drop sourceBatchId;
 
+-- move minorId back from MultiRelationshipHistory to MultiRelationshipSlot
+ALTER TABLE MultiRelationshipSlot add CONSTRAINT fk302 FOREIGN KEY (minorId) REFERENCES Hardware(id);
+
+ALTER TABLE MultiRelationshipHistory drop foreign key fk313;
+ALTER TABLE MultiRelationshipHistory drop minorId;
+
 DELETE from DbRelease where major='0' and minor='11' and patch='0';

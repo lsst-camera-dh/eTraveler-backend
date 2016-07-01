@@ -202,14 +202,13 @@ COMMENT='names for slots for each subsidiary item';
 CREATE TABLE MultiRelationshipSlot
 ( id int NOT NULL AUTO_INCREMENT,
   multiRelationshipSlotTypeId int NOT NULL,
-  minorId int NOT NULL COMMENT "batch from which 1 or nBatchedItems come or regular tracked hardware instance",
+  minorId int NULL COMMENT "obsolete; moved to MultiRelationshipHistory",
   hardwareId int NOT NULL COMMENT "parent component in assembly",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk300 FOREIGN KEY (multiRelationshipSlotTypeId) REFERENCES MultiRelationshipSlotType(id),
   CONSTRAINT fk301 FOREIGN KEY (hardwareId) REFERENCES Hardware(id),
-  CONSTRAINT fk302 FOREIGN KEY (minorId) REFERENCES Hardware(id),
   INDEX ix300 (multiRelationshipSlotTypeId),
   INDEX ix301 (hardwareId),
   INDEX ix302 (minorId)
@@ -726,6 +725,7 @@ COMMENT='Keep track of all activity status updates';
 CREATE TABLE MultiRelationshipHistory
 ( id int NOT NULL AUTO_INCREMENT,
   multiRelationshipSlotId int NOT NULL,
+  minorId int NULL COMMENT 'batch from which 1 or nBatchedItems come or regular tracked hardware instance',
   multiRelationshipActionId int NOT NULL,
   activityId int  NULL,
   createdBy varchar(50) NOT NULL,
@@ -734,6 +734,7 @@ CREATE TABLE MultiRelationshipHistory
   CONSTRAINT fk310 FOREIGN KEY (multiRelationshipSlotId) REFERENCES MultiRelationshipSlot(id),
   CONSTRAINT fk311 FOREIGN KEY (multiRelationshipActionId) REFERENCES MultiRelationshipAction(id),
   CONSTRAINT fk312 FOREIGN KEY (activityId) REFERENCES Activity(id),
+  CONSTRAINT fk313 FOREIGN KEY (minorId) REFERENCES Hardware(id),
   INDEX ix310 (multiRelationshipSlotId),
   INDEX ix311 (multiRelationshipActionId),
   INDEX ix312 (activityId)
