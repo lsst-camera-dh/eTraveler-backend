@@ -211,7 +211,7 @@ CREATE TABLE MultiRelationshipSlot
   CONSTRAINT fk301 FOREIGN KEY (hardwareId) REFERENCES Hardware(id),
   INDEX ix300 (multiRelationshipSlotTypeId),
   INDEX ix301 (hardwareId),
-  INDEX ix302 (minorId)
+  UNIQUE INDEX ix303 (hardwareId, multiRelationshipSlotTypeId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='batched (or not) slot instance. May represent 1 or several items';
 
@@ -463,7 +463,7 @@ CREATE TABLE InputPattern
   inputSemanticsId int NOT NULL,
   label   varchar(255) NOT NULL COMMENT "required label to appear on form", 
   units  varchar(255) DEFAULT "none",
-  description varchar(255) NULL COMMENT "if label is not sufficient",
+  description text NULL COMMENT "if label is not sufficient",
   minV float  NULL COMMENT "allowed minimum (optional)",  
   maxV float  NULL COMMENT "allowed maximum (optional)",  
   datatype varchar(255) NULL DEFAULT "LSST_TEST_TYPE" COMMENT 'used in cataloging when type is filepath',
@@ -725,7 +725,7 @@ COMMENT='Keep track of all activity status updates';
 CREATE TABLE MultiRelationshipHistory
 ( id int NOT NULL AUTO_INCREMENT,
   multiRelationshipSlotId int NOT NULL,
-  minorId int NULL COMMENT 'batch from which 1 or nBatchedItems come or regular tracked hardware instance',
+  minorId int NOT NULL COMMENT 'batch from which 1 or nBatchedItems come or regular tracked hardware instance',
   multiRelationshipActionId int NOT NULL,
   activityId int  NULL,
   createdBy varchar(50) NOT NULL,
