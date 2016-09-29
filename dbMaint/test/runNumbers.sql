@@ -7,7 +7,8 @@ CREATE TABLE RunNumber
   creationTS timestamp NULL,
   CONSTRAINT fk370 FOREIGN KEY(rootActivityId) REFERENCES Activity(id),
   PRIMARY KEY(id),
-  INDEX ix371 (runNumber)
+  INDEX ix371 (runNumber),
+  UNIQUE INDEX ix372 (rootActivityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Associate run number with traveler execution';
 
