@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS RunNumber;
 DROP TABLE IF EXISTS SignatureResultManual;
 DROP TABLE IF EXISTS NextProcessVersion;
 DROP TABLE IF EXISTS Result;

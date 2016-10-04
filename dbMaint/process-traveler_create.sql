@@ -590,8 +590,10 @@ CREATE TABLE FilepathResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
  name varchar(255) COMMENT "comes from schema; it is always 'path'",
  value  varchar(255) COMMENT "absolute file path at creating site",
+ basename varchar(255) COMMENT "extracted from full filepath stored in value",
  virtualPath  varchar(255) COMMENT "virtual path from Data Catalog",
  catalogKey int COMMENT "key from Data Catalog",
+ datatype varchar(255) COMMENT "datatype used to register in Data Catalog",
  size   int DEFAULT "0" COMMENT "another field in fileref schema",
  sha1   char(40) NOT NULL COMMENT "still another field in fileref",
  schemaName varchar(255) NOT NULL,
@@ -603,7 +605,9 @@ CREATE TABLE FilepathResultHarnessed
  PRIMARY KEY(id),
  CONSTRAINT fk175 FOREIGN KEY(activityId) REFERENCES Activity(id),
  CONSTRAINT ix176 UNIQUE (activityId, name, schemaName, schemaVersion, schemaInstance),
- INDEX fk175 (activityId)
+ INDEX fk175 (activityId),
+ INDEX ix177 (datatype),
+ INDEX ix178 (basename)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Store filepath results from harnessed activities';
 
@@ -865,3 +869,17 @@ CREATE TABLE SignatureResultManual
  CONSTRAINT ix360 UNIQUE (activityId, signerRequest)
  ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='an entry for each signature at execution time';
+
+-- Create a table associating a root activity id with a run number
+CREATE TABLE RunNumber
+( id int NOT NULL AUTO_INCREMENT,
+  runNumber varchar(15) COMMENT "Digits optionally followed by 1 alpha char",
+  rootActivityId int NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  CONSTRAINT fk370 FOREIGN KEY(rootActivityId) REFERENCES Activity(id),
+  PRIMARY KEY(id),
+  INDEX ix371 (runNumber),
+  UNIQUE INDEX ix372 (rootActivityId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Associate run number with traveler execution';
