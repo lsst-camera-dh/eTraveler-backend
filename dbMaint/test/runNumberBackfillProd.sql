@@ -1,5 +1,11 @@
-insert into RunNumber (rootActivityId, createdBy, creationTS) select rootActivityId, 'jrb', UTC_TIMESTAMP() from Activity where (parentActivityId is NULL)  order by id;
-update RunNumber as R, Exception as E set R.runNumber = R.id where R.runNumber is NULL and R.rootActivityId NOT IN(E.NCRActivityId);
+create temporary table NewRun (RAI int);
+insert into NewRun (RAI) select rootActivityId from Activity where (parentActivityId is NULL) order by id;
+
+delete from NewRun where (RAI in (select rootActivityId from RunNumber));
+
+insert into RunNumber (rootActivityId, createdBy, creationTS) select RAI, 'jrb', UTC_TIMESTAMP() from NewRun; 
+
+update RunNumber as R, Exception as E set R.runNumber = R.id  where R.runNumber is NULL and R.rootActivityId NOT IN(E.NCRActivityId);
 
 --  Cannot update table appearing in subquery, so make temp copy of RunNumber rows needing to be filled
 create temporary table Temprun (tempid int, temprn varchar(15), tempRAI int, bigRoot int);
