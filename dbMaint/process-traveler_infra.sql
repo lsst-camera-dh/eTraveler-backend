@@ -25,6 +25,7 @@ INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, last
 INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '11', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for uninstall batches; clean up obsolete stuff');
 INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '11', '1', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Increase input description size; minor clean-up of relationship support');
 INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '12', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Run numbers. Better searching of harnessed job file output');
+INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '12', '1', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Patch to RunNumber for better searching');
 
 
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=UTC_TIMESTAMP();
