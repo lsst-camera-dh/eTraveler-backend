@@ -26,6 +26,7 @@ INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastM
 INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '11', '1', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Increase input description size; minor clean-up of relationship support');
 INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '12', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Run numbers. Better searching of harnessed job file output');
 INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '12', '1', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Patch to RunNumber for better searching');
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '13', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Text result type; single-slot actions');
 
 
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=UTC_TIMESTAMP();
@@ -50,6 +51,8 @@ insert into InputSemantics set name="filepath", tableName='FilepathResultManual'
 insert into InputSemantics set name="timestamp", tableName='StringResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InputSemantics set name="string", tableName='StringResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into InputSemantics set name="signature", tableName='SignatureResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into InputSemantics set name="text", tableName='TextResultManual', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+
 
 insert into JobHarnessStep set name="registered", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into JobHarnessStep set name="configured", createdBy='jrb', creationTS=UTC_TIMESTAMP();

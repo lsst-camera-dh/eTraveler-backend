@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS IntResultManual;
 DROP TABLE IF EXISTS IntResultHarnessed;
 DROP TABLE IF EXISTS FloatResultManual;
 DROP TABLE IF EXISTS FloatResultHarnessed;
+DROP TABLE IF EXISTS TextResultManual;
 DROP TABLE IF EXISTS InputPattern;
 DROP TABLE IF EXISTS InputSemantics;
 DROP TABLE IF EXISTS Prerequisite;

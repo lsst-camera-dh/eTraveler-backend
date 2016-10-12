@@ -1,4 +1,4 @@
--- last fk:  360s
+-- last fk:  380s
 CREATE TABLE IF NOT EXISTS DbRelease
 ( id int NOT NULL AUTO_INCREMENT,
   major int NOT NULL COMMENT "major release number",
@@ -645,6 +645,20 @@ CREATE TABLE StringResultHarnessed
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Store arbitary non-filepath string results from activities';
 
+CREATE TABLE TextResultManual
+(id int NOT NULL AUTO_INCREMENT,
+ inputPatternId int NOT NULL,
+ value text,
+ activityId int NOT NULL COMMENT "activity producing this result",
+ createdBy varchar(50) NOT NULL,
+ creationTS timestamp NULL,
+ PRIMARY KEY(id),
+ CONSTRAINT fk380 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
+ CONSTRAINT fk381 FOREIGN KEY(activityId) REFERENCES Activity(id),
+ CONSTRAINT ix382 UNIQUE (activityId, inputPatternId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='Store arbitrary long non-filepath string results from manual activities';
+
 CREATE TABLE NextProcessVersion
 (id int NOT NULL AUTO_INCREMENT,
  name varchar(50) NOT NULL COMMENT 'will match something in Process.name',
@@ -749,12 +763,15 @@ CREATE TABLE ProcessRelationshipTag
   processId int NOT NULL,
   multiRelationshipTypeId int NOT NULL,
   multiRelationshipActionId int NOT NULL,
+  multiRelationshipSlotTypeId int NULL;
+  slotForm enum('ALL', 'SPECIFIED', 'QUERY') DEFAULT 'ALL;
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk320 FOREIGN KEY (processId) REFERENCES Process(id),
   CONSTRAINT fk321 FOREIGN KEY (multiRelationshipTypeId) REFERENCES MultiRelationshipType(id),
   CONSTRAINT fk322 FOREIGN KEY (multiRelationshipActionId) REFERENCES MultiRelationshipAction(id),
+  CONSTRAINT fk323 FOREIGN KEY (multiRelationshipSlotTypeId) REFERENCES MultiRelationshipSlotType(id),
   INDEX ix320 (processId),
   INDEX ix321 (multiRelationshipTypeId),
   INDEX ix322 (multiRelationshipActionId)
