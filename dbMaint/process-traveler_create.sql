@@ -764,7 +764,7 @@ CREATE TABLE ProcessRelationshipTag
   multiRelationshipTypeId int NOT NULL,
   multiRelationshipActionId int NOT NULL,
   multiRelationshipSlotTypeId int NULL;
-  slotForm enum('ALL', 'SPECIFIED', 'QUERY') DEFAULT 'ALL;
+  slotForm enum('ALL', 'SPECIFIED', 'QUERY') DEFAULT 'ALL';
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
