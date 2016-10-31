@@ -18,4 +18,4 @@ alter table FloatResultManual add index ix162(activityId, inputPatternId);
 insert into InternalAction set name='repeatable',maskBit='512',createdBy='jrb',creationTS=UTC_TIMESTAMP();
 
 update DbRelease set status='OLD' where major='0' and minor='13' and patch='0';
-insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '14', '0', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Text result type; single-slot actions');
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '14', '0', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Add SignatureResultManual.signerComment, add new internal action "repeatable" ');
