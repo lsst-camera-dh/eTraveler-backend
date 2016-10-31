@@ -19,14 +19,14 @@ INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, last
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 6, 6, 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'add a couple columns');
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 6, 8, 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support labels: non-status attributes of hardware components. Also optional operator inputs, new PermissionGroup for QA and approved entry in TravelerTypeState');
 INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 7, 0, 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Begin to support batched hardware, Process.shortDescription');
-INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 8, 0, 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Complete support of batched hardware; generalize handling of hardware relationships');
-INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '9', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for subsystems');
-INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '10', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for signatures');
-INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '11', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for uninstall batches; clean up obsolete stuff');
-INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '11', '1', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Increase input description size; minor clean-up of relationship support');
-INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '12', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Run numbers. Better searching of harnessed job file output');
-INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '12', '1', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Patch to RunNumber for better searching');
-insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '13', '0', 'TEST', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Text result type; single-slot actions');
+INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values (0, 8, 0, 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Complete support of batched hardware; generalize handling of hardware relationships');
+INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '9', '0', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for subsystems');
+INSERT into DbRelease  (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '10', '0', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for signatures');
+INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '11', '0', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Support for uninstall batches; clean up obsolete stuff');
+INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '11', '1', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Increase input description size; minor clean-up of relationship support');
+INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '12', '0', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Run numbers. Better searching of harnessed job file output');
+INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '12', '1', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Patch to RunNumber for better searching');
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '13', '0', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Text result type; single-slot actions');
 
 
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=UTC_TIMESTAMP();
@@ -106,9 +106,9 @@ insert into MultiRelationshipAction (name, createdBy, creationTS) values ('insta
 insert into MultiRelationshipAction (name, createdBy, creationTS) values ('uninstall', 'jrb', UTC_TIMESTAMP());
 insert into MultiRelationshipAction (name, createdBy, creationTS) values ('deassign', 'jrb', UTC_TIMESTAMP());
 
-insert into Subsystem (name, shortName, description, parentId, createdBy, creationTS) values ("Camera", "Cam", "Full camera", NULL, 'jrb', UTC_TIMESTAMP());
-
 
 insert into Subsystem (name, shortName, description, generic, createdBy, creationTS) values ("Legacy", "Legacy", "Used for traveler types predating Subsystem table", '1', 'jrb', UTC_TIMESTAMP());
 
 insert into Subsystem (name, shortName, description, generic, createdBy, creationTS) values ("Default", "Default", "Used for traveler types not associated with any particular subsystem", '1', 'jrb', UTC_TIMESTAMP());
+
+insert into HardwareGroup(name, description, createdBy, creationTS) values ('Anything', 'Anything', 'jrb', UTC_TIMESTAMP());
