@@ -508,7 +508,7 @@ CREATE TABLE IntResultManual
  PRIMARY KEY(id),
  CONSTRAINT fk150 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
  CONSTRAINT fk151 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix152 UNIQUE (activityId, inputPatternId),
+ INDEX ix152 (activityId, inputPatternId),
  INDEX fk150 (inputPatternId),
  INDEX fk151 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
@@ -542,7 +542,7 @@ CREATE TABLE FloatResultManual
  PRIMARY KEY(id),
  CONSTRAINT fk160 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
  CONSTRAINT fk161 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix162 UNIQUE (activityId, inputPatternId),
+ INDEX ix162 (activityId, inputPatternId),
  INDEX fk160 (inputPatternId),
  INDEX fk161 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
@@ -580,7 +580,7 @@ CREATE TABLE FilepathResultManual
  PRIMARY KEY(id),
  CONSTRAINT fk170 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
  CONSTRAINT fk171 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix172 UNIQUE (activityId, inputPatternId),
+ INDEX ix172 (activityId, inputPatternId),
  INDEX fk160 (inputPatternId),
  INDEX fk161 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
@@ -622,7 +622,7 @@ CREATE TABLE StringResultManual
  PRIMARY KEY(id),
  CONSTRAINT fk180 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
  CONSTRAINT fk181 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix182 UNIQUE (activityId, inputPatternId),
+ INDEX ix182 (activityId, inputPatternId),
  INDEX fk180 (inputPatternId),
  INDEX fk181 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
@@ -655,7 +655,7 @@ CREATE TABLE TextResultManual
  PRIMARY KEY(id),
  CONSTRAINT fk380 FOREIGN KEY(inputPatternId) REFERENCES InputPattern(id),
  CONSTRAINT fk381 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix382 UNIQUE (activityId, inputPatternId)
+ INDEX ix382 (activityId, inputPatternId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Store arbitrary long non-filepath string results from manual activities';
 
@@ -877,6 +877,7 @@ CREATE TABLE SignatureResultManual
  inputPatternId int NOT NULL,
  signerRequest varchar(255) NOT NULL,
  signerValue   varchar(255),
+ signerComment text NOT NULL DEFAULT '',
  signatureTS   timestamp NULL,
  createdBy     varchar(50) NOT NULL,
  creationTS    timestamp NULL,
