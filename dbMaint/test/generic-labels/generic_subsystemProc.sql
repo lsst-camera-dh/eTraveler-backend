@@ -11,7 +11,7 @@ create procedure generic_subsystem(IN objectId int, IN objectTypeId int)
       WHEN 'run' THEN CALL run_subsystem(objectId);
       WHEN 'hardwareType' THEN CALL hardwareType_subsystem(objectId);
       WHEN 'NCR' THEN CALL NCR_subsystem(objectId);
-    END CASE
+    END CASE;
   END //
 
 delimiter ;
