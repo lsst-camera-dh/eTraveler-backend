@@ -42,6 +42,7 @@ CREATE TABLE Label
 CREATE TABLE LabelHistory
 ( id int NOT NULL AUTO_INCREMENT,
   objectId int NOT NULL,
+  labelableId int NOT NULL COMMENT "Convenience. Can be looked up from labelId",
   labelId  int NOT NULL,
   reason text default "" COMMENT "e.g. initialized, used, discarded..",
   adding tinyint NOT NULL default '1',
@@ -49,5 +50,6 @@ CREATE TABLE LabelHistory
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
-  CONSTRAINT fk420 FOREIGN KEY (labelId) REFERENCES Label(id)
+  CONSTRAINT fk420 FOREIGN KEY (labelId) REFERENCES Label(id),
+  CONSTRAINT fk421 FOREIGN KEY (labelableId) REFERENCES Labelable(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
