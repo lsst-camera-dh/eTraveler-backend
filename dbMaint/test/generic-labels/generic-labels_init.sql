@@ -14,10 +14,14 @@ insert into LabelGroup (name, labelableId, createdBy, creationTS)  select 'Snark
 insert into LabelGroup (name, labelableId, createdBy, creationTS)  select 'SnarkRandom', Labelable.id, 'jrb', UTC_TIMESTAMP from Labelable where Labelable.name='hardware';
 insert into LabelGroup (name, labelableId, createdBy, creationTS)  select 'LocLabels', Labelable.id, 'jrb', UTC_TIMESTAMP from Labelable where Labelable.name='location';
 insert into LabelGroup (name, labelableId, createdBy, creationTS)  select 'HtypeLegacy', Labelable.id, 'jrb', UTC_TIMESTAMP from Labelable where Labelable.name='hardware_type';
+insert into LabelGroup (name, labelableId, createdBy, creationTS) select 'Boro', Labelable.id, 'jrb', UTC_TIMESTAMP from Labelable where Labelable.name='hardware';
+
 
 update LabelGroup set hardwareGroupId=(select id from HardwareGroup where HardwareGroup.name='Generic-CCD') where LabelGroup.name='CCDLabels';
 update LabelGroup set hardwareGroupId=(select id from HardwareGroup where HardwareGroup.name='snark') where LabelGroup.name='SnarkWhere';
 update LabelGroup set hardwareGroupId=(select id from HardwareGroup where HardwareGroup.name='snark') where LabelGroup.name='SnarkRandom';
+update LabelGroup set hardwareGroupId=(select id from HardwareGroup where HardwareGroup.name='borogove') where LabelGroup.name='Boro';
+
 
 update LabelGroup set subsystemId=(select id from Subsystem where name='Legacy') where LabelGroup.name='HtypeLegacy';
 
@@ -61,3 +65,8 @@ insert into Label (name, labelGroupId, createdBy, creationTS) select 'complete',
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'noSpares', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='HtypeLegacy';
 
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'obsolete', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='HtypeLegacy';
+
+-- Make some labels in group Boro
+insert into Label (name, labelGroupId, createdBy, creationTS) select 'Boro_L1', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='Boro';
+insert into Label (name, labelGroupId, createdBy, creationTS) select 'Boro_L2', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='Boro';
+insert into Label (name, labelGroupId, createdBy, creationTS) select 'Boro_L3', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='Boro';
