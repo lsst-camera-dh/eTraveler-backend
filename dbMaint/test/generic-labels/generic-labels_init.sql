@@ -1,11 +1,4 @@
 -- Seed the tables with some things
--- First enumerate labelable objects
-insert into Labelable (name, tableName, createdBy, creationTS) values ('run', 'RunNumber', 'jrb', UTC_TIMESTAMP());
-insert into Labelable (name, tableName, createdBy, creationTS) values ('hardware', 'Hardware', 'jrb', UTC_TIMESTAMP());
-insert into Labelable (name, tableName, createdBy, creationTS) values ('hardware_type', 'HardwareType', 'jrb', UTC_TIMESTAMP());
-insert into Labelable (name, tableName, createdBy, creationTS) values ('NCR', 'Exception', 'jrb', UTC_TIMESTAMP());
-insert into Labelable (name, tableName, createdBy, creationTS) values ('travelerType', 'TravelerType', 'jrb', UTC_TIMESTAMP());
-insert into Labelable (name, tableName, createdBy, creationTS) values ('location', 'Location', 'jrb', UTC_TIMESTAMP());
 
 -- Define some groups
 insert into LabelGroup (name, labelableId, createdBy, creationTS)  select 'RunLabels', Labelable.id, 'jrb', UTC_TIMESTAMP from Labelable where Labelable.name='run';
@@ -38,7 +31,7 @@ insert into Label (name, labelGroupId, createdBy, creationTS) select 'paused_res
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'ignore', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='RunLabels'; 
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'conditionsIssue', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='RunLabels'; 
 
--- Make some lables in group SnarkWhere
+-- Make some labels in group SnarkWhere
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'high', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='SnarkWhere';
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'low', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='SnarkWhere';
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'underground', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='SnarkWhere';
