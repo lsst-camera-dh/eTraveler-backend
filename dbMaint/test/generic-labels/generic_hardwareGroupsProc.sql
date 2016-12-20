@@ -11,6 +11,7 @@ create procedure generic_hardwareGroups(IN objectId int, IN objectTypeId int)
       WHEN 'run' THEN CALL run_hardwareGroups(objectId);
       WHEN 'hardwareType' THEN CALL hardwareType_hardwareGroups(objectId);
       WHEN 'NCR' THEN CALL NCR_hardwareGroups(objectId);
+      WHEN 'label' THEN CALL label_hardwareGroups(objectId);
     END CASE;
   END //
 
