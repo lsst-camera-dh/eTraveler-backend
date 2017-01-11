@@ -16,6 +16,7 @@ CREATE TABLE LabelGroup
   name varchar(255) NOT NULL,
   mutuallyExclusive tinyint NOT NULL default '0',
   mustBePresent tinyint NOT NULL default '0',
+  defaultLabel varchar(255) NULL COMMENT "non-null value required if mustBePresent is set",
   subsystemId int NULL,
   hardwareGroupId int NULL,
   labelableId int NOT NULL,
