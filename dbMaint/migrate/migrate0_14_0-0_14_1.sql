@@ -18,5 +18,6 @@ alter table FloatResultHarnessed add constraint ix166 unique (schemaName, name, 
 alter table StringResultHarnessed drop key ix186;
 alter table StringResultHarnessed add constraint ix186 unique (schemaName, name, schemaInstance, activityId, schemaVersion);
 
+alter table Hardware add column remarks varchar(255) NOT NULL default "" COMMENT "primarily for use during registration" after manufactureDate;
 update DbRelease set status='OLD' where major='0' and minor='14' and patch='0';
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '14', '1', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Change float to double in results tables; clean up');

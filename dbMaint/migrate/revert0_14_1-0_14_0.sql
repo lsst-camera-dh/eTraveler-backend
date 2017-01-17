@@ -1,6 +1,8 @@
 alter table FloatResultHarnessed modify column value float after name;
 alter table FloatResultManual modify column value float after name;
 
+alter table Hardware drop remarks;
+
 alter table Process add hardwareTypeId int DEFAULT NULL COMMENT 'deprecated field';
 alter table Process add key fk40 (hardwareTypeId);
 alter table Process add constraint fk40 foreign key (hardwareTypeId) references HardwareType(id);

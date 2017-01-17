@@ -126,6 +126,7 @@ CREATE TABLE Hardware
   manufacturerId varchar(255) NOT NULL default "",
   model varchar(255) NULL,
   manufactureDate timestamp NULL,
+  remarks varchar(255) NOT NULL default "" COMMENT "primarily for use during registration",
   hardwareStatusId int NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
