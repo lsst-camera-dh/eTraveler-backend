@@ -57,7 +57,7 @@ CREATE TABLE LabelHistory
   CONSTRAINT fk420 FOREIGN KEY (labelId) REFERENCES Label(id),
   CONSTRAINT fk421 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
   INDEX ix422 (objectId, labelableId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Code to set up labelable object types belongs in process-traveler_infra
 -- First enumerate labelable objects
@@ -88,3 +88,6 @@ source ../proc/travelerType_hardwareGroupsProc.sql;
 source ../proc/generic_subsystemProc.sql;
 source ../proc/generic_hardwareGroupsProc.sql;
 
+-- update DbRelease
+update DbRelease set status='OLD' where major='0' and minor='14' and patch='1';
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '0', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Generic label support');
