@@ -126,6 +126,7 @@ CREATE TABLE Hardware
   manufacturerId varchar(255) NOT NULL default "",
   model varchar(255) NULL,
   manufactureDate timestamp NULL,
+  remarks varchar(255) NOT NULL default "" COMMENT "primarily for use during registration",
   hardwareStatusId int NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -255,7 +256,6 @@ CREATE TABLE Process
 ( id int NOT NULL AUTO_INCREMENT, 
   originalId int NULL COMMENT "set equal to id of 1st version of this Process",
   name varchar(255) NOT NULL, 
-  hardwareTypeId int NULL, 
   version int NOT NULL, 
   userVersionString varchar(255) NULL COMMENT 'e.g. git tag',
   shortDescription varchar(255) NOT NULL default "",
@@ -272,7 +272,6 @@ CREATE TABLE Process
   creationTS timestamp NULL,
   hardwareGroupId int NOT NULL,
   PRIMARY KEY (id), 
-  CONSTRAINT fk40 FOREIGN KEY (hardwareTypeId) REFERENCES HardwareType (id), 
   CONSTRAINT fk42 FOREIGN KEY (newHardwareStatusId) REFERENCES HardwareStatus (id),
   CONSTRAINT fk45 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup (id), 
   INDEX fk40 (hardwareTypeId),
@@ -377,18 +376,6 @@ CREATE TABLE Activity
   INDEX ix72 (parentActivityId, processEdgeId)
 )   ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Instance of process step executed on a particular component';
-
-CREATE TABLE Result 
-( id int NOT NULL AUTO_INCREMENT, 
-  activityId int NOT NULL, 
-  status int NOT NULL, 
-  createdBy varchar(50) NOT NULL,
-  creationTS timestamp NULL,
-  PRIMARY KEY (id), 
-  CONSTRAINT fk90 FOREIGN KEY (activityId) REFERENCES Activity (id), 
-  INDEX fk90 (activityId) 
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 
 CREATE TABLE PrerequisiteType
 ( id int NOT NULL AUTO_INCREMENT,
@@ -526,7 +513,7 @@ CREATE TABLE IntResultHarnessed
  creationTS timestamp NULL,
  PRIMARY KEY(id),
  CONSTRAINT fk155 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix156 UNIQUE (activityId, name, schemaName, schemaVersion, schemaInstance),
+ CONSTRAINT ix156 UNIQUE (schemaName, name, schemaInstance, activityId, schemaVersion),
  INDEX fk155 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Store scalar int results from harnessed activities';
@@ -535,7 +522,7 @@ CREATE TABLE FloatResultManual
 (id int NOT NULL AUTO_INCREMENT,
  inputPatternId int NOT NULL,
  name varchar(255) NULL COMMENT "deprecated",
- value  float,
+ value  double,
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
@@ -551,7 +538,7 @@ COMMENT='Store scalar float results from manual activities';
 CREATE TABLE FloatResultHarnessed
 (id int NOT NULL AUTO_INCREMENT,
  name varchar(255) COMMENT "comes from schema",
- value  float,
+ value  double,
  schemaName varchar(255) NOT NULL,
  schemaVersion varchar(50) NOT NULL,
  schemaInstance int DEFAULT "0" COMMENT "Same schema may be used more than once in a result summary",
@@ -560,7 +547,7 @@ CREATE TABLE FloatResultHarnessed
  creationTS timestamp NULL,
  PRIMARY KEY(id),
  CONSTRAINT fk165 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix166 UNIQUE (activityId, name, schemaName, schemaVersion, schemaInstance),
+ CONSTRAINT ix166 UNIQUE (schemaName, name, schemaInstance, activityId, schemaVersion),
  INDEX fk165 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Store scalar float results from harnessed activities';
@@ -640,7 +627,7 @@ CREATE TABLE StringResultHarnessed
  creationTS timestamp NULL,
  PRIMARY KEY(id),
  CONSTRAINT fk185 FOREIGN KEY(activityId) REFERENCES Activity(id),
- CONSTRAINT ix186 UNIQUE (activityId, name, schemaName, schemaVersion, schemaInstance),
+ CONSTRAINT ix186 UNIQUE (schemaName, name, schemaInstance, activityId, schemaVersion),
  INDEX fk185 (activityId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Store arbitary non-filepath string results from activities';
@@ -658,18 +645,6 @@ CREATE TABLE TextResultManual
  INDEX ix382 (activityId, inputPatternId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Store arbitrary long non-filepath string results from manual activities';
-
-CREATE TABLE NextProcessVersion
-(id int NOT NULL AUTO_INCREMENT,
- name varchar(50) NOT NULL COMMENT 'will match something in Process.name',
- nextVersion int DEFAULT 0,
- createdBy varchar(50) NOT NULL,
- creationTS timestamp NULL,
- PRIMARY KEY (id),
- UNIQUE INDEX(name)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='Serve up next available version number for NextProcessVersion.name';
-
 
 CREATE TABLE TravelerType
 ( id int NOT NULL AUTO_INCREMENT,

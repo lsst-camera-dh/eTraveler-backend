@@ -37,7 +37,8 @@ CREATE TABLE Label
   creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk410 FOREIGN KEY (labelGroupId) REFERENCES LabelGroup(id),
-  CONSTRAINT uix411 UNIQUE INDEX (labelGroupId, name)
+  CONSTRAINT uix411 UNIQUE INDEX (labelGroupId, name),
+  INDEX ix410 (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE LabelHistory
@@ -52,5 +53,6 @@ CREATE TABLE LabelHistory
   creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk420 FOREIGN KEY (labelId) REFERENCES Label(id),
-  CONSTRAINT fk421 FOREIGN KEY (labelableId) REFERENCES Labelable(id)
+  CONSTRAINT fk421 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
+  INDEX ix422 (objectId, labelableId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1

@@ -50,13 +50,9 @@ insert into Label (name, labelGroupId, createdBy, creationTS) select 'grinning',
 
 -- Make some labels in group HtypeLegacy
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'manufacturedAtSLAC', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='HtypeLegacy';
-
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'delayed', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='HtypeLegacy';
-
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'complete', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='HtypeLegacy';
-
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'noSpares', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='HtypeLegacy';
-
 insert into Label (name, labelGroupId, createdBy, creationTS) select 'obsolete', id, 'jrb', UTC_TIMESTAMP() from LabelGroup where name='HtypeLegacy';
 
 -- Make some labels in group Boro
