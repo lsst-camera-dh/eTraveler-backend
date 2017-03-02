@@ -15,7 +15,7 @@ CREATE TABLE LabelGroup
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
   mutuallyExclusive tinyint NOT NULL default '0',
-  mustBePresent tinyint NOT NULL default '0',
+  defaultLabelId int NULL COMMENT "if non-null group has must-be-present property",
   subsystemId int NULL,
   hardwareGroupId int NULL,
   labelableId int NOT NULL,
@@ -25,6 +25,7 @@ CREATE TABLE LabelGroup
   CONSTRAINT fk400 FOREIGN KEY (subsystemId) REFERENCES Subsystem(id),
   CONSTRAINT fk401 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup(id),
   CONSTRAINT fk402 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
+  CONSTRAINT fk403 FOREIGN KEY (defaultLabelId) REFERENCES Label(id),
   CONSTRAINT uix403  UNIQUE INDEX(name, labelableId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
