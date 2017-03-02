@@ -17,11 +17,10 @@ CREATE TABLE LabelGroup
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
   mutuallyExclusive tinyint NOT NULL default '0',
-  mustBePresent tinyint NOT NULL default '0',
-  defaultLabel varchar(255) NULL COMMENT "non-null value required if mustBePresent is set",
+  defaultLabelId int NULL
   subsystemId int NULL,
   hardwareGroupId int NULL,
-  labelableId int NOT NULL,
+  labelableId int NOT NULL  COMMENT "if non-null group has must-be-present property",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id),
@@ -58,6 +57,11 @@ CREATE TABLE LabelHistory
   CONSTRAINT fk421 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
   INDEX ix422 (objectId, labelableId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Add a field to TravelerType to indicate that a traveler may be
+--  used as stand-alone NCR
+alter table TravelerType add column standaloneNCR tinyint NOT NULL default '0' after state;
+
 
 -- Code to set up labelable object types belongs in process-traveler_infra
 -- First enumerate labelable objects
