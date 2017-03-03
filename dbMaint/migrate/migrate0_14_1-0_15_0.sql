@@ -92,6 +92,9 @@ source ../proc/travelerType_hardwareGroupsProc.sql;
 source ../proc/generic_subsystemProc.sql;
 source ../proc/generic_hardwareGroupsProc.sql;
 
+-- Add Process.jobname
+alter table Process add column jobname varchar(255) null after version;
+
 -- update DbRelease
 update DbRelease set status='OLD' where major='0' and minor='14' and patch='1';
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '0', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Generic label support');
