@@ -29,6 +29,11 @@ drop procedure travelerType_subsystem;
 
 alter table TravelerType drop column standaloneNCR;
 
+-- Make path fields in ExceptionType non-nullable
+alter table ExceptionType modify column exitProcessPath varchar(2000)  NOT NULL DEFAULT '' COMMENT 'period separated list of processEdge ids from traveler root to exit process' after conditionString;
+
+alter table ExceptionType modify column returnProcessPath varchar(2000)  NOT NULL DEFAULT '' COMMENT 'period separated list of processEdge ids from traveler root to return process' after exitProcessPath;
+
 delete from DbRelease where major='0' and minor='15' and patch='0';
 update DbRelease set status='CURRENT' where major='0' and minor='14' and patch='1';
 

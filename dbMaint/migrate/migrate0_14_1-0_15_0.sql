@@ -62,6 +62,10 @@ CREATE TABLE LabelHistory
 --  used as stand-alone NCR
 alter table TravelerType add column standaloneNCR tinyint NOT NULL default '0' after state;
 
+-- Make path fields in ExceptionType nullable
+alter table ExceptionType modify column exitProcessPath varchar(2000)  NULL COMMENT 'period separated list of processEdge ids from traveler root to exit process' after conditionString;
+
+alter table ExceptionType modify column returnProcessPath varchar(2000)  NULL COMMENT 'period separated list of processEdge ids from traveler root to return process' after exitProcessPath;
 
 -- Code to set up labelable object types belongs in process-traveler_infra
 -- First enumerate labelable objects
