@@ -10,14 +10,15 @@ CREATE TABLE Labelable
   creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT uix399 UNIQUE INDEX(name)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='object types to which a generic label may be applied';
 
 
 CREATE TABLE LabelGroup
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
   mutuallyExclusive tinyint NOT NULL default '0',
-  defaultLabelId int NULL
+  defaultLabelId int NULL,
   subsystemId int NULL,
   hardwareGroupId int NULL,
   labelableId int NOT NULL  COMMENT "if non-null group has must-be-present property",
@@ -28,7 +29,8 @@ CREATE TABLE LabelGroup
   CONSTRAINT fk401 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup(id),
   CONSTRAINT fk402 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
   CONSTRAINT uix403  UNIQUE INDEX(name, labelableId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='generic label must belong to a group specifying at least object type';
 
 CREATE TABLE Label
 ( id int NOT NULL AUTO_INCREMENT,
@@ -101,4 +103,4 @@ alter table Process add column jobname varchar(255) null after version;
 
 -- update DbRelease
 update DbRelease set status='OLD' where major='0' and minor='14' and patch='1';
-insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '0', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Generic label support');
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '0', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Generic label support; add Process.jobname');

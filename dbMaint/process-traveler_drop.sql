@@ -1,3 +1,29 @@
+-- Drop all the stored procedures
+drop procedure generic_hardwareGroups;
+drop procedure generic_subsystem;
+
+drop procedure NCR_hardwareGroups;
+drop procedure NCR_subsystem;
+
+drop procedure hardwareType_hardwareGroups;
+drop procedure hardwareType_subsystem;
+
+drop procedure hardware_hardwareGroups;
+drop procedure hardware_subsystem;
+
+drop procedure label_hardwareGroups;
+drop procedure label_subsystem;
+
+drop procedure run_hardwareGroups;
+drop procedure run_subsystem;
+
+drop procedure travelerType_hardwareGroups;
+drop procedure travelerType_subsystem;
+
+DROP TABLE IF EXISTS LabelHistory;
+DROP TABLE IF EXISTS Label;
+DROP TABLE IF EXISTS LabelGroup;
+DROP TABLE IF EXISTS Labelable;
 DROP TABLE IF EXISTS RunNumber;
 DROP TABLE IF EXISTS SignatureResultManual;
 DROP TABLE IF EXISTS StringResultManual;
