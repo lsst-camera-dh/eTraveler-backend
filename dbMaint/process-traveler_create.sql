@@ -256,7 +256,8 @@ CREATE TABLE Process
 ( id int NOT NULL AUTO_INCREMENT, 
   originalId int NULL COMMENT "set equal to id of 1st version of this Process",
   name varchar(255) NOT NULL, 
-  version int NOT NULL, 
+  version int NOT NULL,
+  jobname varchar(255) NULL,
   userVersionString varchar(255) NULL COMMENT 'e.g. git tag',
   shortDescription varchar(255) NOT NULL default "",
   description text, 
@@ -274,7 +275,6 @@ CREATE TABLE Process
   PRIMARY KEY (id), 
   CONSTRAINT fk42 FOREIGN KEY (newHardwareStatusId) REFERENCES HardwareStatus (id),
   CONSTRAINT fk45 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup (id), 
-  INDEX fk40 (hardwareTypeId),
   INDEX fk42 (newHardwareStatusId),
   INDEX fk45 (hardwareGroupId),
   CONSTRAINT ix44 UNIQUE INDEX (name, hardwareGroupId, version),
@@ -301,8 +301,8 @@ COMMENT='Encapsulates information on how to traverse hierarchy of process steps'
 CREATE TABLE ExceptionType
 ( id int NOT NULL AUTO_INCREMENT, 
   conditionString varchar(255) NOT NULL,  
-  exitProcessPath varchar(2000)  NOT NULL COMMENT 'period separated list of processEdge ids from traveler root to exit process', 
-  returnProcessPath varchar(2000) NOT NULL COMMENT 'period separated list of processEdge ids from traveler root to return process', 
+  exitProcessPath varchar(2000)  NULL COMMENT 'period separated list of processEdge ids from traveler root to exit process', 
+  returnProcessPath varchar(2000) NULL COMMENT 'period separated list of processEdge ids from traveler root to return process', 
   exitProcessId int NOT NULL,
   returnProcessId int NOT NULL,
   rootProcessId int NOT NULL COMMENT 'id of root process for traveler exception is assoc. with',
@@ -650,6 +650,7 @@ CREATE TABLE TravelerType
 ( id int NOT NULL AUTO_INCREMENT,
   rootProcessId int NOT NULL,
   state ENUM('NEW', 'ACTIVE', 'DEACTIVATED', 'SUPERSEDED') NULL,
+  standaloneNCR tinyint NOT NULL default '0',
   owner varchar(50) COMMENT 'responsible party',
   reason text COMMENT 'purpose of traveler or of this version',
   subsystemId int NULL,
@@ -878,3 +879,64 @@ CREATE TABLE RunNumber
   INDEX ix373 (runInt)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Associate run number with traveler execution';
+
+-- Next four tables are for generic labels
+CREATE TABLE Labelable
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL COMMENT "Kind of thing to which labels are applied",
+  tableName varchar(255) NOT NULL COMMENT "table where a row represents the thing to be labeled",
+  hardwareGroupExpr varchar(255) NULL COMMENT "expression to find hardware group id(s) associated with an object in tableName",
+  subsystemExpr varchar(255) NULL COMMENT "expression to find subsystem id associated with an object in tableName",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT uix399 UNIQUE INDEX(name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='object types to which a generic label may be applied';
+
+
+CREATE TABLE LabelGroup
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  mutuallyExclusive tinyint NOT NULL default '0',
+  defaultLabelId int NULL,
+  subsystemId int NULL,
+  hardwareGroupId int NULL,
+  labelableId int NOT NULL  COMMENT "if non-null group has must-be-present property",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk400 FOREIGN KEY (subsystemId) REFERENCES Subsystem(id),
+  CONSTRAINT fk401 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup(id),
+  CONSTRAINT fk402 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
+  CONSTRAINT uix403  UNIQUE INDEX(name, labelableId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='generic label must belong to a group specifying at least object type';
+
+CREATE TABLE Label
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  labelGroupId int NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk410 FOREIGN KEY (labelGroupId) REFERENCES LabelGroup(id),
+  CONSTRAINT uix411 UNIQUE INDEX (labelGroupId, name),
+  INDEX ix410 (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE LabelHistory
+( id int NOT NULL AUTO_INCREMENT,
+  objectId int NOT NULL,
+  labelableId int NOT NULL COMMENT "Convenience. Can be looked up from labelId",
+  labelId  int NOT NULL,
+  reason text default "" COMMENT "e.g. initialized, used, discarded..",
+  adding tinyint NOT NULL default '1',
+  activityId int NULL COMMENT 'activity (if any) associated with change',
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk420 FOREIGN KEY (labelId) REFERENCES Label(id),
+  CONSTRAINT fk421 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
+  INDEX ix422 (objectId, labelableId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

@@ -28,7 +28,10 @@ INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastM
 INSERT into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '12', '1', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Patch to RunNumber for better searching');
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '13', '0', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Text result type; single-slot actions');
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '14', '0', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Add SignatureResultManual.signerComment, add new internal action "repeatable" ');
-insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '14', '1', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Change float to double in results tables; clean up');
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '14', '1', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Change float to double in results tables; clean up');
+update DbRelease set status='OLD' where major='0' and minor='14' and patch='1';
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '0', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Generic label support; add Process.jobname');
+
 
 
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=UTC_TIMESTAMP();
@@ -115,3 +118,32 @@ insert into Subsystem (name, shortName, description, generic, createdBy, creatio
 insert into Subsystem (name, shortName, description, generic, createdBy, creationTS) values ("Default", "Default", "Used for traveler types not associated with any particular subsystem", '1', 'jrb', UTC_TIMESTAMP());
 
 insert into HardwareGroup(name, description, createdBy, creationTS) values ('Anything', 'Anything', 'jrb', UTC_TIMESTAMP());
+
+-- First enumerate labelable objects
+insert into Labelable (name, tableName, createdBy, creationTS) values ('run', 'RunNumber', 'jrb', UTC_TIMESTAMP());
+insert into Labelable (name, tableName, createdBy, creationTS) values ('hardware', 'Hardware', 'jrb', UTC_TIMESTAMP());
+insert into Labelable (name, tableName, createdBy, creationTS) values ('hardware_type', 'HardwareType', 'jrb', UTC_TIMESTAMP());
+insert into Labelable (name, tableName, createdBy, creationTS) values ('NCR', 'Exception', 'jrb', UTC_TIMESTAMP());
+insert into Labelable (name, tableName, createdBy, creationTS) values ('travelerType', 'TravelerType', 'jrb', UTC_TIMESTAMP());
+insert into Labelable (name, tableName, createdBy, creationTS) values ('location', 'Location', 'jrb', UTC_TIMESTAMP());
+insert into Labelable (name, tableName, createdBy, creationTS) values ('label', 'Label', 'jrb', UTC_TIMESTAMP());
+
+-- Create stored procedures to get subsystem, hardware group(s) associated
+-- with a label, one of each for each labelable type
+source proc/NCR_subsystemProc.sql;
+source proc/NCR_hardwareGroupsProc.sql;
+source proc/hardwareType_subsystemProc.sql;
+source proc/hardwareType_hardwareGroupsProc.sql;
+source proc/hardware_subsystemProc.sql;
+source proc/hardware_hardwareGroupsProc.sql;
+source proc/label_subsystemProc.sql;
+source proc/label_hardwareGroupsProc.sql;
+source proc/run_subsystemProc.sql;
+source proc/run_hardwareGroupsProc.sql;
+source proc/travelerType_subsystemProc.sql;
+source proc/travelerType_hardwareGroupsProc.sql;
+
+-- and create the generic procedures which case on object type
+source proc/generic_subsystemProc.sql;
+source proc/generic_hardwareGroupsProc.sql;
+
