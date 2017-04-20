@@ -30,7 +30,8 @@ insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastM
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '14', '0', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Add SignatureResultManual.signerComment, add new internal action "repeatable" ');
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '14', '1', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Change float to double in results tables; clean up');
 update DbRelease set status='OLD' where major='0' and minor='14' and patch='1';
-insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '0', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Generic label support; add Process.jobname');
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '0', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Generic label support; add Process.jobname');
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '1', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Generic label addendum: manipulation from travelers');
 
 
 
@@ -99,6 +100,8 @@ insert into InternalAction set name='automatable', maskBit='64', createdBy='jrb'
 insert into InternalAction (name, maskBit,createdBy, creationTS) values ('removeLabel', '128', 'jrb', UTC_TIMESTAMP());
 insert into InternalAction (name, maskBit,createdBy, creationTS) values ('addLabel', '256', 'jrb', UTC_TIMESTAMP());
 insert into InternalAction (name, maskBit,createdBy, creationTS) values ('repeatable', '512', 'jrb', UTC_TIMESTAMP());
+insert into InternalAction (name, maskBit, createdBy, creationTS) values ('genericLabel', '1024', 'jrb', UTC_TIMESTAMP());
+
 
 insert into PermissionGroup set name='operator', maskBit='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into PermissionGroup set name='supervisor', maskBit='2', createdBy='jrb', creationTS=UTC_TIMESTAMP();

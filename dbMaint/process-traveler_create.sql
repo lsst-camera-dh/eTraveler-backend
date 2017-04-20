@@ -252,6 +252,51 @@ CREATE TABLE PermissionGroup
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Associate mask bit with each permission group';
 
+-- Next three tables are remaining needed for generic labels
+CREATE TABLE Labelable
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL COMMENT "Kind of thing to which labels are applied",
+  tableName varchar(255) NOT NULL COMMENT "table where a row represents the thing to be labeled",
+  hardwareGroupExpr varchar(255) NULL COMMENT "expression to find hardware group id(s) associated with an object in tableName",
+  subsystemExpr varchar(255) NULL COMMENT "expression to find subsystem id associated with an object in tableName",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT uix399 UNIQUE INDEX(name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='object types to which a generic label may be applied';
+
+
+CREATE TABLE LabelGroup
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  mutuallyExclusive tinyint NOT NULL default '0',
+  defaultLabelId int NULL,
+  subsystemId int NULL,
+  hardwareGroupId int NULL,
+  labelableId int NOT NULL  COMMENT "if non-null group has must-be-present property",
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk400 FOREIGN KEY (subsystemId) REFERENCES Subsystem(id),
+  CONSTRAINT fk401 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup(id),
+  CONSTRAINT fk402 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
+  CONSTRAINT uix403  UNIQUE INDEX(name, labelableId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+COMMENT='generic label must belong to a group specifying at least object type';
+
+CREATE TABLE Label
+( id int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  labelGroupId int NOT NULL,
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk410 FOREIGN KEY (labelGroupId) REFERENCES LabelGroup(id),
+  CONSTRAINT uix411 UNIQUE INDEX (labelGroupId, name),
+  INDEX ix410 (name)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 CREATE TABLE Process 
 ( id int NOT NULL AUTO_INCREMENT, 
   originalId int NULL COMMENT "set equal to id of 1st version of this Process",
@@ -268,13 +313,15 @@ CREATE TABLE Process
   travelerActionMask int unsigned DEFAULT 0,
   permissionMask int unsigned DEFAULT 127 COMMENT 'Set bit for each group authorized to execute this process',
   newHardwareStatusId int NULL COMMENT 'used if step is to change hw status',
+  genericLabelId int NULL COMMENT 'used if generic label is to be added or removed',
   newLocation varchar(255) NULL COMMENT "set new location in this step",
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   hardwareGroupId int NOT NULL,
   PRIMARY KEY (id), 
   CONSTRAINT fk42 FOREIGN KEY (newHardwareStatusId) REFERENCES HardwareStatus (id),
-  CONSTRAINT fk45 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup (id), 
+  CONSTRAINT fk45 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup (id),
+  CONSTRAINT fk46 FOREIGN KEY (genericLabelId) REFERENCES Label(id),
   INDEX fk42 (newHardwareStatusId),
   INDEX fk45 (hardwareGroupId),
   CONSTRAINT ix44 UNIQUE INDEX (name, hardwareGroupId, version),
@@ -880,51 +927,7 @@ CREATE TABLE RunNumber
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Associate run number with traveler execution';
 
--- Next four tables are for generic labels
-CREATE TABLE Labelable
-( id int NOT NULL AUTO_INCREMENT,
-  name varchar(255) NOT NULL COMMENT "Kind of thing to which labels are applied",
-  tableName varchar(255) NOT NULL COMMENT "table where a row represents the thing to be labeled",
-  hardwareGroupExpr varchar(255) NULL COMMENT "expression to find hardware group id(s) associated with an object in tableName",
-  subsystemExpr varchar(255) NULL COMMENT "expression to find subsystem id associated with an object in tableName",
-  createdBy varchar(50) NOT NULL,
-  creationTS timestamp NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT uix399 UNIQUE INDEX(name)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='object types to which a generic label may be applied';
-
-
-CREATE TABLE LabelGroup
-( id int NOT NULL AUTO_INCREMENT,
-  name varchar(255) NOT NULL,
-  mutuallyExclusive tinyint NOT NULL default '0',
-  defaultLabelId int NULL,
-  subsystemId int NULL,
-  hardwareGroupId int NULL,
-  labelableId int NOT NULL  COMMENT "if non-null group has must-be-present property",
-  createdBy varchar(50) NOT NULL,
-  creationTS timestamp NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT fk400 FOREIGN KEY (subsystemId) REFERENCES Subsystem(id),
-  CONSTRAINT fk401 FOREIGN KEY (hardwareGroupId) REFERENCES HardwareGroup(id),
-  CONSTRAINT fk402 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
-  CONSTRAINT uix403  UNIQUE INDEX(name, labelableId)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-COMMENT='generic label must belong to a group specifying at least object type';
-
-CREATE TABLE Label
-( id int NOT NULL AUTO_INCREMENT,
-  name varchar(255) NOT NULL,
-  labelGroupId int NOT NULL,
-  createdBy varchar(50) NOT NULL,
-  creationTS timestamp NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT fk410 FOREIGN KEY (labelGroupId) REFERENCES LabelGroup(id),
-  CONSTRAINT uix411 UNIQUE INDEX (labelGroupId, name),
-  INDEX ix410 (name)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
+-- Final table needed for generic labels
 CREATE TABLE LabelHistory
 ( id int NOT NULL AUTO_INCREMENT,
   objectId int NOT NULL,
