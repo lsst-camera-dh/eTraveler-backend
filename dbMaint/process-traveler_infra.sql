@@ -125,7 +125,7 @@ insert into HardwareGroup(name, description, createdBy, creationTS) values ('Any
 -- First enumerate labelable objects
 insert into Labelable (name, tableName, createdBy, creationTS) values ('run', 'RunNumber', 'jrb', UTC_TIMESTAMP());
 insert into Labelable (name, tableName, createdBy, creationTS) values ('hardware', 'Hardware', 'jrb', UTC_TIMESTAMP());
-insert into Labelable (name, tableName, createdBy, creationTS) values ('hardware_type', 'HardwareType', 'jrb', UTC_TIMESTAMP());
+insert into Labelable (name, tableName, createdBy, creationTS) values ('hardwareType', 'HardwareType', 'jrb', UTC_TIMESTAMP());
 insert into Labelable (name, tableName, createdBy, creationTS) values ('NCR', 'Exception', 'jrb', UTC_TIMESTAMP());
 insert into Labelable (name, tableName, createdBy, creationTS) values ('travelerType', 'TravelerType', 'jrb', UTC_TIMESTAMP());
 insert into Labelable (name, tableName, createdBy, creationTS) values ('label', 'Label', 'jrb', UTC_TIMESTAMP());
