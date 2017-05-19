@@ -28,11 +28,13 @@ class labelToName():
         db_url = sqlalchemy.engine.url.URL('mysql+mysqldb', **kwds)
         self.engine = sqlalchemy.create_engine(db_url)
 
-    def formNames(self, dryRun=True):
+    def formNames(self, dryRun=1):
         # Fetch, id, label from InputPattern where name is null, order by id
         q = "select id, label from InputPattern where name is null"
-        u = "update InputPattern set name={0} where id={1}"
+        u = "update InputPattern set name='{0}' where id={1}"
 
+        print "dryRun is:  ", dryRun
+    
         results = self.engine.execute(q)
         row = results.fetchone()
         count = 1
@@ -43,25 +45,25 @@ class labelToName():
         while (row != None):
             id = row['id']
             label = row['label']
+            #  Get rid of html tags
             name = ''.join(self.htmlPat.split(label))
+
+            # Get rid of blanks
             name = re.sub(' ', '_', name)
+            # Get rid of other characters which cause python or sql grief
+            name = re.sub('%', 'pc', name)
+            name = re.sub("'", '', name)
             print 'value for name will be ',name
             print 'query will be: '
             uq =  u.format(name, id)
             print uq
-            if (not dryRun):
-                # self.engine.execute(uq)
-                print 'Not ready to do it for real yet'
+            if (int(dryRun) == 0):
+                self.engine.execute(uq)
+                #print 'Not ready to do it for real yet'
+
             row = results.fetchone()
             count += 1
-            if dryRun and (count > 100): return
-        # For each row
-        #     transform label value to suitable value for name
-        #     if dryRun == true:
-        #        just print it out
-        #     else:
-        #        update InputPattern set name=(val) where id=(id)
-
+            #if count > 10: return
 
 if __name__ == "__main__":
     usage = " %prog [options] , e.g. \n python labelToName.py --db=dev \n or \n python labelToName.py --connectFile=myConnect.txt "
@@ -70,7 +72,7 @@ if __name__ == "__main__":
     parser.add_option("-d", "--db", dest="db", help="used to compute connect file path: ~/.ssh/db_(option-value).txt")
     parser.add_option("--connectFile", "-f", dest="connectFile", help="path to file containing db connection information")
     parser.add_option("--dryRun", dest="dryRun", help="true by default. To modify database, must have value False")
-    parser.set_defaults(dryRun=True)
+    parser.set_defaults(dryRun=1)
     parser.set_defaults(db=None)
     parser.set_defaults(connectFile=None)
 
@@ -81,11 +83,13 @@ if __name__ == "__main__":
         connectFile = options.connectFile
     else:
         if options.db == None:
-            raise RunTimeException("one of connectFile, db is required")
+            raise RuntimeError("one of connectFile, db is required")
         else:
             connectFile = os.path.join(os.environ['HOME'],
                                        '.ssh/db_' + str(options.db) + '.txt')
 
     ltn = labelToName(connectFile)
 
-    ltn.formNames(options.dryRun)
+    dryRun = options.dryRun
+
+    ltn.formNames(dryRun=dryRun)
