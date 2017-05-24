@@ -270,6 +270,7 @@ COMMENT='object types to which a generic label may be applied';
 CREATE TABLE LabelGroup
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
+  description varchar(5120) default '',
   mutuallyExclusive tinyint NOT NULL default '0',
   defaultLabelId int NULL,
   subsystemId int NULL,
@@ -288,6 +289,7 @@ COMMENT='generic label must belong to a group specifying at least object type';
 CREATE TABLE Label
 ( id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
+  description varchar(5120) default '',
   labelGroupId int NOT NULL,
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
@@ -495,7 +497,8 @@ CREATE TABLE InputPattern
 (id int NOT NULL AUTO_INCREMENT,
   processId int NOT NULL COMMENT "process step this input belongs to",
   inputSemanticsId int NOT NULL,
-  label   varchar(255) NOT NULL COMMENT "required label to appear on form", 
+  label   varchar(255) NOT NULL COMMENT "required label to appear on form",
+  name    varchar(255) NULL COMMENT "one-word identifier for field",
   units  varchar(255) DEFAULT "none",
   description text NULL COMMENT "if label is not sufficient",
   minV float  NULL COMMENT "allowed minimum (optional)",  
@@ -512,6 +515,7 @@ CREATE TABLE InputPattern
   CONSTRAINT ix132 UNIQUE (processId, label),
   CONSTRAINT fk133 FOREIGN KEY(permissionGroupId) REFERENCES PermissionGroup(id),
   INDEX fk130 (processId),
+  CONSTRAINT ix135 UNIQUE (processId, name),
   INDEX fk131 (inputSemanticsId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Describes required operator input assoc. with particular process step';
@@ -570,6 +574,7 @@ CREATE TABLE FloatResultManual
  inputPatternId int NOT NULL,
  name varchar(255) NULL COMMENT "deprecated",
  value  double,
+ valueString varchar(60) COMMENT "save value just as operator entered it",
  activityId int NOT NULL COMMENT "activity producing this result",
  createdBy varchar(50) NOT NULL,
  creationTS timestamp NULL,
