@@ -71,7 +71,7 @@ if __name__ == "__main__":
     parser = OptionParser(usage=usage)
     parser.add_option("-d", "--db", dest="db", help="used to compute connect file path: ~/.ssh/db_(option-value).txt")
     parser.add_option("--connectFile", "-f", dest="connectFile", help="path to file containing db connection information")
-    parser.add_option("--dryRun", dest="dryRun", help="true by default. To modify database, must have value False")
+    parser.add_option("--dryRun", dest="dryRun", help="1 (true) by default. To modify database, use --dryRun=0")
     parser.set_defaults(dryRun=1)
     parser.set_defaults(db=None)
     parser.set_defaults(connectFile=None)
