@@ -67,17 +67,23 @@ class copyLabelHistory():
     
         iTemplate="insert into LabelHistory (objectId,labelableId,labelId,"
         iTemplate+="reason,adding,activityId,createdBy,creationTS) value "
-        iTemplate+="('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}')"
+        iTemplate+="('{0}','{1}','{2}','{3}','{4}',{5},'{6}','{7}')"
         results = self.oldHistory
         row = results.fetchone()
 
         while row != None:
+            activityId=row['activityId']
+            if activityId == None:
+                activityId = 'NULL'
+            else:
+                activityId = "'" + str(activityId) + "'"
+                
             iQuery = iTemplate.format(str(row['hardwareId']),
                                       str(self.labelableId),
                                       str(row['genLabelId']),
                                       str(row['reason']),
                                       str(row['adding']),
-                                      str(row['activityId']),
+                                      activityId,
                                       str(row['createdBy']),
                                       str(row['creationTS']))
             print "insert query is: "
