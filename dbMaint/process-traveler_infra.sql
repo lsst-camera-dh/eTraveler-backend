@@ -32,8 +32,8 @@ insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastM
 update DbRelease set status='OLD' where major='0' and minor='14' and patch='1';
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '0', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Generic label support; add Process.jobname');
 insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '1', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Generic label addendum: manipulation from travelers');
-insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '2', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Add generic label descriptions, InputPattern.name, FloatResultManual.valueString');
-
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '2', 'OLD', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Add generic label descriptions, InputPattern.name, FloatResultManual.valueString');
+insert into DbRelease (major, minor, patch, status, createdBy, creationTS, lastModTS, remarks) values ('0', '15', '3', 'CURRENT', 'jrb', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'Add final status "closed"; minor clean-up in manual results tables');
 
 insert into PrerequisiteType set name='PROCESS_STEP', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into PrerequisiteType set name='COMPONENT', createdBy='jrb', creationTS=UTC_TIMESTAMP();
@@ -78,6 +78,7 @@ insert into ActivityFinalStatus set name="new", isFinal='0', createdBy='jrb', cr
 insert into ActivityFinalStatus set name="skipped", isFinal='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into ActivityFinalStatus set name="paused", isFinal='0', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into ActivityFinalStatus set name="inProgress", isFinal='0', createdBy='jrb', creationTS=UTC_TIMESTAMP();
+insert into ActivityFinalStatus set name="closed", isFinal='1', createdBy='jrb', creationTS=UTC_TIMESTAMP();
 
 insert into TravelerTypeState set name="new", createdBy='jrb', creationTS=UTC_TIMESTAMP();
 insert into TravelerTypeState set name="active", createdBy='jrb', creationTS=UTC_TIMESTAMP();
