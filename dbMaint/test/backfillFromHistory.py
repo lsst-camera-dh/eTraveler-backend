@@ -88,7 +88,7 @@ class backfillFromHistory():
             row = results.fetchone()
             count += 1
             # To start just try a couple
-            if count > 5: return
+            #if count > 5: return
 
 if __name__ == "__main__":
     usage = " %prog [options] , e.g. \n python backfillFromHistory.py --db=dev \n or \n python backfillFromHistory.py --connectFile=myConnect.txt "
