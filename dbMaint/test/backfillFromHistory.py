@@ -97,7 +97,7 @@ if __name__ == "__main__":
     parser.add_option("-d", "--db", dest="db", help="used to compute connect file path: ~/.ssh/db_(option-value).txt")
     parser.add_option("--connectFile", "-f", dest="connectFile", help="path to file containing db connection information")
     parser.add_option("--dryRun", dest="dryRun", help="1 (true) by default. To modify database, use --dryRun=0")
-    parser.add_option("--item",dest="item",help="field to extract from history")
+    parser.add_option("--item",dest="item",help="field to extract from history. May be activityStatus (default) or hardwareLocation")
     parser.add_option("--nullOnly", dest="nullOnly",
                       help="if set (default) only null fields will be overwritten. To write all fields use --nullOnly=0")
     parser.set_defaults(dryRun=1)
