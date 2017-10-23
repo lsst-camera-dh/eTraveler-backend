@@ -45,9 +45,16 @@ class backfillFromHistory():
                 self.historyDataField='locationId'
                 self.historyItemField='hardwareId'
             else:
-                print "item ",item, " not supported"
-                print "Have a nice day"
-                return
+                if item == 'hardwareStatus':
+                    self.itemTable='Hardware'
+                    self.itemField = 'hardwareStatusId'
+                    self.historyTable='HardwareStatusHistory'
+                    self.historyDataField='hardwareStatusId'
+                    self.historyItemField='hardwareId'
+                else:
+                    print "item ",item, " not supported"
+                    print "Have a nice day"
+                    return
             
         print "dryRun is:  ", dryRun
 
@@ -69,20 +76,24 @@ class backfillFromHistory():
             historyQuery += ' where ' + self.historyItemField
             historyQuery += " ='" + str(id) + "' order by id desc limit 1"
             if int(dryRun) == 1:
-                print 'About to issue query'
-                print historyQuery
+                if count < 10 or (count % 100 == 0):
+                    print 'About to issue query'
+                    print historyQuery
                 rs = self.engine.execute(historyQuery)
                 r = rs.fetchone()
                 statusId = r[self.historyDataField]
-                print 'New value for ', self.itemTable, ' entry with id ',id, ' is ',statusId
+                if count < 10 or (count % 100 == 0):
+                    print 'New value for ', self.itemTable, ' entry with id ',id, ' is ',statusId
             else:
                 upd = 'update ' + self.itemTable + ' set ' + self.itemField
                 upd += '=(' + historyQuery + ") where id='"
                 upd += str(id) + "'"
-                print 'About to issue update'
-                print upd
+                if count < 10 or (count % 100 == 0):
+                    print 'About to issue update'
+                    print upd
                 self.engine.execute(upd)
-                print 'Updated activity ',id
+                if count < 10 or (count % 100 == 0):
+                    print 'Updated activity ',id
                 
             
             row = results.fetchone()
@@ -97,7 +108,7 @@ if __name__ == "__main__":
     parser.add_option("-d", "--db", dest="db", help="used to compute connect file path: ~/.ssh/db_(option-value).txt")
     parser.add_option("--connectFile", "-f", dest="connectFile", help="path to file containing db connection information")
     parser.add_option("--dryRun", dest="dryRun", help="1 (true) by default. To modify database, use --dryRun=0")
-    parser.add_option("--item",dest="item",help="field to extract from history. May be activityStatus (default) or hardwareLocation")
+    parser.add_option("--item",dest="item",help="field to extract from history. May be activityStatus (default), hardwareLocation or hardwareStatus")
     parser.add_option("--nullOnly", dest="nullOnly",
                       help="if set (default) only null fields will be overwritten. To write all fields use --nullOnly=0")
     parser.set_defaults(dryRun=1)
