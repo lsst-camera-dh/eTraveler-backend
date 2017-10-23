@@ -93,9 +93,7 @@ class backfillFromHistory():
                     print upd
                 self.engine.execute(upd)
                 if count < 10 or (count % 100 == 0):
-                    print 'Updated activity ',id
-                
-            
+                    print 'Updated item in table ', self.itemTable, 'with id=',id
             row = results.fetchone()
             count += 1
             # To start just try a couple
