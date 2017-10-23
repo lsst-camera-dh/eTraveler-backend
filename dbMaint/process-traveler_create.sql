@@ -441,7 +441,7 @@ CREATE TABLE PrerequisiteType
   creationTS timestamp NULL,
   PRIMARY KEY (id),
   CONSTRAINT ix99 UNIQUE INDEX (name)
-) ENGINE=InooDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE PrerequisitePattern
 ( id int NOT NULL AUTO_INCREMENT,

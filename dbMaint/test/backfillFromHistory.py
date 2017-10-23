@@ -59,8 +59,8 @@ class backfillFromHistory():
         print "dryRun is:  ", dryRun
 
         q = 'select id from ' + self.itemTable
-        if int(nullOnly) == 1: q += ' where ' + self.itemField + ' is null'
-        
+        if int(nullOnly) == 1: q += ' where ' + self.itemField + ' is null '
+        q += ' order by id'
         results = self.engine.execute(q)
         row = results.fetchone()
         count = 1
