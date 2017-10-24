@@ -72,9 +72,17 @@ class backfillFromHistory():
             id = row['id']
 
             historyQuery = 'select ' + self.historyDataField
-            historyQuery += ' from ' + self.historyTable
-            historyQuery += ' where ' + self.historyItemField
-            historyQuery += " ='" + str(id) + "' order by id desc limit 1"
+            historyQuery += ' from ' + self.historyTable + ' as HT'
+            if item == 'hardwareStatus':
+                historyQuery += ' join HardwareStatus HS on '
+                historyQuery +=  'HT.hardwareStatusId = HS.id'
+            historyQuery += ' where ';
+            if item == 'hardwareStatus':
+                historyQuery += ' HS.isStatusValue=1 and '
+
+            historyQuery += self.historyItemField
+            historyQuery += " ='" + str(id) + "' order by "
+            historyQuery += "HT.id desc limit 1"
             if int(dryRun) == 1:
                 if count < 10 or (count % 100 == 0):
                     print 'About to issue query'
