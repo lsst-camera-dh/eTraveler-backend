@@ -937,7 +937,6 @@ CREATE TABLE RunNumber
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Associate run number with traveler execution';
 
--- Final table needed for generic labels
 CREATE TABLE LabelHistory
 ( id int NOT NULL AUTO_INCREMENT,
   objectId int NOT NULL,
@@ -953,3 +952,20 @@ CREATE TABLE LabelHistory
   CONSTRAINT fk421 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
   INDEX ix422 (objectId, labelableId)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Final table needed for generic labels
+CREATE TABLE LabelCurrent
+( id int NOT NULL AUTO_INCREMENT,
+  objectId int NOT NULL,
+  labelableId int NOT NULL COMMENT "Convenience. Can be looked up from labelId",
+  labelId  int NOT NULL,
+  reason varchar(20000) default "" COMMENT "e.g. initialized, used, discarded..",
+  adding tinyint NOT NULL default '1',
+  activityId int NULL COMMENT 'activity (if any) associated with change',
+  createdBy varchar(50) NOT NULL,
+  creationTS timestamp NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk430 FOREIGN KEY (labelId) REFERENCES Label(id),
+  CONSTRAINT fk431 FOREIGN KEY (labelableId) REFERENCES Labelable(id),
+  UNIQUE INDEX ix432 (objectId, labelId)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='a place to cache current label status';

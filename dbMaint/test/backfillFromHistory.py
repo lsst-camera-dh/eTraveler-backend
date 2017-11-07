@@ -52,9 +52,13 @@ class backfillFromHistory():
                     self.historyDataField='hardwareStatusId'
                     self.historyItemField='hardwareId'
                 else:
-                    print "item ",item, " not supported"
-                    print "Have a nice day"
-                    return
+                    if item == 'label':
+                        self.backfillLabels(dryRun)
+                        return
+                    else:
+                        print "item ",item, " not supported"
+                        print "Have a nice day"
+                        return
             
         print "dryRun is:  ", dryRun
 
@@ -107,6 +111,55 @@ class backfillFromHistory():
             # To start just try a couple
             #if count > 5: return
 
+    def backfillLabels(self, dryRun=1):
+        '''
+        Use a different strategy for labels: just copy from LabelHistory
+        into LabelCurrent, using ON DUPLICATE KEY UPDATE ..
+        '''
+        # First get everything but id out of LabelHistory in order
+
+        q = 'select objectId, labelableId, labelId, reason, adding, '
+        q += 'activityId, createdBy, creationTS from LabelHistory order by id'
+
+        results = self.engine.execute(q)
+        row = results.fetchone()
+        count = 1
+        if (row == None):
+            print "No label history to be copied"
+            return
+        print "dryRun is: ",dryRun
+        
+        while (row != None):
+            haveAid = (row['activityId'] is not None)
+            eReason = row['reason'].replace('"', '\\"').replace("'", "\\'")
+            ins = 'insert into LabelCurrent (objectId,labelableId,labelId,'
+            ins += 'reason,adding,createdBy,creationTS'
+            if haveAid: ins +=',activityId'
+            ins += ') values('+str(row['objectId'])+','+str(row['labelableId'])
+            ins += ','+str(row['labelId'])+ ',"' + eReason + '",'
+            ins +=str(row['adding'])+',"'+row['createdBy']
+            ins += '","' + str(row['creationTS']) + '"'
+            if haveAid:
+                ins += ',' + str(row['activityId'])
+            ins +=') ON DUPLICATE KEY UPDATE reason="' + eReason
+            ins += '",adding='+str(row['adding'])+',createdBy="'+row['createdBy']
+            ins += '",creationTS="' + str(row['creationTS']) + '"'
+            if haveAid:
+                ins +=',activityId=' + str(row['activityId'])
+            else:
+                ins +=',activityId=NULL'
+
+            print 'Insert query looks like: '
+            print ins
+            if dryRun == '0':
+                print "executing"
+                self.engine.execute(ins)
+            row = results.fetchone()
+            count = count + 1
+            #if (count > 5): return
+        
+            
+
 if __name__ == "__main__":
     usage = " %prog [options] , e.g. \n python backfillFromHistory.py --db=dev \n or \n python backfillFromHistory.py --connectFile=myConnect.txt "
 
@@ -114,7 +167,7 @@ if __name__ == "__main__":
     parser.add_option("-d", "--db", dest="db", help="used to compute connect file path: ~/.ssh/db_(option-value).txt")
     parser.add_option("--connectFile", "-f", dest="connectFile", help="path to file containing db connection information")
     parser.add_option("--dryRun", dest="dryRun", help="1 (true) by default. To modify database, use --dryRun=0")
-    parser.add_option("--item",dest="item",help="field to extract from history. May be activityStatus (default), hardwareLocation or hardwareStatus")
+    parser.add_option("--item",dest="item",help="field to extract from history. May be activityStatus (default), hardwareLocation, hardwareStatus or label")
     parser.add_option("--nullOnly", dest="nullOnly",
                       help="if set (default) only null fields will be overwritten. To write all fields use --nullOnly=0")
     parser.set_defaults(dryRun=1)
