@@ -45,15 +45,26 @@ class backfillFromHistory():
                 self.historyDataField='locationId'
                 self.historyItemField='hardwareId'
             else:
-                print "item ",item, " not supported"
-                print "Have a nice day"
-                return
+                if item == 'hardwareStatus':
+                    self.itemTable='Hardware'
+                    self.itemField = 'hardwareStatusId'
+                    self.historyTable='HardwareStatusHistory'
+                    self.historyDataField='hardwareStatusId'
+                    self.historyItemField='hardwareId'
+                else:
+                    if item == 'label':
+                        self.backfillLabels(dryRun)
+                        return
+                    else:
+                        print "item ",item, " not supported"
+                        print "Have a nice day"
+                        return
             
         print "dryRun is:  ", dryRun
 
         q = 'select id from ' + self.itemTable
-        if int(nullOnly) == 1: q += ' where ' + self.itemField + ' is null'
-        
+        if int(nullOnly) == 1: q += ' where ' + self.itemField + ' is null '
+        q += ' order by id'
         results = self.engine.execute(q)
         row = results.fetchone()
         count = 1
@@ -65,30 +76,89 @@ class backfillFromHistory():
             id = row['id']
 
             historyQuery = 'select ' + self.historyDataField
-            historyQuery += ' from ' + self.historyTable
-            historyQuery += ' where ' + self.historyItemField
-            historyQuery += " ='" + str(id) + "' order by id desc limit 1"
+            historyQuery += ' from ' + self.historyTable + ' as HT'
+            if item == 'hardwareStatus':
+                historyQuery += ' join HardwareStatus HS on '
+                historyQuery +=  'HT.hardwareStatusId = HS.id'
+            historyQuery += ' where ';
+            if item == 'hardwareStatus':
+                historyQuery += ' HS.isStatusValue=1 and '
+
+            historyQuery += self.historyItemField
+            historyQuery += " ='" + str(id) + "' order by "
+            historyQuery += "HT.id desc limit 1"
             if int(dryRun) == 1:
-                print 'About to issue query'
-                print historyQuery
+                if count < 10 or (count % 100 == 0):
+                    print 'About to issue query'
+                    print historyQuery
                 rs = self.engine.execute(historyQuery)
                 r = rs.fetchone()
                 statusId = r[self.historyDataField]
-                print 'New value for ', self.itemTable, ' entry with id ',id, ' is ',statusId
+                if count < 10 or (count % 100 == 0):
+                    print 'New value for ', self.itemTable, ' entry with id ',id, ' is ',statusId
             else:
                 upd = 'update ' + self.itemTable + ' set ' + self.itemField
                 upd += '=(' + historyQuery + ") where id='"
                 upd += str(id) + "'"
-                print 'About to issue update'
-                print upd
+                if count < 10 or (count % 100 == 0):
+                    print 'About to issue update'
+                    print upd
                 self.engine.execute(upd)
-                print 'Updated activity ',id
-                
-            
+                if count < 10 or (count % 100 == 0):
+                    print 'Updated item in table ', self.itemTable, 'with id=',id
             row = results.fetchone()
             count += 1
             # To start just try a couple
             #if count > 5: return
+
+    def backfillLabels(self, dryRun=1):
+        '''
+        Use a different strategy for labels: just copy from LabelHistory
+        into LabelCurrent, using ON DUPLICATE KEY UPDATE ..
+        '''
+        # First get everything but id out of LabelHistory in order
+
+        q = 'select objectId, labelableId, labelId, reason, adding, '
+        q += 'activityId, createdBy, creationTS from LabelHistory order by id'
+
+        results = self.engine.execute(q)
+        row = results.fetchone()
+        count = 1
+        if (row == None):
+            print "No label history to be copied"
+            return
+        print "dryRun is: ",dryRun
+        
+        while (row != None):
+            haveAid = (row['activityId'] is not None)
+            eReason = row['reason'].replace('"', '\\"').replace("'", "\\'")
+            ins = 'insert into LabelCurrent (objectId,labelableId,labelId,'
+            ins += 'reason,adding,createdBy,creationTS'
+            if haveAid: ins +=',activityId'
+            ins += ') values('+str(row['objectId'])+','+str(row['labelableId'])
+            ins += ','+str(row['labelId'])+ ',"' + eReason + '",'
+            ins +=str(row['adding'])+',"'+row['createdBy']
+            ins += '","' + str(row['creationTS']) + '"'
+            if haveAid:
+                ins += ',' + str(row['activityId'])
+            ins +=') ON DUPLICATE KEY UPDATE reason="' + eReason
+            ins += '",adding='+str(row['adding'])+',createdBy="'+row['createdBy']
+            ins += '",creationTS="' + str(row['creationTS']) + '"'
+            if haveAid:
+                ins +=',activityId=' + str(row['activityId'])
+            else:
+                ins +=',activityId=NULL'
+
+            print 'Insert query looks like: '
+            print ins
+            if dryRun == '0':
+                print "executing"
+                self.engine.execute(ins)
+            row = results.fetchone()
+            count = count + 1
+            #if (count > 5): return
+        
+            
 
 if __name__ == "__main__":
     usage = " %prog [options] , e.g. \n python backfillFromHistory.py --db=dev \n or \n python backfillFromHistory.py --connectFile=myConnect.txt "
@@ -97,7 +167,7 @@ if __name__ == "__main__":
     parser.add_option("-d", "--db", dest="db", help="used to compute connect file path: ~/.ssh/db_(option-value).txt")
     parser.add_option("--connectFile", "-f", dest="connectFile", help="path to file containing db connection information")
     parser.add_option("--dryRun", dest="dryRun", help="1 (true) by default. To modify database, use --dryRun=0")
-    parser.add_option("--item",dest="item",help="field to extract from history. May be activityStatus (default) or hardwareLocation")
+    parser.add_option("--item",dest="item",help="field to extract from history. May be activityStatus (default), hardwareLocation, hardwareStatus or label")
     parser.add_option("--nullOnly", dest="nullOnly",
                       help="if set (default) only null fields will be overwritten. To write all fields use --nullOnly=0")
     parser.set_defaults(dryRun=1)

@@ -20,6 +20,7 @@ drop procedure run_subsystem;
 drop procedure travelerType_hardwareGroups;
 drop procedure travelerType_subsystem;
 
+DROP TABLE IF EXISTS LabelCurrent;
 DROP TABLE IF EXISTS LabelHistory;
 DROP TABLE IF EXISTS RunNumber;
 DROP TABLE IF EXISTS SignatureResultManual;
