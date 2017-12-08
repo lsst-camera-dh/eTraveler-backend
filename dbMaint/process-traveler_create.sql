@@ -311,7 +311,7 @@ CREATE TABLE Process
   shortDescription varchar(255) NOT NULL default "",
   description varchar(40000), 
   instructionsURL varchar(255), 
-  substeps  ENUM('NONE', 'SEQUENCE', 'SELECTION') default 'NONE'
+  substeps  ENUM('NONE', 'SEQUENCE', 'SELECTION', 'HARDWARE_SELECTION') default 'NONE'
    COMMENT 'determines where we go next',
   maxIteration tinyint unsigned DEFAULT 1,
   travelerActionMask int unsigned DEFAULT 0,
@@ -342,12 +342,14 @@ CREATE TABLE ProcessEdge
   child int NOT NULL, step int NOT NULL, 
   cond varchar(255) 
    COMMENT 'condition under which edge is traversed; used only if parent process has navigation type SELECTION',
+  branchHardwareTypeId int NULL COMMENT 'use if selection is by hardware type',
   createdBy varchar(50) NOT NULL,
   creationTS timestamp NULL,
   PRIMARY KEY (id), 
   CONSTRAINT ix32 UNIQUE INDEX (parent, step),
   CONSTRAINT fk31 FOREIGN KEY (child) REFERENCES Process (id) , 
-  CONSTRAINT fk30 FOREIGN KEY (parent) REFERENCES Process (id), 
+  CONSTRAINT fk30 FOREIGN KEY (parent) REFERENCES Process (id),
+  CONSTRAINT fk33 FOREIGN KEY (branchHardwareTypeId) REFERENCES HardwareType(id),
   INDEX fk30 (parent), INDEX fk31 (child) 
 )  ENGINE=InnoDB DEFAULT CHARSET=latin1
 COMMENT='Encapsulates information on how to traverse hierarchy of process steps';
