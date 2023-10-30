@@ -61,9 +61,13 @@ def fix_field(dbname='rd_lsst_cmdv', usertype="app", instring=DEFAULT_IN,
         
 #fix_field(usertype="app", table="Process")
 #fix_field(usertype="app", table="InputPattern")
-fix_field(table="PrerequisitePattern", dbname="rd_lsst_cam")
+#fix_field(table="PrerequisitePattern", dbname="rd_lsst_cam")
 #fix_field(table="InputPattern", dbname="rd_lsst_cam")
 #fix_field(table="Process", dbname="rd_lsst_cam")
+#fix_field(table="Process", dbname="rd_lsst_cam",
+#          instring="https://srs.slac.stanford.edu/Decorator/exp/LSST-CAMERA")
+fix_field(table="PrerequisitePattern", dbname="rd_lsst_cam",
+          instring="https://srs.slac.stanford.edu/Decorator/exp/LSST-CAMERA")
 
     
     
